@@ -1,6 +1,6 @@
 require('./bootstrap');
 
-//window.Vue = require('vue').default;
+import "tailwindcss/tailwind.css"
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';

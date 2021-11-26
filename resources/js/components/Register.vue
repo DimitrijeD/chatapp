@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap w-full justify-center pt-56">
+    <div class="flex flex-wrap w-full justify-center mt-3">
 
         <form @submit.prevent="saveForm" enctype="multipart/form-data">
             <div class="flex flex-wrap max-w-xl">

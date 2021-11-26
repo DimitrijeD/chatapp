@@ -1,6 +1,5 @@
 <template>
-
-    <div class="fixed bottom-0 left-0 w-full bg-gray-100 border border-gray-300 py-4">
+    <div class=" w-full bg-gray-100 border border-gray-300 py-4"><!--    fixed inset-x-0 bottom-0-->
         <div class="container mx-auto">
             <div class="flex justify-between">
                 <div class=" text-sm">Footer 1</div>
