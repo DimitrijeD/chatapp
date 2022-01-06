@@ -35,7 +35,11 @@ Route::get('/chat/users-by-groups/{groupId}',          [ChatGroupController::cla
 Route::post('/chat/group/new',                         [ChatGroupController::class, 'store']);
 
 Route::get('/chat/groups-by-user-with-participants',   [ChatGroupController::class, 'getGroupsByUserWithParticipants']);
+
+// ----------------------------------------------------------------------------------------------------------------------
 Route::get('/chat/groups-by-user-without-self',        [ChatGroupController::class, 'getGroupsByUserWithoutSelf']);
+Route::get('/chat/groups-by-user-without-self-v2',     [ChatGroupController::class, 'getGroupsByUserWithoutSelf_v2']);
+// ----------------------------------------------------------------------------------------------------------------------
 
 Route::post('/chat/group/{groupId}',                   [ChatGroupController::class, 'getGroupById']);
 Route::post('/chat/group-with-participants/{groupId}', [ChatGroupController::class, 'getGroupById_WithParticipants']);

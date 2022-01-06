@@ -19,6 +19,7 @@
         <!-- chat window body -->
         <!-- wrapper for dynamic window minimization -->
         <div
+            class="border-l border-blue-300 flex flex-col"
             v-bind:class="{ 'hidden': isMinimized }"
             @click="selfAcknowledged();"
         >
@@ -34,9 +35,6 @@
                 :newSeenEvent="newSeenEvent"
             />
 
-            <participants-typing
-                :groupId="this.chatGroup.group.id"
-            />
 
             <!-- chat window footer -->
             <message-input
@@ -147,13 +145,13 @@ export default {
             }
         },
 
-
-
     }
 }
 
 </script>
 
 <style>
-
+.h-112{
+    height: 28rem;
+}
 </style>

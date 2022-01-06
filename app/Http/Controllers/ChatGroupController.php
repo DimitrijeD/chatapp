@@ -5,30 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\ChatGroup;
 use App\Models\ChatMessage;
 use App\Models\User;
+use App\Repositories\ChatGroupRepository;
 
 use Illuminate\Http\Request;
 
 class ChatGroupController extends Controller
 {
+    private $chatGroupRepository;
+
+    public function __construct(ChatGroupRepository $chatGroupRepository)
+    {
+        $this->chatGroupRepository = $chatGroupRepository;
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'groupName' => ['max:255'],
         ]);
-        $newGroup = ChatGroup::create([
-            'name' => $request->groupName,
-        ]);
-        foreach($request->users as $userFromRequest){
-            $user = User::find($userFromRequest['id']);
-            $this->addParticipantToGroup($newGroup, $user);
-        }
-        return $newGroup->fresh();
+
+        return $this->chatGroupRepository->store($request->groupName, $request->users);
     }
 
-    public function addParticipantToGroup(ChatGroup $group, User $user)
+/*    public function addParticipantToGroup(ChatGroup $group, User $user)
     {
         $group->participants()->save($user);
-    }
+    }*/
 
     public function getAllUnseenStates(Request $request)
     {
@@ -41,7 +43,8 @@ class ChatGroupController extends Controller
             // conditions in order:
             // 1. props exist, so no errors occur when groups have no messages
             // 2. same as above
-            // 3. if last message ID in group is NOT EQUAL message ID which user 'acknowledged', then he has unseen messages in that group
+            // 3. if last message ID in group is NOT EQUAL message ID which user 'acknowledged', then he has unseen messages in that group,
+            //      @bug theres a problem, for new groups receivers do not pass this check (should be true but isnt) because $group->pivot->last_message_seen_id=null for new groups/new users added to group and 3. if comparison doesnt return true for some reason, or bug is somewhere else :/
             // 4. if user is not owner of last message:
             //      to prevent strange behavior when user sends message, refreshes page, and his message is treated as last unseen to him
             if(    isset($lastMessageInGroup->id)
@@ -99,6 +102,8 @@ class ChatGroupController extends Controller
                 'participants' => $group->participants->where('id', '!=' , $user->id),
             ];
         }
+
+        // $user->groups()->where('user_id', '<>',  $authUser->id)->get();
         return $groupsWithUsers;
     }
 
@@ -125,6 +130,14 @@ class ChatGroupController extends Controller
             'group' => $group,
             'participants' => $group->participants->where('id', '!=' , $user->id),
         ];
+    }
+
+    public function getGroupsByUserWithoutSelf_v2(Request $request)
+    {
+        $user = $request->user();
+        return $user->groups()
+            ->with('participants')
+            ->get();
     }
 
 

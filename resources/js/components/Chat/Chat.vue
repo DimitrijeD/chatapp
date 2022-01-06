@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Wrapper for chat nav bar-->
-        <div class="flex justify-start mt-2">
+        <div class="flex justify-start">
             <create-chat-group
                 @createdGroup="getFreshGroupInstance"
             />
@@ -15,7 +15,9 @@
         </div>
 
         <!-- @todo this is where website content(pages) should be yielded,so chat can exist throughout app -->
-        <div>
+        <profile />
+
+        <div >
             <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
                 laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
                 optio perferendis reprehenderit!</p>
@@ -63,12 +65,14 @@
 import GroupList from "./GroupList.vue";
 import ChatWindow from "./ChatWindow/ChatWindow.vue";
 import CreateChatGroup from "./CreateChatGroup.vue";
+import Profile from'../Profile.vue';
 
 export default {
     components:{
         'group-list': GroupList,
         'chat-window': ChatWindow,
         'create-chat-group': CreateChatGroup,
+        'profile': Profile,
     },
 
     data(){
@@ -85,10 +89,16 @@ export default {
     {
         this.getUserSelf();
         this.getInitialUnseenMessagesState();
+        this.increment();
     },
 
     methods:
     {
+        increment() {
+            this.$store.commit('increment');
+            // console.log(this.$store.state.count);
+        },
+
         getUserSelf()
         {
             axios.get('/api/user')

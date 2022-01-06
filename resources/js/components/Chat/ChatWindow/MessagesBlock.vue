@@ -1,7 +1,11 @@
 <template>
-    <div class="flex flex-col-reverse h-96 overflow-y-scroll bg-white "
+    <div class="flex flex-col-reverse bg-white h-96 overflow-y-scroll"
          :class="{ 'hidden': isMinimized }"
     >
+        <participants-typing
+            :groupId="this.chatGroup.group.id"
+        />
+
         <div v-for="message in messages">
             <one-message
                 :message="message"
@@ -10,7 +14,7 @@
             />
 
             <!-- if there are any users who saw this message last time -->
-            <div v-if="message.seen_state.length > 0">
+            <div v-if="message.seen_state.length > 0" class="flex justify-end">
                 <div v-for="seenState in message.seen_state">
                     <!--
                     On logged in user, do not show himself as seen AND do not show user if hes sender
@@ -18,14 +22,14 @@
                     that's pointless
                     Second if also removes all appearance of 'seen' for user whose last message belongs to
                     -->
-                    <div v-if="seenState.id != userSelf.id && messages[0].user.id != seenState.id" class="flex justify-end">
+                    <div v-if="seenState.id != userSelf.id && messages[0].user.id != seenState.id">
                         <messages-seen
                             :firstName="seenState.firstName"
                         />
                     </div>
+
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -34,6 +38,8 @@
 <script>
 import OneMessage from './OneMessage.vue';
 import MessagesSeen from './MessagesSeen.vue';
+import ParticipantsTyping from "./ParticipantsTyping.vue";
+
 
 export default {
     props: [
@@ -47,6 +53,7 @@ export default {
     components: {
         'one-message': OneMessage,
         'messages-seen': MessagesSeen,
+        'participants-typing': ParticipantsTyping,
     },
 
     data(){
@@ -94,3 +101,9 @@ export default {
 
 }
 </script>
+
+<style>
+.msg-block-height{
+    height: 430px;
+}
+</style>

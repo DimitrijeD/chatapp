@@ -75,7 +75,7 @@
                         </div>
 
                         <!-- List of all participants in 'this' chat group -->
-                        <!-- @todo Need overflow when there is too many participants to list -->
+                        <!-- @todo Need overflow when there are too many participants in list -->
                         <span
                             v-for="participant in group.participants"
                             v-if="participant.id !== userSelf.id"
@@ -114,11 +114,15 @@ export default {
             dropdownText: 'Chat groups',
             newMessage: false,
 
+            groupsOriginal_v2: [],
+            groups_v2: []
+
         }
     },
 
     mounted() {
         this.getGroupsByUserWithParticipants();
+        this.getGroupsByUserWithParticipants_v2();
     },
 
     watch: {
@@ -170,6 +174,17 @@ export default {
         {
             this.$emit('openWindow', group);
             this.showExistingChats = false;
+        },
+
+        getGroupsByUserWithParticipants_v2()
+        {
+            axios.get('/api/chat/groups-by-user-without-self-v2')
+                .then((res)=>{
+                    // console.log(res.data);
+                    this.groupsOriginal_v2 = res.data;
+                    this.groups_v2 = this.groupsOriginal_v2;
+                    this.addUnseenStateBool_2();
+                })
         },
 
         getGroupsByUserWithParticipants()
@@ -231,6 +246,8 @@ export default {
 
         addUnseenStateBool()
         {
+            console.log('this.groupsWithUnseenMessages');
+            console.log(this.groupsWithUnseenMessages);
             for(let grUnseenInd in this.groupsWithUnseenMessages){
                 if(this.groupsWithUnseenMessages.hasOwnProperty(grUnseenInd)){
 
@@ -243,6 +260,27 @@ export default {
 
                 }
             }
+        },
+
+        addUnseenStateBool_2()
+        {
+
+            for(let grUnseenInd in this.groupsWithUnseenMessages){
+                if(this.groupsWithUnseenMessages.hasOwnProperty(grUnseenInd)){
+
+                    for(let grAllInd in this.groups_v2){
+                        console.log('grAllInd ' + grAllInd);
+                        if(this.groups_v2.hasOwnProperty(grAllInd) && (this.groupsWithUnseenMessages[grUnseenInd].id === this.groups_v2[grAllInd].id) ){
+                            this.groups_v2[grAllInd].hasUnseenState = true;
+                            console.log('v2');
+                            console.log(this.groups_v2[grAllInd]);
+                            break;
+                        }
+                    }
+
+                }
+            }
+            // console.log(this.groups_v2);
         },
 
         findGroupById(id, arrOfGroups){
