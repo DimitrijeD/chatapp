@@ -5,6 +5,7 @@ import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Profile from "./components/Profile.vue";
 import MailVerification from './components/MailVerification.vue';
+import Chat from "./components/Chat/Chat.vue";
 
 export default {
     mode: 'history',
@@ -79,6 +80,10 @@ export default {
             component:  MailVerification,
         },
 
+        {
+            path: '/chat',
+            component:  Chat,
+        },
     ]
 
 }

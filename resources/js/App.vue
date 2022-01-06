@@ -1,13 +1,12 @@
 <template>
-    <div >
-<!--        class="flex flex-col h-screen justify-between bg-white"-->
+    <div>
         <nav-bar></nav-bar>
 
         <div class="container mx-auto">
             <router-view></router-view>
         </div>
 
-        <app-footer></app-footer>
+<!--        <app-footer></app-footer>-->
     </div>
 </template>
 
