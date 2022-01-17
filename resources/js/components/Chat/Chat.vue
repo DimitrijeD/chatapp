@@ -15,6 +15,7 @@
         </div>
 
         <!-- @todo this is where website content(pages) should be yielded,so chat can exist throughout app -->
+        {{ this.$store.state.userX }}
         <profile />
 
         <div >
@@ -78,27 +79,29 @@ export default {
     data(){
         return{
             openedChatWindows: [],
-            count: 0,
             user: null,
             groupsWithUnseenMessages: [],
             groupIdAcknowledged: null,
         }
     },
 
+    created() {
+        // console.log('created - Chat.vue', this.$store.state.userX);
+    },
+
     mounted()
     {
         this.getUserSelf();
         this.getInitialUnseenMessagesState();
-        this.increment();
+        // console.log('mounted - Chat.vue', this.$store.state.userX);
+    },
+
+    beforeUpdate(){
+        // console.log('BeforeUpdate - Chat.vue', this.$store.state.userX);
     },
 
     methods:
     {
-        increment() {
-            this.$store.commit('increment');
-            // console.log(this.$store.state.count);
-        },
-
         getUserSelf()
         {
             axios.get('/api/user')

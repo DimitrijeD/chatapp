@@ -6,7 +6,6 @@
             <router-view></router-view>
         </div>
 
-<!--        <app-footer></app-footer>-->
     </div>
 </template>
 
@@ -18,6 +17,6 @@ export default {
     components: {
         'nav-bar': NavBar,
         'app-footer': Footer,
-    }
+    },
 }
 </script>

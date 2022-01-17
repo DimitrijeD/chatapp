@@ -51,5 +51,4 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withPivot(['last_message_seen_id']);
     }
 
-
 }

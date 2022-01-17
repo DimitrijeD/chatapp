@@ -1,3 +1,5 @@
+import axios from "axios";
+
 require('./bootstrap');
 
 import "tailwindcss/tailwind.css"
@@ -14,20 +16,37 @@ Vue.use(VueRouter);
 const store = new Vuex.Store({
     state: {
         count: 0,
-        user: null,
+        userX: null,
     },
+
     mutations: {
-        increment (state) {
-            state.count++
+        setUserX(state, userX)
+        {
+            state.userX = userX;
         },
-    }
+    },
+
+    actions: {
+        async getUserX(context)
+        {
+            return await axios.get('/api/user').then((res)=>{
+                context.commit('setUserX', res.data);
+            });
+        },
+    },
+
 });
+
 
 const app = new Vue({
     el: '#app',
     router: new VueRouter(routes),
     store: store,
     render: h => h(App),
+
+    beforeCreate() {
+        this.$store.dispatch("getUserX");
+    },
 });
 
 

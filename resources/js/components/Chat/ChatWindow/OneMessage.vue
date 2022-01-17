@@ -17,7 +17,7 @@
                         class="bg-cover bg-center"
                     >
 
-                    <div class="text-sm mt-1 text-gray-500 truncate">
+                    <div class="w-20 text-sm mt-1 text-gray-500 truncate">
                         {{ message.user.firstName }}
                     </div>
                 </div>

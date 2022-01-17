@@ -32,7 +32,7 @@ export default {
             path: '/login',
             component: Login,
             name: 'Login',
-            beforeEnter: (to, from, next) => {
+/*            beforeEnter: (to, from, next) => {
                 axios.get('/api/user-loggedin')
                     .then((res) => {
                         if( !res.data ){
@@ -40,14 +40,14 @@ export default {
                             next();
                         }
                     });
-            },
+            },*/
         },
 
         {
             path: '/register',
             component: Register,
             name: "Register",
-            beforeEnter: (to, from, next) => {
+/*            beforeEnter: (to, from, next) => {
                 axios.get('/api/user-loggedin')
                     .then((res) => {
                         if( res.data ){
@@ -57,7 +57,7 @@ export default {
                             next();
                         }
                     });
-            },
+            },*/
         },
 
         {
