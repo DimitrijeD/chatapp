@@ -2,10 +2,14 @@
     <div class="flex flex-col-reverse bg-white h-96 overflow-y-scroll"
          :class="{ 'hidden': isMinimized }"
     >
-        <participants-typing
+        <!-- Since message order is reversed by 'flex-col-reverse' this component must be
+        on top of template in order to display participants typing on the bottom of the chat messages block/s -->
+<!--        <participants-typing
+            :groupId="this.chatGroup.group.id"
+        />-->
+        <participants-typing-v2
             :groupId="this.chatGroup.group.id"
         />
-
         <div v-for="message in messages">
             <one-message
                 :message="message"
@@ -39,7 +43,7 @@
 import OneMessage from './OneMessage.vue';
 import MessagesSeen from './MessagesSeen.vue';
 import ParticipantsTyping from "./ParticipantsTyping.vue";
-
+import ParticipantsTyping_v2 from "./ParticipantsTyping_v2";
 
 export default {
     props: [
@@ -54,6 +58,7 @@ export default {
         'one-message': OneMessage,
         'messages-seen': MessagesSeen,
         'participants-typing': ParticipantsTyping,
+        'participants-typing-v2': ParticipantsTyping_v2
     },
 
     data(){
@@ -68,7 +73,6 @@ export default {
                 let oldStateData = this.findUsersState(this.messages, newValue.selfId);
 
                 let tempState = this.messages[oldStateData.msgIndex].seen_state[oldStateData.userIndexInState];
-                // console.log(tempState);
 
                 this.messages[oldStateData.msgIndex].seen_state.splice(oldStateData.userIndexInState, 1);
                 this.messages[0].seen_state.push(tempState);
