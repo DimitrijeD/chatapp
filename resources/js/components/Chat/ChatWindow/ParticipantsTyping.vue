@@ -1,14 +1,11 @@
 <template>
     <div>
-        <!-- @todo this only works properly for 1on1 chat. If multiple users type, values are just overridden -->
-        <!-- @todo typing doesn't dissapear when message is received. It requires OneMessage component to emit event to reset someoneIsTyping['for that user] -->
         <div
-            v-if="someoneIsTyping"
+            v-if="userTyping"
             class="italic text-sm text-gray-500 ml-2"
         >
-            {{ userTyping.firstName }} {{ userTyping.lastName }} is typing...
+            {{ userTyping.firstName }} is typing ...
         </div>
-
     </div>
 </template>
 
@@ -21,7 +18,6 @@ export default {
     data(){
         return{
             userTyping: null,
-            someoneIsTyping: false,
             typingTimer: null,
         }
     },
@@ -30,20 +26,15 @@ export default {
         Echo.private("group." + this.groupId)
         .listenForWhisper('typing', e => {
             this.userTyping = e;
-            this.someoneIsTyping = true;
-
             if(this.typingTimer){
                 clearTimeout(this.typingTimer);
             }
 
             this.typingTimer = setTimeout(() => {
-                this.someoneIsTyping = false;
                 this.userTyping = null;
             }, 3000);
         });
     },
-
-
 
 }
 </script>

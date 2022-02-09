@@ -35,7 +35,6 @@
                 :newSeenEvent="newSeenEvent"
             />
 
-
             <!-- chat window footer -->
             <message-input
                 @messageSent="getMessages()"
@@ -51,7 +50,6 @@ import ChatParticipants from "./ChatParticipants.vue";
 import WindowManagement from "./WindowManagement.vue";
 import MessagesBlock from "./MessagesBlock";
 import MessageInput from "./MessageInput.vue";
-import ParticipantsTyping from "./ParticipantsTyping.vue";
 
 export default {
     props:[
@@ -73,7 +71,6 @@ export default {
         'messages-block': MessagesBlock,
         'message-input': MessageInput,
         'window-management': WindowManagement,
-        'participants-typing': ParticipantsTyping,
     },
 
     created() {
@@ -138,7 +135,7 @@ export default {
 
         findMessageById(messages, messageId)
         {
-            for (var index in messages){
+            for (let index in messages){
                 if (messages.hasOwnProperty(index) && messages[index].id === messageId) {
                     return index;
                 }
