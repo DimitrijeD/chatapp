@@ -7,7 +7,6 @@
             />
 
             <group-list
-                :userSelf="user"
                 :groupsWithUnseenMessages="groupsWithUnseenMessages"
                 :groupIdAcknowledged="groupIdAcknowledged"
                 @openWindow="createNewWindow"
@@ -15,47 +14,19 @@
         </div>
 
         <!-- @todo this is where website content(pages) should be yielded,so chat can exist throughout app -->
-        {{ this.$store.state.userX }}
-        <profile />
-
-        <div >
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-
-            <p class="mb-96">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum excepturi expedita fugit, hic iste,
-                laboriosam laborum libero placeat quis, quod recusandae veniam! Asperiores excepturi maiores natus odit,
-                optio perferendis reprehenderit!</p>
-        </div>
 
         <!-- Wrapper for chat windows-->
-        <div class="container mx-auto fixed bottom-0 inset-x-0">
+        <div class="small-container fixed bottom-0 inset-x-0">
             <div class="flex justify-start">
-                <component
+                <chat-window
                     v-for="chat in openedChatWindows"
-                    :is="chat.type"
                     :key="chat.chatGroup.group.id"
                     :chatGroup="chat.chatGroup"
-                    :userSelf="user"
                     :windowIndex="chat.chatGroup.group.id"
                     @closeWindow="closeWindow"
                     @groupAcknowledged = "groupAcknowledged"
                 >
-                </component>
+                </chat-window>
             </div>
         </div>
     </div>
@@ -66,7 +37,9 @@
 import GroupList from "./GroupList.vue";
 import ChatWindow from "./ChatWindow/ChatWindow.vue";
 import CreateChatGroup from "./CreateChatGroup.vue";
-import Profile from'../Profile.vue';
+import Profile from '../Profile.vue';
+
+import { mapGetters } from 'vuex';
 
 export default {
     components:{
@@ -79,43 +52,32 @@ export default {
     data(){
         return{
             openedChatWindows: [],
-            user: null,
             groupsWithUnseenMessages: [],
             groupIdAcknowledged: null,
         }
     },
 
-    created() {
-        // console.log('created - Chat.vue', this.$store.state.userX);
+    created(){
+        
     },
 
     mounted()
     {
-        this.getUserSelf();
+
         this.getInitialUnseenMessagesState();
-        // console.log('mounted - Chat.vue', this.$store.state.userX);
+        this.connectToMessageNotifications(this.user.id);
     },
 
-    beforeUpdate(){
-        // console.log('BeforeUpdate - Chat.vue', this.$store.state.userX);
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
     },
 
     methods:
     {
-        getUserSelf()
-        {
-            axios.get('/api/user')
-            .then((res) => {
-                this.user = res.data;
-                this.connectToMessageNotifications(this.user.id);
-            });
-        },
-
         getInitialUnseenMessagesState()
         {
             axios.get('/api/all-unseen-states')
-            .then((res)=>{
-                // console.log(res.data);
+            .then((res)=>{    
                 this.groupsWithUnseenMessages = res.data;
             })
         },
@@ -206,8 +168,6 @@ export default {
         groupAcknowledged(groupId)
         {
             this.groupIdAcknowledged = groupId;
-            // console.log('new message,seen');
-            // console.log(groupId);
         },
 
         // @todo make chat window heading display notification that there are unread meassasges
@@ -215,8 +175,6 @@ export default {
         {
 
         },
-
-
 
     },
 }

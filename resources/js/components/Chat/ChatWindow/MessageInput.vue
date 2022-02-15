@@ -1,9 +1,9 @@
 <template>
     <div class="w-full flex ">
 
-        <!-- Message input area -->
+        <!-- Message input -->
         <textarea
-            class="flex-auto bg-blue-50 px-2 w-full resize-none text-sm focus:bg-white focus:outline-none focus:ring-1 focus:border-primary ring-inset"
+            class="flex-auto bg-blue-50 p-2 w-full resize-none text-base focus:bg-white focus:outline-none focus:ring-1 focus:border-primary ring-inset"
             rows="3"
             @keyup.enter="whenMessageSent()"
             @keydown="userTyping"
@@ -14,7 +14,7 @@
 
         <button
             @click="whenMessageSent()"
-            class="flex-auto p-2 pl-3 pr-3 bg-blue-500 text-white"
+            class="button-send-msg text-base bg-blue-400 text-white hover:bg-blue-500"
         >
             Send
         </button>
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
     data(){
         return{
@@ -32,10 +34,14 @@ export default {
 
     props:[
         'groupId',
-        'userSelf'
     ],
 
-    created(){
+    created() {
+
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
 
     },
 
@@ -59,7 +65,6 @@ export default {
                 text: this.message
             })
             .then(res => {
-                // console.log(res.data);
                 if( res.status === 201 ){
                     this.message = '';
                     this.$emit('messageSent');
@@ -74,12 +79,18 @@ export default {
         {
             Echo.private("group." + this.groupId)
             .whisper('typing', {
-                'id': this.userSelf.id,
-                'firstName': this.userSelf.firstName,
-                'lastName': this.userSelf.lastName,
+                'id': this.user.id,
+                'firstName': this.user.firstName,
+                'lastName': this.user.lastName,
             });
         },
     }
 }
 </script>
 
+<style scoped>
+.button-send-msg{
+  aspect-ratio: 1 / 1;
+  height: 100%;
+}
+</style>

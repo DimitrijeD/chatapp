@@ -7,6 +7,8 @@ import Profile from "./components/Profile.vue";
 import MailVerification from './components/MailVerification.vue';
 import Chat from "./components/Chat/Chat.vue";
 
+import store from './store/index.js';
+
 export default {
     mode: 'history',
     linkActiveClass: 'font-semibold',
@@ -32,46 +34,57 @@ export default {
             path: '/login',
             component: Login,
             name: 'Login',
-/*            beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 axios.get('/api/user-loggedin')
-                    .then((res) => {
-                        if( !res.data ){
-                            // not logged in
-                            next();
-                        }
-                    });
-            },*/
+                .then((res) => {
+                    if( !res.data ){
+                        // not logged in
+                        next();
+                    }
+                });
+            },
         },
 
         {
             path: '/register',
             component: Register,
             name: "Register",
-/*            beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 axios.get('/api/user-loggedin')
-                    .then((res) => {
-                        if( res.data ){
-                            // logged in
-                        } else {
-                            // not logged in
-                            next();
-                        }
-                    });
-            },*/
+                .then((res) => {
+                    if( res.data ){
+                        // logged in
+                    } else {
+                        // not logged in
+                        next();
+                    }
+                });
+            },
         },
 
         {
             path: '/profile',
             component: Profile,
             beforeEnter: (to, from, next) => {
+                // is user in store already?
+                if(store.getters.StateUser){
+                    return next();
+                }
+
+                // get user with verified email, false otherwise
+                // user is not in store, try to get user, and if he is logged in, save him in store
                 axios.get('/api/authenticated')
-                    .then((res) => {
-                        // not logged in
-                        if( !res.data ){
-                            return next({ path: '/login' })
-                        }
-                        next();
-                    });
+                .then((res) => {
+                    let user = res.data; 
+                    // if user is not logged in OR doesnt have email verified
+                    if( !user ){
+                        return next({ path: '/login' })
+                    }
+
+                    // commit user to store 
+                    store.commit('setUser', user);
+                    next();
+                });
             },
         },
 
@@ -83,7 +96,29 @@ export default {
         {
             path: '/chat',
             component:  Chat,
+            beforeEnter: (to, from, next) => {
+                // is user in store already?
+                if(store.getters.StateUser){
+                    return next();
+                }
+
+                // get user with verified email, false otherwise
+                // user is not in store, try to get user, and if he is logged in, save him in store
+                axios.get('/api/authenticated')
+                .then((res) => {
+                    let user = res.data; 
+                    // if user is not logged in OR doesnt have email verified
+                    if( !user ){
+                        return next({ path: '/login' })
+                    }
+
+                    // commit user to store 
+                    store.commit('setUser', user);
+                    next();
+                });
+            },
         },
+
     ]
 
 }

@@ -1,50 +1,46 @@
 <template>
-    <div class="mb-1.5 mr-1.5">
-        <!--            v-bind:class="{
-                'hover:bg-blue-50': !isSelf,
-                'border-blue-300':  !isSelf,
-                'border-gray-300':   isSelf,
-            }"-->
-        <div class="mt-2 ml-1">
-            <!-- Wrapper for user name, image and message so that 'message sent time ago' is below -->
-            <div class="flex justify-start ">
+    <div class="flex space-x-2 m-3">
 
-                <!-- Users small thumbnail and first name -->
-                <div class="w-24">
-                    <img
-                        :src="message.user.thumbnail"
-                        alt="no img :/"
-                        class="bg-cover bg-center"
-                    >
+        <!-- Users thumbnail -->
+        <div class="flex-none w-20 h-20">
+            <img
+                :src="message.user.thumbnail"
+                alt="no img :/"
+                class="object-cover relative border border-gray-100 shadow-sm h-full"
+            >
+        </div>
 
-                    <div class="w-20 text-sm mt-1 text-gray-500 truncate">
-                        {{ message.user.firstName }}
-                    </div>
-                </div>
 
-                <!-- Message text box -->
-                <div class="ml-1.5 mb-0.5 w-full">
-                    <div class="p-3 break-all text-sm text-gray-800 rounded-tr-lg rounded-bl-lg"
-                        v-bind:class="{
-                            'bg-blue-200': !isSelf,
-                            'bg-gray-200':  isSelf,
-                        }"
-                    >
-                        {{ message.text }}
-                    </div>
-
-                    <!-- When was message created -->
-                    <vue-moments-ago
-                        class="text-gray-400 float-right mt-0.5"
-                        prefix=""
-                        suffix="ago"
-                        :date="message.created_at"
-                        lang="en"
-                    />
-                </div>
-
+        <div class="flex-grow">
+            <!-- Users First Name -->
+            <div >
+                <span class="text-sm mb-1.5 text-gray-700 truncate">
+                    {{ message.user.firstName }} {{ message.user.lastName }}
+                </span>
+                                
+                <!-- When was message created -->
+                <vue-moments-ago
+                    class="text-gray-400 text-sm float-right mb-1.5"
+                    prefix=""
+                    suffix="ago"
+                    :date="message.created_at"
+                    lang="en"
+                />
             </div>
 
+            <!-- Message text box -->
+            <div class="w-full">
+                <div class="p-3 break-all text-base text-gray-700 rounded-tr-lg rounded-bl-lg filter drop-shadow-md"
+                    v-bind:class="{
+                        'bg-blue-100': !isSelf,
+                        'bg-gray-100':  isSelf,
+                    }"
+                >
+                    {{ message.text }}
+                </div>
+
+
+            </div>
         </div>
     </div>
 </template>
@@ -52,11 +48,11 @@
 <script>
 
 import VueMomentsAgo from 'vue-moments-ago';
+import { mapGetters } from "vuex";
 
 export default {
     props: [
         'message',
-        'userSelf',
     ],
 
     data(){
@@ -69,6 +65,15 @@ export default {
         'vue-moments-ago': VueMomentsAgo,
     },
 
+    created(){
+
+},
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+
+    },
+
     mounted() {
         this.whichUserIsIt();
     },
@@ -76,7 +81,7 @@ export default {
     methods:{
         whichUserIsIt()
         {
-            if(this.message.user.id == this.userSelf.id){
+            if(this.message.user.id == this.user.id){
                 this.isSelf = true;
             } else {
                 this.isSelf = false;
@@ -86,9 +91,3 @@ export default {
 
 }
 </script>
-
-<style>
-.border-l-3{
-    border-left-width: 4px;
-}
-</style>

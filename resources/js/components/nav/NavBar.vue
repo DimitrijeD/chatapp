@@ -1,30 +1,53 @@
 <template>
-    <div class="flex bg-blue-700 py-3">
-        <div class="container mx-auto flex justify-between">
+    <div class="bg-blue-700">
+        <div class="small-container flex justify-between py-3">
 
-            <div class="">
-                <router-link to="/" class="mr-2 text-xl text-white" exact>Home</router-link>
-                <router-link to="/about" class="mr-2 text-xl text-white">About</router-link>
-                <router-link to="/profile" class="mr-2 text-xl text-white">Profile</router-link>
-                <router-link to="/chat" class="text-xl text-white">Chat</router-link>
+            <!-- Left side of navigation bar -->
+            <div>
+                <div v-if="user">
+                    <router-link to="/"        class="mr-3 text-xl text-white" exact>Home</router-link>
+                    <router-link to="/about"   class="mr-3 text-xl text-white">About</router-link>
+                    <router-link to="/profile" class="mr-3 text-xl text-white">Profile</router-link>
+                    <router-link to="/chat"    class="     text-xl text-white">Chat</router-link>
+                </div>
+
+                <div v-else>
+                    <router-link to="/"        class="mr-3 text-xl text-white" exact>Home</router-link>
+                    <router-link to="/about"   class="     text-xl text-white">About</router-link>
+                </div>
             </div>
 
-            <div class="flex">
-                <!-- here i need, if user logedin show logout, if not show login register, but how do i get user data here -->
-                <router-link to="/login" class="mr-3 text-xl text-white" exact>Login</router-link>
-                <router-link to="/register" class="mr-3 text-xl text-white">Register</router-link>
 
-                <logout class="text-xl text-white"></logout>
+            <!-- Right side of navigation bar -->
+            <div>
+                <div v-if="user">                    
+                    <logout class="text-xl text-white"></logout>
+                </div>
+
+                <div v-else>
+                    <router-link to="/login"    class="mr-3 text-xl text-white" exact>Login</router-link>
+                    <router-link to="/register" class="     text-xl text-white">Register</router-link>
+                </div>
             </div>
+
+
         </div>
     </div>
 </template>
 
 <script>
 import Logout from './Logout.vue';
+
+import { mapGetters } from 'vuex';
+
 export default {
     components: {
         'logout': Logout,
-    }
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+    },
+    
 }
 </script>

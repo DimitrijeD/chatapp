@@ -3,7 +3,7 @@
         <div class="bg-gray-50 shadow-xl py-3">
 
             <div class="p-2">
-                <img class="mx-auto" :src="user.thumbnail" alt="no img">
+                <img class="mx-auto" :src="user.image" alt="no img">
             </div>
 
             <div class="p-2">
@@ -26,19 +26,34 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
     data(){
         return{
-            user: null,
+            
         };
     },
 
-    mounted(){
-
-        axios.get('/api/user').then((res)=>{
-            this.user = res.data;
-        });
+    created()
+    {
+        
     },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+
+    },
+
+    mounted()
+    {
+        
+    },
+
+
+    methods: {
+        
+    }
 
 }
 </script>

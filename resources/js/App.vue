@@ -2,7 +2,7 @@
     <div>
         <nav-bar></nav-bar>
 
-        <div class="container mx-auto">
+        <div>
             <router-view></router-view>
         </div>
 
@@ -20,3 +20,10 @@ export default {
     },
 }
 </script>
+
+<style>
+    .small-container{
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+</style>
