@@ -1,32 +1,29 @@
 <template>
-    <div class="flex flex-col-reverse bg-white h-96 overflow-y-scroll"
+    <div class="flex flex-col-reverse h-full overflow-y-scroll"
          :class="{ 'hidden': isMinimized }"
     >
         <!-- Since message order is reversed by 'flex-col-reverse' this component must be
         on top of template in order to display participants typing on the bottom of the chat messages block/s -->
-<!--        <participants-typing
-            :groupId="this.chatGroup.group.id"
-        />-->
-        <participants-typing-v2
+        <participants-typing
             :groupId="this.chatGroup.group.id"
         />
-        <div v-for="message in messages">
+
+        <div v-for="message in messages" :key="message.id">
             <one-message
                 :message="message"
-                :userSelf="userSelf"
                 :key="message.id"
             />
 
             <!-- if there are any users who saw this message last time -->
             <div v-if="message.seen_state.length > 0" class="flex justify-end">
-                <div v-for="seenState in message.seen_state">
+                <div v-for="seenState in message.seen_state" :key="seenState.id">
                     <!--
-                    On logged in user, do not show himself as seen AND do not show user if hes sender
-                    so if I sends a message to "user2" and I click on window, on "user2" window I wont appear as seen below my own message,
+                    Do not show 'user' as seen AND do not show 'user' if he is sender
+                    so if "user1" sends a message to "user2" and "user1" click on window, on "user2" window "user1" wont appear as seen below his own message,
                     that's pointless
-                    Second if also removes all appearance of 'seen' for user whose last message belongs to
+                    Second condition removes all appearance of 'seen' for user whose last message belongs to
                     -->
-                    <div v-if="seenState.id != userSelf.id && messages[0].user.id != seenState.id">
+                    <div v-if="seenState.id != user.id  &&  messages[0].user.id != seenState.id">
                         <messages-seen
                             :firstName="seenState.firstName"
                         />
@@ -43,12 +40,12 @@
 import OneMessage from './OneMessage.vue';
 import MessagesSeen from './MessagesSeen.vue';
 import ParticipantsTyping from "./ParticipantsTyping.vue";
-import ParticipantsTyping_v2 from "./ParticipantsTyping_v2";
+
+import { mapGetters } from "vuex";
 
 export default {
     props: [
         'messages',
-        'userSelf',
         'isMinimized',
         'chatGroup',
         'newSeenEvent'
@@ -58,7 +55,6 @@ export default {
         'one-message': OneMessage,
         'messages-seen': MessagesSeen,
         'participants-typing': ParticipantsTyping,
-        'participants-typing-v2': ParticipantsTyping_v2
     },
 
     data(){
@@ -67,11 +63,24 @@ export default {
         }
     },
 
+    created(){
+
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+
+    },
+
+    /**
+     * @TODO Theres a bug, after new group is created and user1 sends a message to user2,
+     * 'msgIndex' is undefined because message with index of '0' doesnt exist.
+     * It would be awesoome if I refactored this completely because I have no idea what it does and how it does it
+     */
     watch: {
         newSeenEvent: {
             handler: function(newValue, oldValue) {
                 let oldStateData = this.findUsersState(this.messages, newValue.selfId);
-
                 let tempState = this.messages[oldStateData.msgIndex].seen_state[oldStateData.userIndexInState];
 
                 this.messages[oldStateData.msgIndex].seen_state.splice(oldStateData.userIndexInState, 1);

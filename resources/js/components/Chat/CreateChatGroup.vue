@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <button
             @click="showDropdown()"
             class="width-300 height-44 py-2 pr-2 text-base font-medium"
@@ -19,47 +19,58 @@
 
         <div
             v-if="showCreateDropdown"
-            class="width-300 height-480 z-50 absolute bg-white border-b-2 border-l-2 border-r-2 border-blue-300 "
+            class="width-300 z-50 absolute bg-white border-b-2 border-l-2 border-r-2 border-blue-300"
         >
 
-            <div class="">
-                <div class="m-2">
-                    <input
-                        class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Name of new group chat"
-                        type="text"
-                        v-model="newChatGroup.groupName"
-                    >
-                </div>
+            <div class="m-2">
+                <input
+                    class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                    placeholder="Name of new group chat"
+                    type="text"
+                    v-model="newChatGroup.groupName"
+                >
             </div>
 
-            <div class="mt-2">
-                <div class="m-2">
-                    <input
-                        class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Find people to chat"
-                        type="text"
-                        @keyup="searchInput"
-                        v-model="userSearchStr"
-                    >
-                </div>
+            <div class="m-2">
+                <input
+                    class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                    placeholder="Find people to chat"
+                    type="text"
+                    @keyup="searchInput"
+                    v-model="userSearchStr"
+                >
+            </div>
 
-                <div class="overflow-y-auto">
-                    <div v-for="user in this.allUsers" class="">
-                        <button
-                            @click="selectedUserForChat(user)"
-                            class="p-2 m-1 rounded"
-                            v-bind:class="{
-                                'text-blue-500': !user.selectionStatus,
-                                'bg-white':      !user.selectionStatus,
+            <div class="overflow-y-auto user-list-height">
+                <div v-for="user in this.allUsers" class="flex flex-col m-1 cursor-pointer" :key="user.id">
+                    <div class="flex flex-row">
 
-                                'text-white':    user.selectionStatus,
-                                'bg-blue-400':   user.selectionStatus,
-                                'font-semibold': user.selectionStatus,
-                            }"
-                        >
-                            {{ user.firstName }} {{ user.lastName }}
-                        </button>
+                        <!-- img -->
+                        <div class="w-20 h-20">
+                            <img
+                                :src="user.thumbnail"
+                                alt="no img :/"
+                                class="object-cover relative border border-gray-100 shadow-sm h-full"
+                            >
+                        </div>
+
+                        <!-- UserName -->
+                        <div class="grid grid-cols-1 gap-0 place-content-center">
+                            <p
+                                @click="selectedUserForChat(user)"
+                                class="ml-2 rounded "
+                                v-bind:class="{
+                                    'text-blue-500': !user.selectionStatus,
+                                    'bg-white': !user.selectionStatus,
+
+                                    'text-white':    user.selectionStatus,
+                                    'bg-blue-400':   user.selectionStatus,
+                                    'font-semibold': user.selectionStatus,
+                                }"
+                            >
+                                {{ user.firstName }} {{ user.lastName }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,7 +80,7 @@
             </div>
 
             <div
-                class="bg-blue-500 text-white py-1 px-2 text-base m-2 absolute inset-x-0 bottom-0 text-center"
+                class="bg-blue-400 hover:bg-blue-500 text-white text-base mt-2 p-2 text-center cursor-pointer"
                 @click="createNewChatGroup()"
             >
                 Create chat group
@@ -81,6 +92,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
 
@@ -92,7 +104,6 @@ export default {
                 groupName: '',
                 users: [],
             },
-            user: null,
             errors: [],
 
             nothingFound: '',
@@ -100,18 +111,23 @@ export default {
         }
     },
 
+    created(){
+        
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+
+    },
+
     mounted()
     {
         this.getAllUsersExceptSelf();
 
-        axios.get('/api/user')
-        .then((res) => {
-            this.user = res.data;
-        })
     },
 
     methods:
-    {
+    {        
         showDropdown(){
             for(let userIndex in this.allUsers){
                 this.allUsers[userIndex].selectionStatus = false;
@@ -279,5 +295,9 @@ export default {
 
 .height-480{
     height: 480px;
+}
+
+.user-list-height{
+    height: 350px;
 }
 </style>

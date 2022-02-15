@@ -35,11 +35,11 @@
 
         <div
             v-if="showExistingChats"
-            class="z-50 width-300  absolute bg-white border-b-2 border-l-2 border-r-2 border-blue-300 bg-white overflow-y-auto h-96"
+            class="z-50 width-300 absolute bg-white border-b-2 border-l-2 border-r-2 border-blue-300 overflow-y-auto h-96"
         >
             <div class="m-2">
                 <input
-                    class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                    class="flex w-full p-2 text-base hover:bg-blue-50 focus:bg-blue-100 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
                     placeholder="Find chats by user"
                     type="text"
                     v-model="userSearchStr"
@@ -47,10 +47,10 @@
                 >
             </div>
 
-            <div class="flex flex-col-reverse bg-gray-50">
-                <div v-for="group in groups" >
+            <div class="flex flex-col-reverse">
+                <div v-for="group in groups" :key="group.id">
                     <div
-                        class=" p-2 mb-1 m-2 rounded"
+                        class="p-2 m-2 rounded cursor-pointer"
                         @click="createChatWindow(group)"
                         :class="{
                             // doesnt have unseen messages
@@ -69,8 +69,8 @@
                                 {{group.group.name}}
                             </span>
 
-                            <span v-else class="p-2 font-medium text-gray-700 text-base">
-                                This group has no name :/
+                            <span v-else class="p-2 font-medium text-gray-600 text-base">
+                                No name
                             </span>
                         </div>
 
@@ -78,10 +78,12 @@
                         <!-- @todo Need overflow when there are too many participants in list -->
                         <span
                             v-for="participant in group.participants"
-                            v-if="participant.id !== userSelf.id"
+                            :key="participant.id"
                             class="bg-blue-400 text-white rounded p-1 m-1"
                         >
-                            {{ participant.firstName }} {{ participant.lastName }}
+                            <span v-if="participant.id !== user.id">
+                                {{ participant.firstName }} {{ participant.lastName }}
+                            </span>
                         </span>
 
                     </div>
@@ -96,9 +98,10 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
     props: [
-        'userSelf',
         'groupsWithUnseenMessages',
         'groupIdAcknowledged'
     ],
@@ -118,6 +121,15 @@ export default {
             groups_v2: []
 
         }
+    },
+
+    created(){
+
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
+
     },
 
     mounted() {
@@ -261,7 +273,6 @@ export default {
 
         addUnseenStateBool_2()
         {
-
             for(let grUnseenInd in this.groupsWithUnseenMessages){
                 if(this.groupsWithUnseenMessages.hasOwnProperty(grUnseenInd)){
 

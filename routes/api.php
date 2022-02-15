@@ -1,14 +1,17 @@
 <?php
 
-use App\Http\Controllers\ChatGroupController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\EmailController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\ChatGroupController;
 use App\Http\Controllers\ChatController;
+
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\AuthenticationController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
