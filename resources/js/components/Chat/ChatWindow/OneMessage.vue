@@ -1,5 +1,5 @@
 <template>
-    <div class="flex space-x-2 m-3">
+    <div class="flex space-x-2 mx-3 my-4">
 
         <!-- Users thumbnail -->
         <div class="flex-none w-20 h-20">
@@ -12,7 +12,7 @@
 
 
         <div class="flex-grow">
-            <!-- Users First Name -->
+            <!-- Users Name -->
             <div >
                 <span class="text-sm mb-1.5 text-gray-700 truncate">
                     {{ message.user.firstName }} {{ message.user.lastName }}
@@ -36,10 +36,8 @@
                         'bg-gray-100':  isSelf,
                     }"
                 >
-                    {{ message.text }}
+                    {{ message.text }} msgID = {{ message.id }}
                 </div>
-
-
             </div>
         </div>
     </div>

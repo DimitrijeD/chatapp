@@ -1,0 +1,135 @@
+ChatGroupClusterSeeder class creates fake chat group with participants, messages and last seen message. 
+It has many different configurations suitable for simulating all kinds of users input and how app behaves and looks under circumstances.
+
+Everything is configurable in seederConfig() method. 
+There are examples to help you out decide what kind of chat you can and wish to create. 
+
+Run seeder:
+php artisan db:seed --class=ChatGroupClusterSeeder
+
+Login with default user:
+*email     qwe@qwe
+*password  qweqweqwe
+
+And see result of seeder. 
+
+Enjoy coing :)
+
+
+-----------------------------------------------------------------------------------------------------------
+|                                                                                                         |
+|                                               Dig deeper                                                |
+|                                                                                                         |
+-----------------------------------------------------------------------------------------------------------
+
+
+There are 3 cluster modules:
+    Messages,  Time  and  Last Message Seen Clusters
+
+Each of them has 4 configuration types; meaning they can be:
+    'MAX-ACTIVITY',  'DEFAULT',  'RANDOM'  and  'EVEN'
+
+    making it total of 48 different 'chat group types' you can create.
+    Some config types create similar chats, while others create unique chats which simulate correct behaivor type.
+
+
+For example, if you choose the following configuration:
+    * DEFAULT Messages 
+    * EVEN Time 
+    * MAX-ACTIVITY Last Message Seen 
+
+    * without changing any other values in seederConfig(),
+
+    = 
+    
+    created chat group will: 
+    - have some small number of chat messages in it (task of MessagesDefault class)
+    - all those messages will be evenly distributed between each other to fill time range (task of TimeEven class);
+        example: 
+            30 messages in 30 days: will distribute messages 1 for each day,
+            OR 60 messages in 30 days: will set  messages  for each day,
+    - all users will have their last message seen, set on last message (task of LastMessageSeenMaxActivity class )
+
+
+
+-----------------------------------------------------
+|                                                   |
+|           Create desired chat group               |
+|                                                   |
+-----------------------------------------------------
+
+Within seederConfig() method you can configure:
+    - chat type
+    - number of messages to create,
+    - number of users to add to this chat group and which users,
+    - minimum and maximum for time period in which all messages must be,
+    - minimum and maximum length range of chat message text
+    - chat group name
+
+
+
+-----------------------------------------------------
+|                                                   |
+|                     Chat Types                    |
+|                                                   |
+-----------------------------------------------------
+
+MAX-ACTIVITY
+    Simulates chat in which users are very active;
+        They see all recent messages.
+        They send a lot of messages in latest time period (ex. last 2 hours 300 messages).
+        That yields short time period between chat messages.
+
+DEFAULT  
+    Simulates chat in which users occasinaly send messages and read them.
+        Its similar to EVEN, except DEFAULT has small randomness factor.
+        All DEFAULT Types approximate/simulate normal ditribution.
+
+RANDOM
+    Simulates chat in which users behaivior can be anything.
+        All types are in range of minimum and maximum validation rules. 
+
+EVEN 
+    Simulates chat in which users have 'calm demeanor'.
+        Its similar to DEFAULT, except EVEN approaches distribution between values it uses to create data.
+
+
+
+-----------------------------------------------------
+|                                                   |
+|                     Progress                      |
+|                                                   |
+-----------------------------------------------------
+
+        Types                     Completed           Tested only itself        Tested with other combinations                          
+
+MessagesMaxActivity                   1                       0                               0
+TimeMaxActivity                       1                       0                               0 
+LastMessageSeenMaxActivity            1                       0                               0
+
+MessagesDefault                       1                       0                               0
+TimeDefault                           1                       0                               0
+LastMessageSeenDefault                1                       0                               0   
+
+MessagesRandom                        1                       0                               0
+TimeRandom                            1                       0                               0
+LastMessageSeenRandom                 1                       0                               0  
+
+MessagesEven                          1                       0                               0
+TimeEven                              1                       0                               0
+LastMessageSeenEven                   1                       0                               0
+
+Total:                               11/12                    0/12                            0/12
+
+Tests will be create if necessity arises.
+
+-----------------------------------------------------
+|                                                   |
+|                     TODOS                         |
+|                                                   |
+-----------------------------------------------------
+
+* Figure out how to allow programmer to input inside console configuration types and data to use for seeding
+* Default user block cluster is in alternate distribution, and should be in normal distribution
+* MAX_ACTIVITY user block cluster should be disordered
+* RANDOM time might not be working as intended. Check if created_at matches ID ordering if not, code is dog.

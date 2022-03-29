@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +27,9 @@ Route::post('/mail-verification-clicked', [EmailController::class, 'checkSlugAut
 Route::get('/authenticated', [AuthenticationController::class, 'isAuthenticated']);
 Route::get('/user-loggedin', [AuthenticationController::class, 'isLoggedIn']);
 
-Route::get('/chat/group/{groupId}/get-all-messages',   [ChatController::class, 'getAllMessages']);
+Route::get('/chat/group/{groupId}/get-all-messages',     [ChatController::class, 'getAllMessages']);
+Route::get('/chat/group/{groupId}/from-msg/{latestMsg}', [ChatController::class, 'getMissingMessages']);
+
 Route::post('/chat/group/{groupId}/message',           [ChatController::class, 'saveNewMessage']);
 Route::post('/chat/getAllUsersExceptSelf',             [ChatController::class, 'getAllUsersExceptSelf']);
 Route::post('/chat/messages-seen',                     [ChatController::class, 'messageIsSeen']);

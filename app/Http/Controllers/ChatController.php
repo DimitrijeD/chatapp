@@ -19,11 +19,24 @@ class ChatController extends Controller
     // returns all messages for specific room with users and their pivot 'state'
     public function getAllMessages(Request $request, $groupId)
     {
+        $messages = ChatMessage::
+            where('chat_group_id', $groupId)
+            ->with('user')
+            ->get();
+
+        $seenStates = DB::table('group_participants')
+            ->where('chat_group_id', $groupId)
+            ->get();
+
+        return ['messages' => $messages, 'seen_states' => $seenStates]; 
+    }
+
+    public function getMissingMessages($groupId, $latestMsg)
+    {
         return ChatMessage::
               where('chat_group_id', $groupId)
+            ->where('id', '>', $latestMsg)
             ->with('user')
-            ->with('seenState')
-            ->orderBy('created_at', 'DESC')
             ->get();
     }
 
@@ -35,6 +48,14 @@ class ChatController extends Controller
         $newMessage->chat_group_id = $groupId;
         $newMessage->text = $request->text;
         $newMessage->save();
+
+        DB::table('group_participants')
+            ->where('user_id', $sender->id)
+            ->where('chat_group_id', $groupId)
+            ->update([
+                'last_message_seen_id' => $newMessage->id,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         // update groups field 'updated_at' to NOW in order to be able to sort users groups by 'time of last message'
         $group = ChatGroup::find($groupId);
