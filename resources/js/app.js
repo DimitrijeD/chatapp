@@ -12,8 +12,6 @@ import store from './store/index.js';
 
 Vue.use(VueRouter);
 
-// this.$store.dispatch("getUser");
-
 const app = new Vue({
     el: '#app',
     router: new VueRouter(routes),

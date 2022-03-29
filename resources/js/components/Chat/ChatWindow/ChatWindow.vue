@@ -19,22 +19,21 @@
 
         <!-- wrapper for dynamic window minimization -->
         <div
-            class="border-l border-blue-300 flex flex-col"
+            class="border-l border-blue-300 flex flex-col bg-white bg-gradient-to-r from-blue-50 via-white to-gray-100"
             v-bind:class="{ 'hidden': isMinimized }"
             @click="selfAcknowledged();"
         >
+            <!-- <background /> -->
 
             <!-- Chat Window Body -->
-            <div class="window-h window-body-bg-color">
-            <!-- @todo On mount, it's getting all messages of this chat group.
-            After reducing number of messages per scrollUp, this must be array of blocks in stead of one block component
-            And 'who has seen what message' should be injected into right messages-block component
-            -->
+            <div class="window-h">
+
                 <messages-block
                     :messages="messages"
                     :isMinimized="isMinimized"
                     :chatGroup="chatGroup"
-                    :newSeenEvent="newSeenEvent"
+                    :groupSeenStates="groupSeenStates"
+                    :newSeenState="newSeenState"
                 />
             </div>
             <!-- -------------------- -->
@@ -55,6 +54,9 @@ import ChatParticipants from "./ChatParticipants.vue";
 import WindowManagement from "./WindowManagement.vue";
 import MessagesBlock from "./MessagesBlock";
 import MessageInput from "./MessageInput.vue";
+import Background from "./ChatBody/Background.vue";
+
+import * as helpers from "../../../helpers/helpers_exporter.js";
 
 import { mapGetters } from 'vuex';
 
@@ -68,7 +70,10 @@ export default {
         return {
             messages: [],
             isMinimized: false,
-            newSeenEvent: {},
+            lastMessageId: null,
+            lastAcknowledgedMessageId: null,
+            groupSeenStates: {},
+            newSeenState: {}
         }
     },
 
@@ -77,12 +82,12 @@ export default {
         'messages-block': MessagesBlock,
         'message-input': MessageInput,
         'window-management': WindowManagement,
+        'background': Background,
     },
 
     created() {
         this.connect();
         this.listenForMessagesSeen();
-
     },
 
     computed: {
@@ -90,47 +95,111 @@ export default {
 
     },
 
-    methods: {
+    methods: {   
         minimizeWindow()
         {
             this.isMinimized = !this.isMinimized;
         },
 
+        /**
+         * If there are messages in chat group, get only those which have greater ID than "this.lastMessageId" 
+         *      then merge existing messages and received ones into 'this.messages' variable
+         * else 
+         *      there are no messages, get all messsages 
+         * 
+         */
         getMessages()
         {
+            // console.log(this.lastMessageId);
+            // if(this.lastMessageId){
+            //     console.log('this chat window already has messages, do "missing messages" get request');
+            //     axios.get('/api/chat/group/' + this.chatGroup.group.id + '/from-msg/' + this.lastMessageId)
+            //     .then(res => {
+
+            //         /**
+            //          * @TODO Before I finish this, I need to convert "this.messages" into hash table :
+            //          * this.messages = {
+            //          *      msgId1: { id: msgId1, text: 'older message text ' ...},
+            //          *      msgId2: { id: msgId2, text: 'newer message text ' ...},
+            //          *      ...
+            //          * } 
+            //          * this.messages = {
+            //          *      23: { id: 23, text: 'older message text ' ...},
+            //          *      75: { id: 75, text: 'newer message text ' ...},
+            //          *      ...
+            //          * }
+            //          */
+            //          helpers.createHashMap_OneToOne(res.data, 'id);
+                     
+            //     })
+            //     .catch(error => {
+            //         // 
+            //     });
+            // } else {
+            //     // axios.get('/api/chat/group/' + this.chatGroup.group.id + '/get-all-messages')
+            //     // .then(res => {
+            //     //     this.messages = res.data;
+
+            //     // })
+            //     // .catch(error => {
+            //     //     // 
+            //     // });
+            // }
+
             axios.get('/api/chat/group/' + this.chatGroup.group.id + '/get-all-messages')
             .then(res => {
-                this.messages = res.data;
+                this.messages = Object.assign({}, helpers.createHashMap_OneToOne(res.data.messages, 'id') );
+                this.setLatestMessageId( this.findLatestMessageId(this.messages) );
+
+                // this.groupSeenStates = Object.assign({}, helpers.createHashMap_OneToMany(res.data.seen_states, 'last_message_seen_id', 'user_id') );
+                this.groupSeenStates = res.data.seen_states;
+                this.messages = Object.assign({}, this.resetAllSeenStatesOnMessages(this.messages));
             })
             .catch(error => {
-                // Tell user to refresh page or come back later ...
-            })
+                // 
+            });
+
         },
 
         connect()
         {
             this.getMessages();
+
             Echo.private("group." + this.chatGroup.group.id)
             .listen('.message.new', e => {
+                // There is a new message in this chat group,
                 this.getMessages();
             });
         },
 
-        // @TODO Send seen message event only once per message
-        // Event when user clicks his own window:
+        // Event when user clicks his own window (he saw/red all messages)
         selfAcknowledged()
         {
-            // if there are no messages in chat
-            // or if user is owner of last message in chat, there is noting to 'acknowledge'
-            if(this.messages.length === 0 || this.messages[0].user.id === this.user.id){
+            // Preventing user from acknowledging chat group with no messages.
+            if(Object.keys(this.messages).length == 0){
                 return;
             }
+            
+            // @BUG After new message is received, this.lastMessageId apparently is not what its supposed to be
+            // Preventing user from acknowledging his own message.
+            if(this.isUserOwnerOfLastMessage(this.messages[this.findLatestMessageId(this.messages)], this.user.id)){
+                return;
+            } 
+
+            // Preventing user from acknowledging same message many times.
+            if(this.lastMessageId == this.lastAcknowledgedMessageId) {
+                return;
+            } 
+            
+            
+            this.setLatestAcknowledgedMessageId(this.lastMessageId);
+
             // tell GroupList component you have opened AND SEEN messages in this group
             this.$emit('groupAcknowledged', this.chatGroup.group.id);
 
             axios.post('/api/chat/messages-seen', {
                 'groupId': this.chatGroup.group.id,
-                'lastMessageId': this.messages[0].id,
+                'lastMessageId': this.lastMessageId,
                 'selfId': this.user.id
             });
 
@@ -140,20 +209,62 @@ export default {
         {
             Echo.private("group." + this.chatGroup.group.id)
             .listen('.message.seen', e => {
-                this.newSeenEvent = e.seenData;
+                // Reason formateData exists is that 'selfId' from DB is bad name, after 'selfId' is changed wherever it is being created,  
+                // delete this var and just pass 'event' var
+                const formatedData = {
+                    chat_group_id: e.seenData.groupId,
+                    user_id: e.seenData.selfId,
+                    last_message_seen_id: e.seenData.lastMessageId,
+                }
+                this.newSeenState = formatedData;
                 
+                // update existing state
+                // let updated = helpers.updateHashMap_OneToMany(this.groupSeenStates, formatedData, formatedData.last_message_seen_id, formatedData.user_id, 'user_id');
+                // this.groupSeenStates = Object.assign({}, updated);
+                // console.log(this.groupSeenStates);
+                // console.log(this.groupSeenStates);
+
+                // // Clean null properties - Does this even work???
+                // let cleaned = helpers.cleanup_oneToOne(this.groupSeenStates);
+                // this.groupSeenStates = Object.assign({}, cleaned);
+
             });
         },
 
-        findMessageById(messages, messageId)
+        /**
+         * Set lastest message in this chat window
+         * 
+         * Each time message is received this method must be updated.
+         */
+        setLatestMessageId(id)
         {
-            for (let index in messages){
-                if (messages.hasOwnProperty(index) && messages[index].id === messageId) {
-                    return index;
-                }
-            }
+            this.lastMessageId = id; 
         },
 
+        setLatestAcknowledgedMessageId(id)
+        {
+            this.lastAcknowledgedMessageId = id; 
+        },
+
+        /**
+         * Find latest message this chat window has.
+         * 
+         * This value might be different then one in database. Purpose of having this value is to only 'get request' messages which are 
+         * not already in this chat window.   
+         */
+        findLatestMessageId(messages)
+        {
+            const messagesIds = Object.keys(messages);
+            return messagesIds[messagesIds.length -1];
+        },
+
+        isUserOwnerOfLastMessage(message, userId)
+        {
+            if(message.user_id == userId){
+                return true;
+            }
+            return false;
+        },
     }
 }
 
@@ -167,10 +278,5 @@ export default {
 .window-w{
     width: 29rem;
 }
-
-.window-body-bg-color{
-    background-color: rgb(252, 255, 255);;
-}
-
 
 </style>

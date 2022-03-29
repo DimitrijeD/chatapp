@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full m-auto">
+    <div class="w-full m-auto z-50">
         <!-- Make overflow when there are many users in this chat -->
         <!-- make status dynamic -->
 

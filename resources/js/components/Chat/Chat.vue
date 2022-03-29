@@ -14,6 +14,11 @@
         </div>
 
         <!-- @todo this is where website content(pages) should be yielded,so chat can exist throughout app -->
+        <profile /> 
+
+        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
+        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
+        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
 
         <!-- Wrapper for chat windows-->
         <div class="small-container fixed bottom-0 inset-x-0">
