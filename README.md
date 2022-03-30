@@ -7,59 +7,83 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## About ChatApp
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+ChatApp is a API web application for realtime chatting. It has following features:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Registration and login.
+- Simple profile page.
+- Creating chats with unlimited number of users.
+- Chat window opens automatically for all chat participants when new message is sent in chat.
+- Chat window display of all users which currentnly type in chat.
+- Information of which user seen messages.
+- Closing and minimizing chat windows.
+- Information of unseen messages.
+- History of conversations and filters for searching chat groups.
+- Custom seeders to accelerate developing and testing processes.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+With many others currently in development.
 
-## Learning Laravel
+## Homestead Installation (not tested)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Follow [offical Laravel docs](https://laravel.com/docs/8.x/homestead) for Homestead and Vagrant installation process.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Edit Homestead.yaml file to map your project with local repo. 
+*Note: do not use tabs for white space in .yaml files. Use " " white space to indent. 
 
-## Laravel Sponsors
+Clone repo
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- cd your_projects_dir
+- git clone https://github.com/DimitrijeD/chatapp.git
 
-### Premium Partners
+Run Vagrant box
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- cd ~/Homestead
+- vagrant up
 
-## Contributing
+If you edit Homestead.yaml file after running 'vagrant up' you must restart box by:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- vagrant reload --provision
 
-## Code of Conduct
+Open Vagrant VM:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- vagrant ssh 
+- cd chatapp // or however you modified path inside .yaml to project
 
-## Security Vulnerabilities
+Copy .env.example into .env and edit it to match your config (most keys are set):
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- cp .env.example .env
+- php artisan key:generate
 
-## License
+// what about public.js file i removed earlyer?
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- php artisan config:cache
+- php artisan migrate
+
+Install NPM packages:
+
+- npm install
+- npm run dev
+
+If you plan to edit frontend, run following command to compile your changes automatically:
+
+- npm run watch-poll 
+
+In separate console, run following command for websockets(make sure you are using correct host ip):
+
+- php artisan websockets:serve --host=192.168.56.56
+
+To create user and chat group with messages in it, run:
+
+- php artisan db:seed --class=ChatGroupClusterSeeder
+
+Login with user:
+
+- http://chatapp.test/login
+- email:    qwe@qwe
+- password: qweqweqwe
+
+For registration feature (otherwise not required) you must setup mail data in .env and run command in separate console for queueing emails:
+
+- php artisan queue:work
+
