@@ -21,8 +21,8 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'firstName'      => ['required', 'min:3', 'max:255'],
-            'lastName'       => ['required', 'min:3', 'max:255'],
+            'first_name'      => ['required', 'min:3', 'max:255'],
+            'last_name'       => ['required', 'min:3', 'max:255'],
             'email'          => ['required', 'min:3', 'max:255', 'email', 'unique:users'],
             'password'       => ['required', 'min:6', 'max:255', 'confirmed'],
             'profilePicture' => ['required', 'file', 'image', 'max:5120'],
@@ -32,8 +32,8 @@ class RegisterController extends Controller
         $pathsToStoredProfilePics = $this->storeTrait($request);
 
         $user = User::create([
-            'firstName' => $request->firstName,
-            'lastName'  => $request->lastName,
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
             'image'     => $pathsToStoredProfilePics['images'],

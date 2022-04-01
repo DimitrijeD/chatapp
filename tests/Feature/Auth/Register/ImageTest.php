@@ -19,8 +19,8 @@ class ImageTest extends TestCase
         Storage::fake('avatars');
 
         $this->userFormData = [
-            'firstName' => 'some',
-            'lastName'  => 'name',
+            'first_name' => 'some',
+            'last_name'  => 'name',
             'email'     => 'test@test',
             'password'              => 'Passwordtest1',
             'password_confirmation' => 'Passwordtest1',

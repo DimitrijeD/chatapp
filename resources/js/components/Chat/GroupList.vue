@@ -82,7 +82,7 @@
                             class="bg-blue-400 text-white rounded p-1 m-1"
                         >
                             <span v-if="participant.id !== user.id">
-                                {{ participant.firstName }} {{ participant.lastName }}
+                                {{ participant.first_name }} {{ participant.last_name }}
                             </span>
                         </span>
 
@@ -230,12 +230,12 @@ export default {
             // usI - user index
             for (let grI in groups){
                 for (let usI in groups[grI].participants){
-                    let firstName = groups[grI].participants[usI].firstName;
-                    let lastName = groups[grI].participants[usI].lastName;
+                    let first_name = groups[grI].participants[usI].first_name;
+                    let last_name = groups[grI].participants[usI].last_name;
                     let groupName = groups[grI].group.name;
 
                     // 'John Doe Some Group Name'
-                    let text = firstName + ' ' + lastName + ' ' + groupName;
+                    let text = first_name + ' ' + last_name + ' ' + groupName;
 
                     // If input match anything in this string, return as match
                     if(this.regExpressionMatch(strSearch, text)){

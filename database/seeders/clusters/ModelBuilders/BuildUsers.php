@@ -34,8 +34,8 @@ class BuildUsers
                 $this->users->push( $user );
             } else {
                 $this->users->push( User::factory()->create([
-                    'firstName' => $participant['firstName'], 
-                    'lastName' => $participant['lastName'], 
+                    'first_name' => $participant['first_name'], 
+                    'last_name' => $participant['last_name'], 
                     'email' => $participant['email'], 
                     'password' => Hash::make($participant['password']),
                 ]));

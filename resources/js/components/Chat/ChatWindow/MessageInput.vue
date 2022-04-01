@@ -80,8 +80,8 @@ export default {
             Echo.private("group." + this.groupId)
             .whisper('typing', {
                 'id': this.user.id,
-                'firstName': this.user.firstName,
-                'lastName': this.user.lastName,
+                'first_name': this.user.first_name,
+                'last_name': this.user.last_name,
             });
         },
     }

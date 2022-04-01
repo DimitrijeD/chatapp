@@ -21,8 +21,8 @@ class InvalidInputTest extends TestCase
         $image = UploadedFile::fake()->image('avatar.jpg');
 
         $this->userFormData = [
-            'firstName' => 'some',
-            'lastName'  => 'name',
+            'first_name' => 'some',
+            'last_name'  => 'name',
             'email'     => 'test@test',
             'password'              => 'Passwordtest1',
             'password_confirmation' => 'Passwordtest1',
@@ -39,20 +39,20 @@ class InvalidInputTest extends TestCase
 
     public function test__required__first_name()
     {
-        $this->userFormData['firstName'] = '';
+        $this->userFormData['first_name'] = '';
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['firstName' => __('The first name field is required.')]);
+        $response->assertSessionHasErrors(['first_name' => __('The first name field is required.')]);
     }
 
     public function test__required__last_name()
     {
-        $this->userFormData['lastName'] = '';
+        $this->userFormData['last_name'] = '';
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['lastName' => __('The last name field is required.')]);
+        $response->assertSessionHasErrors(['last_name' => __('The last name field is required.')]);
     }
 
     public function test__required__email()
@@ -99,38 +99,38 @@ class InvalidInputTest extends TestCase
      */
     public function test__first_name__max()
     {
-        $this->userFormData['firstName'] = Str::random(256);
+        $this->userFormData['first_name'] = Str::random(256);
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['firstName' => __('The first name must not be greater than 255 characters.')]);
+        $response->assertSessionHasErrors(['first_name' => __('The first name must not be greater than 255 characters.')]);
     }
 
     public function test__first_name__min()
     {
-        $this->userFormData['firstName'] = Str::random(2);
+        $this->userFormData['first_name'] = Str::random(2);
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['firstName' => __('The first name must be at least 3 characters.')]);
+        $response->assertSessionHasErrors(['first_name' => __('The first name must be at least 3 characters.')]);
     }
 
     public function test__last_name__max()
     {
-        $this->userFormData['lastName'] = Str::random(256);
+        $this->userFormData['last_name'] = Str::random(256);
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['lastName' => __('The last name must not be greater than 255 characters.')]);
+        $response->assertSessionHasErrors(['last_name' => __('The last name must not be greater than 255 characters.')]);
     }
 
     public function test__last_name__min()
     {
-        $this->userFormData['lastName'] = Str::random(2);
+        $this->userFormData['last_name'] = Str::random(2);
 
         $response = $this->post($this->registerRoute, $this->userFormData);
 
-        $response->assertSessionHasErrors(['lastName' => __('The last name must be at least 3 characters.')]);
+        $response->assertSessionHasErrors(['last_name' => __('The last name must be at least 3 characters.')]);
     }
 
     public function test__email__max()

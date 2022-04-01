@@ -68,7 +68,7 @@
                                     'font-semibold': user.selectionStatus,
                                 }"
                             >
-                                {{ user.firstName }} {{ user.lastName }}
+                                {{ user.first_name }} {{ user.last_name }}
                             </p>
                         </div>
                     </div>
@@ -258,11 +258,11 @@ export default {
             let arrOfSearchMatchedUsers = [];
 
             for (let userInd in users){
-                let firstName = users[userInd].firstName;
-                let lastName = users[userInd].lastName;
+                let first_name = users[userInd].first_name;
+                let last_name = users[userInd].last_name;
 
                 // 'John Doe'
-                let text = firstName + ' ' + lastName;
+                let text = first_name + ' ' + last_name;
 
                 // If input match anything in this string, return as match
                 if(this.regExpressionMatch(strSearch, text)){

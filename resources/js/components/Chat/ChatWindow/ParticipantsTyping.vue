@@ -6,7 +6,7 @@
             class="italic text-sm text-gray-500 ml-2"
         >
             <div v-if="user">
-                {{ user.firstName }} is typing ...
+                {{ user.first_name }} is typing ...
             </div>
         </div>
     </div>

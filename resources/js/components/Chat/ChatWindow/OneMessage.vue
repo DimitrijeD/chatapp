@@ -15,7 +15,7 @@
             <!-- Users Name -->
             <div >
                 <span class="text-sm mb-1.5 text-gray-700 truncate">
-                    {{ message.user.firstName }} {{ message.user.lastName }}
+                    {{ message.user.first_name }} {{ message.user.last_name }}
                 </span>
                                 
                 <!-- When was message created -->
