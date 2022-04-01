@@ -7,9 +7,9 @@
 
                 <div class="p-2 w-full mb-2">
                     <label class="w-full text-lg">First Name</label>
-                    <div v-if="errors.firstName">
-                        <span class="w-full text-red-500" v-for="firstNameError in errors.firstName">
-                            {{ firstNameError }}
+                    <div v-if="errors.first_name">
+                        <span class="w-full text-red-500" v-for="first_nameError in errors.first_name">
+                            {{ first_nameError }}
                             <br>
                         </span>
                     </div>
@@ -17,16 +17,16 @@
                         class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
                         placeholder="First name"
                         type="text"
-                        v-model="form.firstName"
+                        v-model="form.first_name"
                         required
                     >
                 </div>
 
                 <div class="p-2 w-full mb-2">
                     <label class="w-full text-lg">Last Name</label>
-                    <div v-if="errors.lastName">
-                        <span class="w-full text-red-500" v-for="lastNameError in errors.lastName">
-                            {{ lastNameError }}
+                    <div v-if="errors.last_name">
+                        <span class="w-full text-red-500" v-for="last_nameError in errors.last_name">
+                            {{ last_nameError }}
                             <br>
                         </span>
                     </div>
@@ -34,7 +34,7 @@
                         class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
                         placeholder="Last name"
                         type="text"
-                        v-model="form.lastName"
+                        v-model="form.last_name"
                         required
                     >
                 </div>
@@ -117,8 +117,8 @@ export default {
     data(){
         return{
             form:{
-                firstName: '',
-                lastName: '',
+                first_name: '',
+                last_name: '',
                 email: '',
                 password:'',
                 password_confirmation:'',
@@ -133,8 +133,8 @@ export default {
     methods:{
         saveForm(){
             let userData = new FormData;
-            userData.append('firstName', this.form.firstName);
-            userData.append('lastName', this.form.lastName);
+            userData.append('first_name', this.form.first_name);
+            userData.append('last_name', this.form.last_name);
             userData.append('email', this.form.email);
 
             userData.append('password', this.form.password);
@@ -149,8 +149,8 @@ export default {
 
                     this.mailVerfication = {
                         email: this.form.email,
-                        firstName: this.form.firstName,
-                        lastName: this.form.lastName,
+                        first_name: this.form.first_name,
+                        last_name: this.form.last_name,
                     };
 
                     axios

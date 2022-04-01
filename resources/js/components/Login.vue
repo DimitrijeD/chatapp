@@ -1,30 +1,40 @@
 <template>
-    <div class="flex flex-wrap w-full justify-center items-center pt-56">
-        <div class="flex flex-wrap max-w-xl">
-            <div class="p-2 text-2xl text-gray-800 font-semibold"><h1>Login to your account</h1></div>
-            <div class="p-2 w-full mb-2">
-                <label>Your e-mail</label>
+    <div class="flex h-screen justify-center items-center">
+        <div class="w-8/12">
+            <div class="my-3">
                 <div v-if="errors.email">
                     <span class="w-full text-red-500" v-for="emailError in errors.email">
                         {{ emailError }}
                         <br>
                     </span>
                 </div>
-                <input class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2" placeholder="Email" type="email" v-model="form.email">
+                <input 
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
+                    placeholder="Email" 
+                    type="email" 
+                    v-model="form.email">
             </div>
-            <div class="p-2 w-full mb-2 ">
-                <label>Password</label>
+            <div class="my-3">
                 <div v-if="errors.password">
-                    <span class="w-full text-red-500" v-for="passwordError in errors.password">
+                    <span class=" w-full text-red-500" v-for="passwordError in errors.password">
                         {{ passwordError }}
                         <br>
                     </span>
                 </div>
-                <input class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2" placeholder="Password" type="password" v-model="form.password" name="password">
+                <input 
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
+                    placeholder="Password" 
+                    type="password" 
+                    v-model="form.password" 
+                    name="password">
             </div>
-            <div class="p-2 w-full mt-3">
-                <button @click.prevent="loginUser" type="submit" class="flex text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Login</button>
-            </div>
+
+            <button 
+                @click.prevent="loginUser" 
+                type="submit" 
+                class="tnx-hver w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
+            >Login</button>
+         
         </div>
     </div>
 </template>
@@ -51,3 +61,13 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.tnx-hver {
+
+}
+
+.tnx-hver:hover {
+    font-size: 1.155rem;
+}
+</style>

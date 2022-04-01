@@ -25,8 +25,8 @@ class EmailController extends Controller
 
         $userData = [
             'email' => $user->email,
-            'firstName' => $user->firstName,
-            'lastName' => $user->lastName,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
             'hashUrl' => $authAttempt->hashUrl,
         ];
 
@@ -47,8 +47,8 @@ class EmailController extends Controller
 
         $userData = [
             'email' => $user->email,
-            'firstName' => $user->firstName,
-            'lastName' => $user->lastName,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
             'hashUrl' => $authAttempt->hashUrl,
         ];
 

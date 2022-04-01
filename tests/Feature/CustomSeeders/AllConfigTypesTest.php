@@ -56,8 +56,8 @@ class AllConfigTypesTest extends TestCase
                         $numUsers = 3,
                         $participants_ = [
                             [
-                                'firstName' => 'Qwe',
-                                'lastName' => 'Qwe',
+                                'first_name' => 'Qwe',
+                                'last_name' => 'Qwe',
                                 'email' => 'qwe@qwe', 
                                 'password' => 'qweqweqwe',
                             ],

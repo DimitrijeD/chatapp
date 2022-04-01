@@ -24,8 +24,8 @@ class NotifyMail extends Mailable
         return $this->subject('Email verification for ChatApp')
             ->view('emails.verifyMail', [
                 'email' => $this->details['email'],
-                'firstName' => $this->details['firstName'],
-                'lastName' => $this->details['lastName'],
+                'first_name' => $this->details['first_name'],
+                'last_name' => $this->details['last_name'],
                 'hashUrl' => $hashUrl,
             ]);
     }

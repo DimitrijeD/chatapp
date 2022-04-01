@@ -8,7 +8,7 @@
 
             <div class="p-2">
                 <h3 class="text-center text-xl text-gray-900  text-uppercase">UserID {{ user.id }} </h3>
-                <h3 class="text-center text-xl text-gray-900  text-uppercase">{{ user.firstName }} {{ user.lastName }} </h3>
+                <h3 class="text-center text-xl text-gray-900  text-uppercase">{{ user.first_name }} {{ user.last_name }} </h3>
 
                 <div class="text-center text-gray-400 text-xs font-semibold p-1 mb-2">
                     <p>Description</p>

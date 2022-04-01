@@ -75,18 +75,18 @@ class ChatGroupClusterSeeder extends Seeder
         $defaultTimeInterval = true;
 
         // CHOOSE number of chat group participants
-        $this->numUsers = 3;
+        $this->numUsers = 2;
 
         $participants = [
             [
-                'firstName' => 'Qwe',
-                'lastName' => 'Qwe',
+                'first_name' => 'Qwe',
+                'last_name' => 'Qwe',
                 'email' => 'qwe@qwe', 
                 'password' => 'qweqweqwe',
             ],
             [
-                'firstName' => 'Asd',
-                'lastName' => 'Asd',
+                'first_name' => 'Asd',
+                'last_name' => 'Asd',
                 'email' => 'asd@asd', 
                 'password' => 'qweqweqwe',
             ],
@@ -164,8 +164,8 @@ class ChatGroupClusterSeeder extends Seeder
         $numUsers = 3,
         $participants_ = [
             [
-                'firstName' => 'Qwe',
-                'lastName' => 'Qwe',
+                'first_name' => 'Qwe',
+                'last_name' => 'Qwe',
                 'email' => 'qwe@qwe', 
                 'password' => 'qweqweqwe',
             ],
