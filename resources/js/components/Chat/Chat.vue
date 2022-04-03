@@ -13,13 +13,6 @@
             />
         </div>
 
-        <!-- @todo this is where website content(pages) should be yielded,so chat can exist throughout app -->
-        <profile /> 
-
-        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
-        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
-        <div class="mb-96">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, nam quis culpa animi natus neque impedit veritatis non tempore, doloribus praesentium temporibus est tenetur facere quae. Harum autem ducimus nihil?</div>
-
         <!-- Wrapper for chat windows-->
         <div class="small-container fixed bottom-0 inset-x-0">
             <div class="flex justify-start">
@@ -42,8 +35,6 @@
 import GroupList from "./GroupList.vue";
 import ChatWindow from "./ChatWindow/ChatWindow.vue";
 import CreateChatGroup from "./CreateChatGroup.vue";
-import Profile from '../Profile.vue';
-
 import { mapGetters } from 'vuex';
 
 export default {
@@ -51,7 +42,6 @@ export default {
         'group-list': GroupList,
         'chat-window': ChatWindow,
         'create-chat-group': CreateChatGroup,
-        'profile': Profile,
     },
 
     data(){
@@ -62,19 +52,13 @@ export default {
         }
     },
 
-    created(){
-        
-    },
-
-    mounted()
-    {
-
-        this.getInitialUnseenMessagesState();
-        this.connectToMessageNotifications(this.user.id);
-    },
-
     computed: {
         ...mapGetters({ user: "StateUser" }),
+    },
+
+    created(){
+        this.getInitialUnseenMessagesState();
+        this.connectToMessageNotifications();
     },
 
     methods:
@@ -87,9 +71,9 @@ export default {
             })
         },
 
-        connectToMessageNotifications(id)
+        connectToMessageNotifications()
         {
-            Echo.private("App.Models.User." + id)
+            Echo.private("App.Models.User." + this.user.id)
             .listen('.message.notification', e => {
                 this.handleNewMessageNotifications(e.messageNotification);
             });
@@ -142,16 +126,6 @@ export default {
             }
         },
 
-        isWindowOpened(groupId)
-        {
-            for (var index in this.openedChatWindows){
-                if (this.openedChatWindows.hasOwnProperty(index) && this.openedChatWindows[index].chatGroup.group.id === groupId) {
-                    return index;
-                }
-            }
-            return false;
-        },
-
         // Chat windows are closed by removing chat that element from 'this.openedChatWindows'
         closeWindow(groupId)
         {
@@ -168,17 +142,12 @@ export default {
                     return index;
                 }
             }
+            return null;
         },
 
         groupAcknowledged(groupId)
         {
             this.groupIdAcknowledged = groupId;
-        },
-
-        // @todo make chat window heading display notification that there are unread meassasges
-        notifyIfWindowMinimized(notification)
-        {
-
         },
 
     },

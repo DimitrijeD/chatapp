@@ -5,37 +5,49 @@ namespace App\Http\Controllers;
 use App\Models\ChatGroup;
 use App\Models\ChatMessage;
 use App\Models\User;
-use App\Repositories\ChatGroupRepository;
+
+use App\ChatApp\Repos\User\UserEloquentRepo;
+use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
+use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 
 use Illuminate\Http\Request;
 
 class ChatGroupController extends Controller
 {
-    private $chatGroupRepository;
+    protected $chatGroupRepo, $userRepo, $chatMessageRepo;
 
-    public function __construct(ChatGroupRepository $chatGroupRepository)
+    public function __construct(ChatGroupEloquentRepo $chatGroupRepo, UserEloquentRepo $userRepo, ChatMessageEloquentRepo $chatMessageRepo)
     {
-        $this->chatGroupRepository = $chatGroupRepository;
+        $this->chatGroupRepo = $chatGroupRepo;
+        $this->userRepo = $userRepo;
+        $this->chatMessageRepo = $chatMessageRepo;
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'groupName' => ['max:255'],
+            'name' => ['max:255'],
         ]);
 
-        return $this->chatGroupRepository->store($request->groupName, $request->users);
+        $chatGroup = $this->chatGroupRepo->create(['name' => $request->name]);
+
+        foreach($request->users as $user){
+            $user = $this->userRepo->first(['id' => $user['id']]);
+            $this->addParticipantToGroup($chatGroup, $user);
+        }
+
+        return $chatGroup;
     }
 
-/*    public function addParticipantToGroup(ChatGroup $group, User $user)
+    public function addParticipantToGroup(ChatGroup $chatGroup, User $user)
     {
-        $group->participants()->save($user);
-    }*/
+        $chatGroup->participants()->save($user);
+    }
 
-    public function getAllUnseenStates(Request $request)
+    public function getAllUnseenStates()
     {
         $groupsWithUnseenMessage = [];
-        $user = $request->user();
+        $user = auth()->user();
         $allUserGroups = $user->groups;
         foreach($allUserGroups as $group){
             $lastMessageInGroup = $this->getLastMessageOfGroup($group->id);
@@ -58,29 +70,26 @@ class ChatGroupController extends Controller
         return $groupsWithUnseenMessage;
     }
 
-    public function getLastMessageOfGroup($groupId)
+    public function getLastMessageOfGroup($id)
     {
-        return ChatMessage::where('chat_group_id', $groupId)->latest()->first();
+        return $this->chatMessageRepo->latest(['chat_group_id' => $id]);
     }
 
-    // return all users that belong to this group
-    public function getUsersByGroup($groupId)
+    public function getUsersByGroup($id)
     {
-        $group = ChatGroup::find($groupId);
-        return $group->participants;
+        return ($this->chatGroupRepo->find($id))->participants;
     }
 
-    // return all groups that belong to this user
-    public function getGroupsByUser(Request $request)
+    public function getGroupsByUser()
     {
-        return $request->user()->groups;
+        return auth()->user()->groups;
     }
 
     // return all groups that belong to this user, with participants
-    public function getGroupsByUserWithParticipants(Request $request)
+    public function getGroupsByUserWithParticipants()
     {
         $groupsWithUsers = [];
-        $userGroups = $request->user()->groups;
+        $userGroups = auth()->user()->groups;
         foreach($userGroups as $group){
             $groupsWithUsers[] = [
                 'group' => $group,
@@ -91,10 +100,10 @@ class ChatGroupController extends Controller
     }
 
     // return all groups that belong to this user, without self as participant
-    public function getGroupsByUserWithoutSelf(Request $request)
+    public function getGroupsByUserWithoutSelf()
     {
         $groupsWithUsers = [];
-        $user = $request->user();
+        $user = auth()->user();
         $userGroups = $user->groups->sortBy('updated_at');
         foreach($userGroups as $group){
             $groupsWithUsers[] = [
@@ -103,18 +112,17 @@ class ChatGroupController extends Controller
             ];
         }
 
-        // $user->groups()->where('user_id', '<>',  $authUser->id)->get();
         return $groupsWithUsers;
     }
 
-    public function getGroupById($groupId)
+    public function getGroupById($id)
     {
-        return ChatGroup::find($groupId);
+        return $this->chatGroupRepo->find($id);
     }
 
-    public function getGroupById_WithParticipants($groupId)
+    public function getGroupById_WithParticipants($id)
     {
-        $group = ChatGroup::find($groupId);
+        $group = $this->chatGroupRepo->find($id);
         $participants = $group->participants;
         return [
             'group' => $group,
@@ -122,23 +130,23 @@ class ChatGroupController extends Controller
         ];
     }
 
-    public function getGroupById_WithoutSelf(Request $request, $groupId)
+    public function getGroupById_WithoutSelf($id)
     {
-        $group = ChatGroup::find($groupId);
-        $user = $request->user();
+        $group = $this->chatGroupRepo->find($id);
+        $user = auth()->user();
         return [
             'group' => $group,
             'participants' => $group->participants->where('id', '!=' , $user->id),
         ];
     }
 
-    public function getGroupsByUserWithoutSelf_v2(Request $request)
+    public function getGroupsByUserWithoutSelf_v2()
     {
-        $user = $request->user();
-        return $user->groups()
+        return auth()->user()
+            ->groups()
             ->with('participants')
+            ->orderBy('updated_at', 'desc')
             ->get();
     }
-
 
 }

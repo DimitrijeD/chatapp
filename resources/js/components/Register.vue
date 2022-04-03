@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-wrap w-full justify-center mt-3">
 
-        <form @submit.prevent="saveForm" enctype="multipart/form-data">
+        <form @submit.prevent="register" enctype="multipart/form-data">
             <div class="flex flex-wrap max-w-xl">
                 <div class="p-2 text-2xl text-gray-800 font-semibold"><h1>Register an account</h1></div>
 
@@ -131,7 +131,7 @@ export default {
     },
 
     methods:{
-        saveForm(){
+        register(){
             let userData = new FormData;
             userData.append('first_name', this.form.first_name);
             userData.append('last_name', this.form.last_name);
@@ -144,20 +144,7 @@ export default {
 
             axios.post('/api/register', userData)
                 .then(() =>{
-                    // email verification process is called from here
-                    // axios.post('/api/login', this.form);
-
-                    this.mailVerfication = {
-                        email: this.form.email,
-                        first_name: this.form.first_name,
-                        last_name: this.form.last_name,
-                    };
-
-                    axios
-                        .post('/api/mail-verification', this.mailVerfication)
-                        .then(()=>{
-                            this.$router.push({ path: '/mail-verification' });
-                        });
+                    this.$router.push({ path: '/mail-verification/${this.form.email}' });
                 }).catch((error) =>{
                     this.errors = error.response.data.errors;
                 });

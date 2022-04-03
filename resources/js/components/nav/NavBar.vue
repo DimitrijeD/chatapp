@@ -7,8 +7,7 @@
                 <div v-if="user">
                     <router-link to="/"        class="mr-3 text-xl text-white" exact>Home</router-link>
                     <router-link to="/about"   class="mr-3 text-xl text-white">About</router-link>
-                    <router-link to="/profile" class="mr-3 text-xl text-white">Profile</router-link>
-                    <router-link to="/chat"    class="     text-xl text-white">Chat</router-link>
+                    <router-link to="/profile" class="     text-xl text-white">Profile</router-link>
                 </div>
 
                 <div v-else>
@@ -37,7 +36,6 @@
 
 <script>
 import Logout from './Logout.vue';
-
 import { mapGetters } from 'vuex';
 
 export default {

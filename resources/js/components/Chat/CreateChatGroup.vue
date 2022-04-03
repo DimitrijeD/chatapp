@@ -27,7 +27,7 @@
                     class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
                     placeholder="Name of new group chat"
                     type="text"
-                    v-model="newChatGroup.groupName"
+                    v-model="newChatGroup.name"
                 >
             </div>
 
@@ -101,7 +101,7 @@ export default {
             allUsers: [],
             showCreateDropdown: false,
             newChatGroup: {
-                groupName: '',
+                name: '',
                 users: [],
             },
             errors: [],
@@ -133,8 +133,8 @@ export default {
                 this.allUsers[userIndex].selectionStatus = false;
             }
             this.newChatGroup = {
-                groupName: '',
-                    users: [],
+                name: '',
+                users: [],
             };
             this.errors = null;
 
@@ -219,7 +219,7 @@ export default {
         resetComponentVars()
         {
             this.newChatGroup = {
-                groupName: '',
+                name: '',
                 users: [],
             };
             this.showCreateDropdown = false;

@@ -1,9 +1,11 @@
 <template>
     <div>
-        <nav-bar></nav-bar>
-
+        <nav-bar />
+        <div v-if="user">
+            <chat />
+        </div>
         <div>
-            <router-view></router-view>
+            <router-view />
         </div>
 
     </div>
@@ -12,11 +14,18 @@
 <script>
 import NavBar from './components/nav/NavBar.vue';
 import Footer from './components/footer/Footer.vue';
+import Chat from "./components/Chat/Chat.vue";
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
         'nav-bar': NavBar,
         'app-footer': Footer,
+        'chat': Chat,
+    },
+
+    computed: {
+        ...mapGetters({ user: "StateUser" }),
     },
 }
 </script>

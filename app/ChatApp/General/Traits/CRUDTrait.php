@@ -48,8 +48,11 @@ trait CRUDTrait
 
         if($params) {
             foreach($params as $param => $value) {
-                if(is_array($value)) $query->whereIn($param, $value);
-                else $query->where($param, '=', $value);
+                if(is_array($value)) {
+                    $query->whereIn($param, $value);
+                } else { 
+                    $query->where($param, '=', $value);
+                }
             }
         }
 
@@ -88,8 +91,11 @@ trait CRUDTrait
 
         if($params) {
             foreach($params as $param => $value) {
-                if(is_array($value)) $query->whereIn($param, $value);
-                else $query->where($param, '=', $value);
+                if(is_array($value)) {
+                    $query->whereIn($param, $value);
+                } else { 
+                    $query->where($param, '=', $value);
+                }
             }
         }
 
@@ -97,11 +103,22 @@ trait CRUDTrait
             $query->with($with);
         }
 
-        $query->orderBy('updated_at', 'desc');
+        // $query->orderBy('updated_at', 'desc');
 
         $result = $query->get();
 
         return $result->count() ? $result : false;
+    }
+
+    public function latest(array $data)
+    {
+        $query = $this->getModel()::query();
+
+        foreach ($data as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        return $query->latest()->first();
     }
 
 }

@@ -52,7 +52,8 @@ export default {
     },
     methods:{
         loginUser(){
-            axios.post('/api/login', this.form).then(() =>{
+            axios.post('/api/login', this.form)
+            .then((res) =>{
                 this.$router.push({ path: '/profile' });
             }).catch((error) =>{
                 this.errors = error.response.data.errors;

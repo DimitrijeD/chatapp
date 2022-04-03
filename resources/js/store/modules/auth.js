@@ -11,13 +11,13 @@ const getters = {
 };
 
 const actions = {
-    async getUser(context) {
-        await axios.get('/api/user').then((res)=>{
+    getUser(context) {
+        axios.get('/api/user').then((res)=>{
             context.commit('setUser', res.data);
         });
     },
 
-    async LogOut({ commit }) {
+    LogOut({ commit }) {
         let user = null;
         commit("logout", user);
     },

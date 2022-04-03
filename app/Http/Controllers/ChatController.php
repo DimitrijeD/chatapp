@@ -14,15 +14,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\ChatApp\Repos\User\UserEloquentRepo;
+use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
+use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
+
 class ChatController extends Controller
 {
-    // returns all messages for specific room with users and their pivot 'state'
-    public function getAllMessages(Request $request, $groupId)
+    protected $chatGroupRepo, $userRepo, $chatMessageRepo;
+
+    public function __construct(ChatGroupEloquentRepo $chatGroupRepo, UserEloquentRepo $userRepo, ChatMessageEloquentRepo $chatMessageRepo)
     {
-        $messages = ChatMessage::
-            where('chat_group_id', $groupId)
-            ->with('user')
-            ->get();
+        $this->chatGroupRepo = $chatGroupRepo;
+        $this->userRepo = $userRepo;
+        $this->chatMessageRepo = $chatMessageRepo;
+    }
+
+    public function getAllMessages($groupId)
+    {
+        $messages = $this->chatMessageRepo->getMany(['chat_group_id' => $groupId], ['user']);
 
         $seenStates = DB::table('group_participants')
             ->where('chat_group_id', $groupId)
@@ -33,47 +42,41 @@ class ChatController extends Controller
 
     public function getMissingMessages($groupId, $latestMsg)
     {
-        return ChatMessage::
-              where('chat_group_id', $groupId)
-            ->where('id', '>', $latestMsg)
-            ->with('user')
-            ->get();
+        return $this->chatMessageRepo->getMissingMessages($groupId, $latestMsg);
     }
 
-    public function saveNewMessage(Request $request, $groupId)
+    public function store(Request $request, $groupId)
     {
-        $sender = Auth::user();
-        $newMessage = new ChatMessage;
-        $newMessage->user_id = $sender->id;
-        $newMessage->chat_group_id = $groupId;
-        $newMessage->text = $request->text;
-        $newMessage->save();
+        $sender = auth()->user();
+
+        $message = $this->chatMessageRepo->create([
+            'user_id' => $sender->id,
+            'chat_group_id' => $groupId,
+            'text' => $request->text,
+        ]);
 
         DB::table('group_participants')
             ->where('user_id', $sender->id)
             ->where('chat_group_id', $groupId)
             ->update([
-                'last_message_seen_id' => $newMessage->id,
+                'last_message_seen_id' => $message->id,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
         // update groups field 'updated_at' to NOW in order to be able to sort users groups by 'time of last message'
-        $group = ChatGroup::find($groupId);
-        $group->updated_at = date('Y-m-d H:i:s');
-        $group->save();
+        $this->chatGroupRepo->update($this->chatGroupRepo->find($groupId), ['updated_at' => date('Y-m-d H:i:s')]);
 
-        broadcast(new NewChatMessage($newMessage))->toOthers();
-        $this->newChatMessageNotification($groupId, $sender, $newMessage);
+        broadcast(new NewChatMessage($message))->toOthers();
+        $this->newChatMessageNotification($groupId, $sender, $message);
 
-        return $newMessage;
+        return $message;
     }
 
     public function newChatMessageNotification($groupId, $sender, $newMessage)
     {
-        $group = ChatGroup::find($groupId);
-        $participants = $this->getParticipantsWithoutSelf($group, $sender->id);
+        $group = $this->chatGroupRepo->find($groupId);
+        $participants = $group->participants->where('id', '!=' , $sender->id);
 
-        // foreach participant send notification
         foreach ($participants as $participant){
             $messageNotification = [
                 'groupId' => $groupId,
