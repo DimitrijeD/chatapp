@@ -37,28 +37,6 @@ export default {
     },
 
     mounted() {
-        // if user clicked on link which he received in mail,
-        // pathArray should have following structure:
-        //  [0] => ""
-        //  [1] => "mail-verification"
-        //  [2] => "hisEmail-hash"
-        let pathArray = window.location.pathname.split('/');
-
-        switch (pathArray.length){
-            case 2:
-                // user was redirected to this page after registration
-                this.afterRegistration();
-                break;
-
-            case 3:
-                // user clicked link received in mail
-                this.afterMailUrl(pathArray);
-                break;
-
-            default:
-                console.log('something is wrong with url');
-                console.log(pathArray);
-        }
 
     },
 
@@ -70,39 +48,19 @@ export default {
 
         afterMailUrl(pathArray)
         {
-            let emailHashStr = pathArray[2];
-
-            let email = emailHashStr.split('-')[0];
-            let hash  = emailHashStr.split('-')[1];
-
-            // If email is valid and hash is 64 bytes, proceed with users email validation.
-            if( this.validateEmail(email) && this.validateHash(hash) ) {
-                axios
-                    .post('/api/mail-verification-clicked', {slug: emailHashStr})
-                    .then((res) => {
-                        this.status = res.data;
-                        // this.$router.push({ name: "Home" });
-                    });
-            } else {
-                this.validationResult = 'Invalid link, please request another one';
-            }
+            
+            axios
+                .post('/api/mail-verification-clicked', {slug: emailHashStr})
+                .then((res) => {
+                    this.status = res.data;
+                    this.$router.push({ path: '/profile' });
+                })
+                .catch(error => {
+                    //error;
+                });
         },
 
-        // anystring@anystring.anystring
-        validateEmail(email)
-        {
-            let re = /\S+@\S+\.\S+/;
-            return re.test(email);
-        },
-
-        validateHash(hash)
-        {
-            if(hash.length == 64){
-                return true;
-            }
-            return false;
-        },
-
+        //@TODO somehow get user id or mail and send to method to resend mail
         resendEmailVerification()
         {
             axios

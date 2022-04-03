@@ -11,7 +11,8 @@ interface CRUDInterface
     public function create(array $data);
     public function update(Model $model, array $data);
     public function delete(Model $model);
-
+    public function latest(array $data);
+    
     public function get(array $data, array $with = []);
     public function getMany(array $data, array $with = []); 
     public function first(array $data, array $with = []);

@@ -14,4 +14,13 @@ class ChatMessageEloquentRepo implements ChatMessageRepo
     {
         return ChatMessage::class;
     }
+
+    public function getMissingMessages($groupId, $latestMsg)
+    {
+        return ChatMessage::
+              where('chat_group_id', $groupId)
+            ->where('id', '>', $latestMsg)
+            ->with('user')
+            ->get();
+    }
 }

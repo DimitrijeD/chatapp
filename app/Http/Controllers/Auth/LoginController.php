@@ -17,7 +17,7 @@ class LoginController extends Controller
         ]);
 
         if( Auth::attempt($request->only('email', 'password')) ){
-            return response()->json(Auth::user(), 200);
+            return response()->json(Auth::user());
         }
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.']
@@ -26,7 +26,6 @@ class LoginController extends Controller
 
     public function logout()
     {
-    
         Auth::logout();
     }
 }
