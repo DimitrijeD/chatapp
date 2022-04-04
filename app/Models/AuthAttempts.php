@@ -10,7 +10,7 @@ class AuthAttempts extends Model
     use HasFactory;
 
     protected $fillable = [
-        'hashUrl',
+        'hash',
         'type',
         'user_id',
     ];

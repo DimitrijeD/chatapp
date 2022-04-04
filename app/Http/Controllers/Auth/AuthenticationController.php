@@ -72,9 +72,7 @@ class AuthenticationController extends Controller
         $user = $userRepo->find($user_id);
 
         if(!$user){
-            return response()->json([
-                'error' => __("Account doesn't exist."),
-            ]);
+            abort(404);
         }
 
         $authAttempts = AuthAttempts::
@@ -83,29 +81,33 @@ class AuthenticationController extends Controller
             ->get();
 
         if(count($authAttempts) == 0 && $user->email_verified_at){
-            return response()->json([
+            return redirect('/')->with([
                 'success' => __("You are verified."),
+                'user' => $user,
             ]);
         }
 
         foreach($authAttempts as $attempt){
-            if( Hash::check($hash, $attempt->hashUrl)){
+            if( Hash::check($hash, $attempt->hash)){
 
                 $user->email_verified_at = date('Y-m-d H:i:s');
                 $user->save();
 
-                $authAttempts->delete();
+                foreach($authAttempts as $attempt){
+                    $attempt->delete();
+                }
                 
                 Auth::login($user);
 
-                return response()->json([
+                return redirect('/')->with([
                     'success' => __("Successful authentication."),
                     'user' => $user,
                 ]);
             }
         }
 
-        // incorrect $attempt->hashUrl received or brute force attacks.
+        // incorrect $attempt->hash received or brute force attacks.
+        abort(404);
     }
 
 }

@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\EmailController;
-use App\Http\Controllers\ChatGroupController;
-use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Chat\GroupController;
+use App\Http\Controllers\Chat\MessageController;
 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -22,23 +22,23 @@ Route::post('/mail-verification-clicked', [EmailController::class, 'checkSlugAut
 Route::get('/authenticated', [AuthenticationController::class, 'isAuthenticated']);
 Route::get('/user-loggedin', [AuthenticationController::class, 'isLoggedIn']);
 
-Route::get('/chat/group/{groupId}/get-all-messages',     [ChatController::class, 'getAllMessages']);
-Route::get('/chat/group/{groupId}/from-msg/{latestMsg}', [ChatController::class, 'getMissingMessages']);
+Route::get('/chat/group/{groupId}/messages', [MessageController::class, 'getAllMessages']);
+Route::get('/chat/group/{groupId}/from-msg/{latestMsg}', [MessageController::class, 'getMissingMessages']);
 
-Route::post('/chat/group/{groupId}/message',           [ChatController::class, 'store']);
-Route::post('/chat/getAllUsersExceptSelf',             [ChatController::class, 'getAllUsersExceptSelf']);
-Route::post('/chat/messages-seen',                     [ChatController::class, 'messageIsSeen']);
+Route::post('/chat/message/store', [MessageController::class, 'store']);
+Route::post('/chat/messages-seen', [MessageController::class, 'messageIsSeen']);
+Route::get('/chat/getAllUsersExceptSelf', [MessageController::class, 'getAllUsersExceptSelf']);
 
-Route::get('/chat/groups-by-user',                     [ChatGroupController::class, 'getGroupsByUser']);
-Route::get('/chat/users-by-groups/{groupId}',          [ChatGroupController::class, 'getUsersByGroup']);
-Route::post('/chat/group/new',                         [ChatGroupController::class, 'store']);
+Route::get('/chat/groups-by-user', [GroupController::class, 'getGroupsByUser']);
+Route::get('/chat/users-by-groups/{groupId}', [GroupController::class, 'getUsersByGroup']);
+Route::post('/chat/group/new', [GroupController::class, 'store']);
 
-Route::get('/chat/groups-by-user-with-participants',   [ChatGroupController::class, 'getGroupsByUserWithParticipants']);
+Route::get('/chat/groups-by-user-with-participants', [GroupController::class, 'getGroupsByUserWithParticipants']);
+Route::get('/chat/groups-by-user-without-self', [GroupController::class, 'getGroupsByUserWithoutSelf']);
+Route::get('/chat/groups-by-user-without-self-v2', [GroupController::class, 'getGroupsByUserWithoutSelf_v2']);
+Route::get('/chat/group/with-participants/{id}', [GroupController::class, 'getGroupById_WithParticipants']);
+Route::get('/chat/group/without-self/{id}', [GroupController::class, 'getGroupById_WithoutSelf']);
 
-Route::get('/chat/groups-by-user-without-self',        [ChatGroupController::class, 'getGroupsByUserWithoutSelf']);
-Route::get('/chat/groups-by-user-without-self-v2',     [ChatGroupController::class, 'getGroupsByUserWithoutSelf_v2']);
+Route::get('/all-unseen-states', [GroupController::class, 'getAllUnseenStates']);
 
-Route::post('/chat/group/{groupId}',                   [ChatGroupController::class, 'getGroupById']);
-Route::post('/chat/group-with-participants/{groupId}', [ChatGroupController::class, 'getGroupById_WithParticipants']);
-Route::post('/chat/group-without-self/{groupId}',      [ChatGroupController::class, 'getGroupById_WithoutSelf']);
-Route::get('/all-unseen-states',                       [ChatGroupController::class, 'getAllUnseenStates']);
+// Route::get('/chat/group/{id}', [GroupController::class, 'getGroupById']);

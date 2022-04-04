@@ -143,7 +143,7 @@ export default {
 
         getAllUsersExceptSelf()
         {
-            axios.post('/api/chat/getAllUsersExceptSelf')
+            axios.get('/api/chat/getAllUsersExceptSelf')
             .then((res) => {
                 this.allUsersOriginal = this.addSelectedStatusToAllUsers(res.data);
                 this.allUsers = this.allUsersOriginal;
