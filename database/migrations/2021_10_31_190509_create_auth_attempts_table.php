@@ -17,7 +17,7 @@ class CreateAuthAttemptsTable extends Migration
             $table->id();
             $table->integer('user_id');
             $table->timestamps();
-            $table->string('hashUrl');
+            $table->string('hash');
             $table->string('type');
         });
     }

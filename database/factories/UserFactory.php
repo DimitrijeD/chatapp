@@ -28,8 +28,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => NULL,
-            'image' => '/images/basic-avatar-image.jpg',
-            'thumbnail' => '/thumbnails/basic-avatar-thumbnail.jpg',
+            'image' => '/basic-images/basic-avatar.jpg',
+            'thumbnail' => '/basic-images/basic-avatar.jpg',
         ];
     }
 

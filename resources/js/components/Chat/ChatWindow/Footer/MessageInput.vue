@@ -1,6 +1,6 @@
 <template>
     <div class="w-full flex ">
-
+        
         <!-- Message input -->
         <textarea
             class="flex-auto bg-blue-50 p-2 w-full resize-none text-base focus:bg-white focus:outline-none focus:ring-1 focus:border-primary ring-inset"
@@ -29,7 +29,11 @@ export default {
     data(){
         return{
             message: '',
+            storeMessageEndpoint: '/api/chat/message/store'
         }
+    },
+
+    components:{
     },
 
     props:[
@@ -60,10 +64,7 @@ export default {
                 return;
             }
 
-            let url = '/api/chat/group/' + this.groupId + '/message';
-            axios.post(url, {
-                text: this.message
-            })
+            axios.post(this.storeMessageEndpoint, this.formatMessage())
             .then(res => {
                 if( res.status === 201 ){
                     this.message = '';
@@ -84,6 +85,15 @@ export default {
                 'last_name': this.user.last_name,
             });
         },
+
+        formatMessage()
+        {
+            return {
+                text: this.message,
+                chat_group_id: this.groupId,
+                user_id: this.user.id
+            };
+        }
     }
 }
 </script>

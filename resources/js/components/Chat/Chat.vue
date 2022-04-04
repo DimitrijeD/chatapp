@@ -59,6 +59,11 @@ export default {
     created(){
         this.getInitialUnseenMessagesState();
         this.connectToMessageNotifications();
+
+        axios.get('/api/chat/groups-by-user-without-self-v2')
+        .then((res)=>{    
+            console.log(res.data);
+        })
     },
 
     methods:
@@ -95,8 +100,7 @@ export default {
         // Get fresh instance of chat group,
         getFreshGroupInstance(chatGroup)
         {
-            axios
-            .post('/api/chat/group-without-self/' + chatGroup.id)
+            axios.get('/api/chat/group/without-self/' + chatGroup.id)
             .then( res => {
                 this.addComponentToArray(res.data);
             });
@@ -107,7 +111,7 @@ export default {
         // messageReceivedButWindowNotOpenYet - So open it :)
         messageReceivedButWindowNotOpenYet(notification)
         {
-            axios.post('/api/chat/group-with-participants/' + notification.groupId)
+            axios.get('/api/chat/group/with-participants/' + notification.groupId)
             .then(res => {
                 this.createNewWindow(res.data);
             });

@@ -13,22 +13,15 @@ use App\Jobs\SendEmailJob;
 use App\Models\AuthAttempts;
 use App\Models\User;
 use App\ChatApp\Repos\User\UserEloquentRepo;
+use App\Http\Requests\Auth\RegisterRequest;
 
 class RegisterController extends Controller
 {
     use ProfilePictureTrait;
     use CreateValidationSlugTrait;
 
-    public function register(Request $request, UserEloquentRepo $userRepo)
+    public function register(RegisterRequest $request, UserEloquentRepo $userRepo)
     {
-        $request->validate([
-            'first_name'     => ['required', 'min:3', 'max:255'],
-            'last_name'      => ['required', 'min:3', 'max:255'],
-            'email'          => ['required', 'min:3', 'max:255', 'email', 'unique:users'],
-            'password'       => ['required', 'min:6', 'max:255', 'confirmed'],
-            'profilePicture' => ['required', 'file', 'image', 'max:5120'],
-        ]);
-
         // Save profile pics and return their dir_name and name.ext
         $pathsToStoredProfilePics = $this->storeTrait($request);
 
@@ -41,12 +34,12 @@ class RegisterController extends Controller
             'thumbnail' => $pathsToStoredProfilePics['thumbnails'],
         ]);
 
-        $hash = Str::random(5);
+        $hash = Str::random(64);
         $dbHash = Hash::make($hash);
 
         AuthAttempts::create([
             'user_id' => $user->id,
-            'hashUrl' => $dbHash, 
+            'hash' => $dbHash, 
             'type' => 'mail_validation'
         ]);
 
@@ -54,11 +47,10 @@ class RegisterController extends Controller
             'email' => $user->email,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
-            'hashUrl' => url("/mail-verification/uid/{$user->id}/h/{$hash}"),
+            'url' => url("/mail-verification/uid/{$user->id}/h/{$hash}"),
         ];
 
         dispatch(new SendEmailJob($userData));
 
     }
 }
-

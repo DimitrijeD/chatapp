@@ -53,7 +53,7 @@
 import ChatParticipants from "./ChatParticipants.vue";
 import WindowManagement from "./WindowManagement.vue";
 import MessagesBlock from "./MessagesBlock";
-import MessageInput from "./MessageInput.vue";
+import MessageInput from "./Footer/MessageInput.vue";
 import Background from "./ChatBody/Background.vue";
 
 import * as helpers from "../../../helpers/helpers_exporter.js";
@@ -136,7 +136,7 @@ export default {
             //         // 
             //     });
             // } else {
-            //     // axios.get('/api/chat/group/' + this.chatGroup.group.id + '/get-all-messages')
+            //     // axios.get('/api/chat/group/' + this.chatGroup.group.id + '/messages')
             //     // .then(res => {
             //     //     this.messages = res.data;
 
@@ -146,7 +146,7 @@ export default {
             //     // });
             // }
 
-            axios.get('/api/chat/group/' + this.chatGroup.group.id + '/get-all-messages')
+            axios.get('/api/chat/group/' + this.chatGroup.group.id + '/messages')
             .then(res => {
                 this.messages = Object.assign({}, helpers.createHashMap_OneToOne(res.data.messages, 'id') );
                 this.setLatestMessageId( this.findLatestMessageId(this.messages) );
@@ -200,7 +200,6 @@ export default {
             axios.post('/api/chat/messages-seen', {
                 'groupId': this.chatGroup.group.id,
                 'lastMessageId': this.lastMessageId,
-                'selfId': this.user.id
             });
 
         },
@@ -213,7 +212,7 @@ export default {
                 // delete this var and just pass 'event' var
                 const formatedData = {
                     chat_group_id: e.seenData.groupId,
-                    user_id: e.seenData.selfId,
+                    user_id: e.seenData.user_id,
                     last_message_seen_id: e.seenData.lastMessageId,
                 }
                 this.newSeenState = formatedData;
