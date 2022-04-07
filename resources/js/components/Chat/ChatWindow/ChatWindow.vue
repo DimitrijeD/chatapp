@@ -27,13 +27,13 @@
 
             <!-- Chat Window Body -->
             <div class="window-h">
-
                 <messages-block
                     :messages="messages"
                     :isMinimized="isMinimized"
                     :chatGroup="chatGroup"
                     :groupSeenStates="groupSeenStates"
                     :newSeenState="newSeenState"
+                    :receivedMessage="receivedMessage"
                 />
             </div>
             <!-- -------------------- -->
@@ -71,6 +71,8 @@ export default {
             messages: [],
             isMinimized: false,
             lastMessageId: null,
+            lastSenderId: null,
+            receivedMessage: {},
             lastAcknowledgedMessageId: null,
             groupSeenStates: {},
             newSeenState: {}
@@ -150,7 +152,8 @@ export default {
             .then(res => {
                 this.messages = Object.assign({}, helpers.createHashMap_OneToOne(res.data.messages, 'id') );
                 this.setLatestMessageId( this.findLatestMessageId(this.messages) );
-
+                this.setlastSenderId(this.findLatestSenderId(this.messages, this.lastMessageId));
+                this.setReceivedMessage();
                 // this.groupSeenStates = Object.assign({}, helpers.createHashMap_OneToMany(res.data.seen_states, 'last_message_seen_id', 'user_id') );
                 this.groupSeenStates = res.data.seen_states;
                 this.messages = Object.assign({}, this.resetAllSeenStatesOnMessages(this.messages));
@@ -230,6 +233,14 @@ export default {
             });
         },
 
+        setReceivedMessage()
+        {
+            this.receivedMessage = {
+                user_id: this.lastSenderId,
+                message_id: this.lastMessageId
+            }
+        },
+
         /**
          * Set lastest message in this chat window
          * 
@@ -238,6 +249,11 @@ export default {
         setLatestMessageId(id)
         {
             this.lastMessageId = id; 
+        },
+
+        setlastSenderId(id)
+        {
+            this.lastSenderId = id;
         },
 
         setLatestAcknowledgedMessageId(id)
@@ -255,6 +271,11 @@ export default {
         {
             const messagesIds = Object.keys(messages);
             return messagesIds[messagesIds.length -1];
+        },
+
+        findLatestSenderId(messages, lastMessageId)
+        {
+            return messages[lastMessageId].user_id;
         },
 
         isUserOwnerOfLastMessage(message, userId)

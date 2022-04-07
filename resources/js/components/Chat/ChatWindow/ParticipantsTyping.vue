@@ -17,6 +17,7 @@
 export default {
     props:[
         'group_id',
+        'receivedMessage'
     ],
 
     /**
@@ -46,6 +47,14 @@ export default {
         .listenForWhisper('typing', user => {
             this.addOrUpdateTyper(user);
         });
+    },
+
+    watch: {
+        receivedMessage: {
+            handler: function(newValue, oldValue) {
+                this.removeTyper(newValue.user_id);
+            }
+        }
     },
 
     methods:{
