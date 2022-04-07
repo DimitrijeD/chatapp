@@ -6,12 +6,12 @@ use App\Models\ChatMessage;
 
 class MessagesBuilder 
 {
-    public $assembledMessageModels, $chat_group_id;
+    public $assembledMessageModels, $group_id;
 
-    public function __construct($chat_group_id)
+    public function __construct($group_id)
     {
         $this->assembledMessageModels = [];
-        $this->chat_group_id = $chat_group_id;
+        $this->group_id = $group_id;
     }
 
     /**
@@ -39,7 +39,7 @@ class MessagesBuilder
         foreach($clusteredMessages as $cluster){
             for($i = 0; $i < $cluster['clusterSize']; $i++){           
                 $this->assembledMessageModels[] = [
-                    'chat_group_id' => $this->chat_group_id,
+                    'group_id' => $this->group_id,
                     'user_id' => $cluster['user']->id,
                     'text' => null,
                     'updated_at' => null,
@@ -60,6 +60,6 @@ class MessagesBuilder
 
     public function getChatGroupMessages()
     {
-        return ChatMessage::where('chat_group_id', $this->chat_group_id)->get();
+        return ChatMessage::where('group_id', $this->group_id)->get();
     }
 }

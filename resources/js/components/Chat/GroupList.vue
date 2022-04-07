@@ -134,7 +134,7 @@ export default {
 
     mounted() {
         this.getGroupsByUserWithParticipants();
-        this.getGroupsByUserWithParticipants_v2();
+        // this.getGroupsByUserWithParticipants_v2();
     },
 
     watch: {
@@ -190,7 +190,7 @@ export default {
 
         getGroupsByUserWithParticipants_v2()
         {
-            axios.get('/api/chat/groups-by-user-without-self-v2')
+            axios.get('/api/chat/user/groups-without-self-v2')
                 .then((res)=>{
                     this.groupsOriginal_v2 = res.data;
                     this.groups_v2 = this.groupsOriginal_v2;
@@ -201,7 +201,7 @@ export default {
         getGroupsByUserWithParticipants()
         {
             axios
-            .get('/api/chat/groups-by-user-without-self')
+            .get('/api/chat/user/groups-without-self')
             .then( res => {
                 this.groupsOriginal = res.data;
                 this.groups = this.groupsOriginal;

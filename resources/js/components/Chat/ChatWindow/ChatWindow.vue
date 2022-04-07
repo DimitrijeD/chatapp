@@ -42,7 +42,7 @@
             <!-- Chat Window Footer -->
             <message-input
                 @messageSent="getMessages()"
-                :groupId="this.chatGroup.group.id"
+                :group_id="this.chatGroup.group.id"
             />
             <!-- -------------------- -->
         </div>
@@ -197,8 +197,8 @@ export default {
             // tell GroupList component you have opened AND SEEN messages in this group
             this.$emit('groupAcknowledged', this.chatGroup.group.id);
 
-            axios.post('/api/chat/messages-seen', {
-                'groupId': this.chatGroup.group.id,
+            axios.post('/api/chat/message/seen', {
+                'group_id': this.chatGroup.group.id,
                 'lastMessageId': this.lastMessageId,
             });
 
@@ -211,7 +211,7 @@ export default {
                 // Reason formateData exists is that 'selfId' from DB is bad name, after 'selfId' is changed wherever it is being created,  
                 // delete this var and just pass 'event' var
                 const formatedData = {
-                    chat_group_id: e.seenData.groupId,
+                    group_id: e.seenData.group_id,
                     user_id: e.seenData.user_id,
                     last_message_seen_id: e.seenData.lastMessageId,
                 }

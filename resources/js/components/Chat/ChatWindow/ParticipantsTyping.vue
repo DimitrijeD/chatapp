@@ -16,7 +16,7 @@
 
 export default {
     props:[
-        'groupId',
+        'group_id',
     ],
 
     /**
@@ -42,7 +42,7 @@ export default {
     },
 
     mounted() {
-        Echo.private("group." + this.groupId)
+        Echo.private("group." + this.group_id)
         .listenForWhisper('typing', user => {
             this.addOrUpdateTyper(user);
         });

@@ -3,9 +3,9 @@
  * 
  * --- Params ---
  * listedCollection = [
- *      { chat_group_id: 1, last_message_seen_id: 108,  user_id: 2 ...}
- *      { chat_group_id: 1, last_message_seen_id: 108,  user_id: 3 ...}
- *      { chat_group_id: 1, last_message_seen_id: null, user_id: 1 ...} // note that null value wont be set as object key! User seen no messages in this chat.
+ *      { group_id: 1, last_message_seen_id: 108,  user_id: 2 ...}
+ *      { group_id: 1, last_message_seen_id: 108,  user_id: 3 ...}
+ *      { group_id: 1, last_message_seen_id: null, user_id: 1 ...} // note that null value wont be set as object key! User seen no messages in this chat.
  * ]
  * 
  * firstLevel = 'last_message_seen_id'; 
@@ -14,8 +14,8 @@
  * --- Return ---
  * hashCollection = {
  *      108: {
- *          2: { chat_group_id: 1, last_message_seen_id: 108,  user_id: 2 ...}
- *          3: { chat_group_id: 1, last_message_seen_id: 108,  user_id: 3 ...}
+ *          2: { group_id: 1, last_message_seen_id: 108,  user_id: 2 ...}
+ *          3: { group_id: 1, last_message_seen_id: 108,  user_id: 3 ...}
  *      }
  * }
  *  

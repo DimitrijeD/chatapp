@@ -24,7 +24,7 @@ class GetGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['required', 'integer']
+            'group_id' => ['required', 'integer']
         ];
     }
 }

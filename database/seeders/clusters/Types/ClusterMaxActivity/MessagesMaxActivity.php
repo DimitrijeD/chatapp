@@ -69,10 +69,10 @@ class MessagesMaxActivity extends MessageProvider implements Cluster
     private function createMessage($group_id, $user_id)
     {
         $chatMessages = ChatMessage::factory()->create([
-            'chat_group_id' => $group_id,
-            'user_id'       => $user_id,
-            'updated_at'    => null,
-            'created_at'    => null,
+            'group_id'   => $group_id,
+            'user_id'    => $user_id,
+            'updated_at' => null,
+            'created_at' => null,
         ]);
     }
 

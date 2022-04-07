@@ -68,10 +68,10 @@ class MessagesEven extends MessageProvider implements Cluster
         $now = now();
 
         $chatMessages = ChatMessage::factory()->create([
-            'chat_group_id' => $group_id,
-            'user_id'       => $user_id,
-            'updated_at'    => $now,
-            'created_at'    => $now,
+            'group_id'   => $group_id,
+            'user_id'    => $user_id,
+            'updated_at' => $now,
+            'created_at' => $now,
         ]);
     }
 

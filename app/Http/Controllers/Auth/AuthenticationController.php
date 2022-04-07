@@ -58,7 +58,7 @@ class AuthenticationController extends Controller
         //     ->get();
         // dd($t);
 
-        // dd($messageRepo->getMany(['chat_group_id' => 1], ['user'], null));
+        // dd($messageRepo->getMany(['group_id' => 1], ['user'], null));
 
         // dd($chatMessageRepo->getMissingMessages(1, 65));
 

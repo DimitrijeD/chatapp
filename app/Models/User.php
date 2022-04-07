@@ -47,8 +47,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function groups()
     {
-        return $this->belongsToMany(ChatGroup::class, 'group_participants')
-            ->withPivot(['last_message_seen_id']);
+        return $this->belongsToMany(ChatGroup::class, 'group_participants', 'user_id', 'group_id')
+            ->withPivot(['last_message_seen_id', 'group_id']);
     }
 
 }

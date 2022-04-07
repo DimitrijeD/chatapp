@@ -33,7 +33,7 @@ class MeSawMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('group.' . $this->seenData['groupId']);
+        return new PrivateChannel('group.' . $this->seenData['group_id']);
     }
 
     public function broadcastAs()

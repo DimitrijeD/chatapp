@@ -26,7 +26,7 @@ class StoreChatMessageRequest extends FormRequest
         return [
             'text' => ['required', 'max:1000',],
             'user_id' => ['required', 'integer'],
-            'chat_group_id' => ['required', 'integer'],
+            'group_id' => ['required', 'integer'],
         ];
     }
 }

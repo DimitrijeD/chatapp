@@ -60,17 +60,17 @@ export default {
         this.getInitialUnseenMessagesState();
         this.connectToMessageNotifications();
 
-        axios.get('/api/chat/groups-by-user-without-self-v2')
-        .then((res)=>{    
-            console.log(res.data);
-        })
+        // axios.get('/api/chat/user/groups-without-self-v2')
+        // .then((res)=>{    
+        //     console.log(res.data);
+        // })
     },
 
     methods:
     {
         getInitialUnseenMessagesState()
         {
-            axios.get('/api/all-unseen-states')
+            axios.get('/api/user/unseen-states')
             .then((res)=>{    
                 this.groupsWithUnseenMessages = res.data;
             })
@@ -100,7 +100,7 @@ export default {
         // Get fresh instance of chat group,
         getFreshGroupInstance(chatGroup)
         {
-            axios.get('/api/chat/group/without-self/' + chatGroup.id)
+            axios.get('/api/chat/group/' + chatGroup.id + '/without-self/')
             .then( res => {
                 this.addComponentToArray(res.data);
             });
@@ -111,7 +111,7 @@ export default {
         // messageReceivedButWindowNotOpenYet - So open it :)
         messageReceivedButWindowNotOpenYet(notification)
         {
-            axios.get('/api/chat/group/with-participants/' + notification.groupId)
+            axios.get('/api/chat/group/' + notification.group_id + '/with-participants')
             .then(res => {
                 this.createNewWindow(res.data);
             });
@@ -131,27 +131,27 @@ export default {
         },
 
         // Chat windows are closed by removing chat that element from 'this.openedChatWindows'
-        closeWindow(groupId)
+        closeWindow(group_id)
         {
-            let indexOfTarget = this.getWindowIndexById(groupId);
+            let indexOfTarget = this.getWindowIndexById(group_id);
             if (indexOfTarget) {
                 this.openedChatWindows.splice(indexOfTarget, 1);
             }
         },
 
-        getWindowIndexById(groupId)
+        getWindowIndexById(group_id)
         {
             for (var index in this.openedChatWindows){
-                if (this.openedChatWindows.hasOwnProperty(index) && this.openedChatWindows[index].chatGroup.group.id == groupId) {
+                if (this.openedChatWindows.hasOwnProperty(index) && this.openedChatWindows[index].chatGroup.group.id == group_id) {
                     return index;
                 }
             }
             return null;
         },
 
-        groupAcknowledged(groupId)
+        groupAcknowledged(group_id)
         {
-            this.groupIdAcknowledged = groupId;
+            this.groupIdAcknowledged = group_id;
         },
 
     },

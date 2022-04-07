@@ -16,7 +16,7 @@ class ChatMessageFactory extends Factory
     public function definition()
     {
         return [
-            'chat_group_id' => ChatGroup::factory(),
+            'group_id' => ChatGroup::factory(),
             'user_id' => User::factory(),
             'text' => $this->faker->text(rand(5, 50)),
             'updated_at' => now(),
