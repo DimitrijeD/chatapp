@@ -77,6 +77,7 @@ class ChatGroupClusterSeeder extends Seeder
         // CHOOSE number of chat group participants
         $this->numUsers = 2;
 
+        // If count($participants) > $this->numUsers , seeder will prioritize $participants as users to create
         $participants = [
             [
                 'first_name' => 'Qwe',
@@ -88,6 +89,18 @@ class ChatGroupClusterSeeder extends Seeder
                 'first_name' => 'Asd',
                 'last_name' => 'Asd',
                 'email' => 'asd@asd', 
+                'password' => 'qweqweqwe',
+            ],
+            [
+                'first_name' => 'Wer',
+                'last_name' => 'Wer',
+                'email' => 'wer@wer', 
+                'password' => 'qweqweqwe',
+            ],
+            [
+                'first_name' => 'Ert',
+                'last_name' => 'Ert',
+                'email' => 'Ert@Ert', 
                 'password' => 'qweqweqwe',
             ],
         ];   

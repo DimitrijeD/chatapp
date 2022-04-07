@@ -2,6 +2,7 @@
     <div class="flex flex-col-reverse h-full overflow-y-scroll relative">
         <participants-typing
             :group_id="this.chatGroup.group.id"
+            :receivedMessage="receivedMessage"
         />
         <div class="z-50">
             <div v-for="(message, messageId) in messages" :key="messageId">
@@ -31,7 +32,8 @@ export default {
         'isMinimized',
         'chatGroup',
         'groupSeenStates',
-        'newSeenState'
+        'newSeenState',
+        'receivedMessage'
     ],
 
     components: {
