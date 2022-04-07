@@ -19,7 +19,7 @@ class LastMessageSeenEven extends LastMessageSeenProvider implements Cluster
 
             $this->lastMessageSeenUpdateData[] = [
                 'user_id' => $this->users[$i]->id,
-                'chat_group_id' => $this->group_id,
+                'group_id' => $this->group_id,
                 'last_message_seen_id' => $arrangement['message']->id,
                 'updated_at' => $this->getTimeOfLastSeen($arrangement['message']),
             ];

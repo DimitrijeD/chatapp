@@ -17,13 +17,13 @@ class ChatGroup extends Model
 
     public function messages()
     {
-        return $this->hasMany(ChatMessage::class);
+        return $this->hasMany(ChatMessage::class, 'group_id', 'id');
     }
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'group_participants')
-            ->withPivot(['last_message_seen_id']);;
+        return $this->belongsToMany(User::class, 'group_participants', 'group_id', 'user_id')
+            ->withPivot(['last_message_seen_id', 'user_id']);
     }
 
 }

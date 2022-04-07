@@ -24,7 +24,7 @@ class GroupParticipantsPivot implements Cluster
         foreach($this->users as $user){
             DB::table('group_participants')->insert([
                 'user_id'              => $user->id,
-                'chat_group_id'        => $this->group_id,
+                'group_id'             => $this->group_id,
                 'last_message_seen_id' => null,
                 'updated_at'           => $now, 
                 'created_at'           => $now, // @TODO make date when was group created.
@@ -50,8 +50,8 @@ class GroupParticipantsPivot implements Cluster
     {
         foreach($pivotRecords as $pivotRecord){
             DB::table('group_participants')->where([
-                'user_id'              => $pivotRecord['user_id'],
-                'chat_group_id'        => $this->group_id,
+                'user_id'  => $pivotRecord['user_id'],
+                'group_id' => $this->group_id,
             ])->update([
                 'last_message_seen_id' => $pivotRecord['last_message_seen_id'],
                 'updated_at' => $pivotRecord['updated_at'],

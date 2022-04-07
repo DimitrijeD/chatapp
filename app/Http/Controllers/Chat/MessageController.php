@@ -7,11 +7,6 @@ use App\Events\MeSawMessage;
 use App\Events\MessageNotification;
 use App\Events\NewChatMessage;
 
-use App\Models\ChatGroup;
-use App\Models\ChatMessage;
-use App\Models\User;
-
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\ChatApp\Repos\User\UserEloquentRepo;
@@ -20,6 +15,8 @@ use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 
 use App\Http\Requests\ChatMessage\StoreChatMessageRequest;
 use App\Http\Requests\ChatMessage\SeenChatMessageRequest;
+
+use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
@@ -32,20 +29,20 @@ class MessageController extends Controller
         $this->chatMessageRepo = $chatMessageRepo;
     }
 
-    public function getAllMessages($groupId)
+    public function getAllMessages(Request $request)
     {
-        $messages = $this->chatMessageRepo->getMany(['chat_group_id' => $groupId], ['user']);
+        $messages = $this->chatMessageRepo->getMany(['group_id' => $request->group_id], ['user']);
 
         $seenStates = DB::table('group_participants')
-            ->where('chat_group_id', $groupId)
+            ->where('group_id', $request->group_id)
             ->get();
 
         return ['messages' => $messages, 'seen_states' => $seenStates]; 
     }
 
-    public function getMissingMessages($groupId, $latestMsg)
+    public function getMissingMessages($group_id, $latestMsg)
     {
-        return $this->chatMessageRepo->getMissingMessages($groupId, $latestMsg);
+        return $this->chatMessageRepo->getMissingMessages($group_id, $latestMsg);
     }
 
     public function store(StoreChatMessageRequest $request)
@@ -54,23 +51,23 @@ class MessageController extends Controller
 
         $message = $this->chatMessageRepo->create([
             'user_id' => $sender->id,
-            'chat_group_id' => $request->chat_group_id,
+            'group_id' => $request->group_id,
             'text' => $request->text,
         ]);
 
         DB::table('group_participants')
             ->where('user_id', $sender->id)
-            ->where('chat_group_id', $request->chat_group_id)
+            ->where('group_id', $request->group_id)
             ->update([
                 'last_message_seen_id' => $message->id,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
         // update groups field 'updated_at' to NOW in order to be able to sort users groups by 'time of last message'
-        $this->chatGroupRepo->update($this->chatGroupRepo->find($request->chat_group_id), ['updated_at' => date('Y-m-d H:i:s')]);
+        $this->chatGroupRepo->update($this->chatGroupRepo->find($request->group_id), ['updated_at' => date('Y-m-d H:i:s')]);
 
         broadcast(new NewChatMessage($message))->toOthers();
-        $this->newChatMessageNotification($request->chat_group_id, $sender, $message);
+        $this->newChatMessageNotification($request->group_id, $sender, $message);
 
         return $message;
     }
@@ -79,14 +76,14 @@ class MessageController extends Controller
      * THIS REQUIRES COMPLETE REFACTOR
      * -- when user unlocks chat, he should auto listen for new messages in all chats.
      */
-    private function newChatMessageNotification($groupId, $sender, $newMessage)
+    private function newChatMessageNotification($group_id, $sender, $newMessage)
     {
-        $group = $this->chatGroupRepo->find($groupId);
+        $group = $this->chatGroupRepo->find($group_id);
         $participants = $group->participants->where('id', '!=' , $sender->id);
 
         foreach ($participants as $participant){
             $messageNotification = [
-                'groupId' => $groupId,
+                'group_id' => $group_id,
                 'sender' => $sender,
                 'created_at' => $newMessage->created_at,
                 'forUserId' => $participant->id ,
@@ -101,7 +98,7 @@ class MessageController extends Controller
 
         $success = DB::table('group_participants')
             ->where('user_id', $user_id)
-            ->where('chat_group_id', $request->groupId)
+            ->where('group_id', $request->group_id)
             ->update([
                 'last_message_seen_id' => $request->lastMessageId,
                 'updated_at' => date('Y-m-d H:i:s')
@@ -109,17 +106,12 @@ class MessageController extends Controller
 
         if($success){
             $seenData = [
-                'groupId' => $request->groupId,
+                'group_id' => $request->group_id,
                 'lastMessageId' => $request->lastMessageId,
                 'user_id' => $user_id
             ];
             broadcast(new MeSawMessage($seenData))->toOthers();
         }
-    }
-
-    public function getAllUsersExceptSelf()
-    {
-        return User::all()->except(Auth::id());
     }
 
 }

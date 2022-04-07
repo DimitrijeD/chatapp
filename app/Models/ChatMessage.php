@@ -10,25 +10,19 @@ class ChatMessage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'chat_group_id',
+        'group_id',
         'user_id',
         'text',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function group()
     {
-        return $this->belongsTo(ChatGroup::class);
-    }
-
-    public function seenState()
-    {
-        return $this->belongsToMany(User::class, 'group_participants', 'last_message_seen_id')
-            ->withPivot(['user_id']);
+        return $this->belongsTo(ChatGroup::class, 'group_id', 'id');
     }
 
 }

@@ -42,7 +42,7 @@ class LastMessageSeenMaxActivity extends LastMessageSeenProvider implements Clus
     {
         return [
             'user_id' => $user_id,
-            'chat_group_id' => $this->group_id,
+            'group_id' => $this->group_id,
             'last_message_seen_id' => $lastMessageID,
             'updated_at' => $updated_at,
         ];

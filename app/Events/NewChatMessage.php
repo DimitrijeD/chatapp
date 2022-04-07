@@ -35,7 +35,7 @@ class NewChatMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('group.' . $this->chatMessage->chat_group_id);
+        return new PrivateChannel('group.' . $this->chatMessage->group_id);
     }
 
     public function broadcastAs() {

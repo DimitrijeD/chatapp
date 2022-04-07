@@ -16,7 +16,7 @@ class CreateGroupParticipantsTable extends Migration
         Schema::create('group_participants', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->integer('chat_group_id');
+            $table->integer('group_id');
             $table->integer('last_message_seen_id')->nullable();
             $table->timestamps();
         });

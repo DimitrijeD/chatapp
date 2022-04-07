@@ -24,7 +24,7 @@ class SeenChatMessageRequest extends FormRequest
     public function rules()
     {
         return [
-            'groupId' => ['required', 'integer'],
+            'group_id' => ['required', 'integer'],
             'lastMessageId' => ['required', 'integer'],
         ];
     }

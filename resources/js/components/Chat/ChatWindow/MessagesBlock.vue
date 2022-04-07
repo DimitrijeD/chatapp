@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col-reverse h-full overflow-y-scroll relative">
         <participants-typing
-            :groupId="this.chatGroup.group.id"
+            :group_id="this.chatGroup.group.id"
         />
         <div class="z-50">
             <div v-for="(message, messageId) in messages" :key="messageId">

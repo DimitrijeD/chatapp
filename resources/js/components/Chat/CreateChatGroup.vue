@@ -143,7 +143,7 @@ export default {
 
         getAllUsersExceptSelf()
         {
-            axios.get('/api/chat/getAllUsersExceptSelf')
+            axios.get('/api/chat/users/without-self')
             .then((res) => {
                 this.allUsersOriginal = this.addSelectedStatusToAllUsers(res.data);
                 this.allUsers = this.allUsersOriginal;
@@ -186,7 +186,7 @@ export default {
             this.newChatGroup.users.push(this.user);
 
             axios
-            .post('/api/chat/group/new', this.newChatGroup)
+            .post('/api/chat/group/store', this.newChatGroup)
             .then( res => {
                 this.$emit('createdGroup', res.data);
             });

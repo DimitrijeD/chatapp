@@ -37,7 +37,7 @@ export default {
     },
 
     props:[
-        'groupId',
+        'group_id',
     ],
 
     created() {
@@ -78,7 +78,7 @@ export default {
 
         userTyping()
         {
-            Echo.private("group." + this.groupId)
+            Echo.private("group." + this.group_id)
             .whisper('typing', {
                 'id': this.user.id,
                 'first_name': this.user.first_name,
@@ -90,7 +90,7 @@ export default {
         {
             return {
                 text: this.message,
-                chat_group_id: this.groupId,
+                group_id: this.group_id,
                 user_id: this.user.id
             };
         }

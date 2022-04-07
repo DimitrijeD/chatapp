@@ -15,7 +15,7 @@ class LastMessageSeenRandom extends LastMessageSeenProvider implements Cluster
 
             $this->lastMessageSeenUpdateData[] = [
                 'user_id' => $user->id,
-                'chat_group_id' => $this->group_id,
+                'group_id' => $this->group_id,
                 'last_message_seen_id' => $randMsg->id,
                 'updated_at' => $this->getTimeOfLastSeen($randMsg),
             ];

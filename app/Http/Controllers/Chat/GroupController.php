@@ -44,43 +44,6 @@ class GroupController extends Controller
         $chatGroup->participants()->save($user);
     }
 
-    public function getAllUnseenStates()
-    {
-        $groupsWithUnseenMessage = [];
-        $user = auth()->user();
-        $allUserGroups = $user->groups;
-        foreach($allUserGroups as $group){
-            $lastMessageInGroup = $this->getLastMessageOfGroup($group->id);
-
-            // conditions in order:
-            // 1. props exist, so no errors occur when groups have no messages
-            // 2. same as above
-            // 3. if last message ID in group is NOT EQUAL message ID which user 'acknowledged', then he has unseen messages in that group,
-            //      @bug theres a problem, for new groups receivers do not pass this check (should be true but isnt) because $group->pivot->last_message_seen_id=null for new groups/new users added to group and 3. if comparison doesnt return true for some reason, or bug is somewhere else :/
-            // 4. if user is not owner of last message:
-            //      to prevent strange behavior when user sends message, refreshes page, and his message is treated as last unseen to him
-            if(    isset($lastMessageInGroup->id)
-                && isset($group->pivot->last_message_seen_id)
-                && $lastMessageInGroup->id != $group->pivot->last_message_seen_id
-                && $user->id != $lastMessageInGroup->user_id)
-            {
-                $groupsWithUnseenMessage[] = $group;
-            }
-        }
-        return $groupsWithUnseenMessage;
-    }
-
-    // EXTRACT THIS
-    private function getLastMessageOfGroup($id)
-    {
-        return $this->chatMessageRepo->latest(['chat_group_id' => $id]);
-    }
-
-    // public function getUsersByGroup($id)
-    // {
-    //     return ($this->chatGroupRepo->find($id))->participants;
-    // }
-
     public function getGroupsByUser()
     {
         return auth()->user()->groups;
@@ -118,12 +81,12 @@ class GroupController extends Controller
 
     public function getGroupById(Request $request)
     {
-        return $this->chatGroupRepo->find($request->id);
+        return $this->chatGroupRepo->find($request->group_id);
     }
 
     public function getGroupById_WithParticipants(Request $request)
     {
-        $group = $this->chatGroupRepo->find($request->id);
+        $group = $this->chatGroupRepo->find($request->group_id);
         $participants = $group->participants;
 
         return [
@@ -134,7 +97,7 @@ class GroupController extends Controller
 
     public function getGroupById_WithoutSelf(Request $request)
     {
-        $group = $this->chatGroupRepo->find($request->id);
+        $group = $this->chatGroupRepo->find($request->group_id);
         $user = auth()->user();
 
         return [
