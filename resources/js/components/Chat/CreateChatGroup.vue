@@ -31,6 +31,15 @@
                 >
             </div>
 
+            <!-- Chose group type -->
+            <div class="m-2">
+                <select class="w-full p-2 bg-gray-50 focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset" v-model="selected_model_type">
+                    <option v-for="(model_type, index) in model_types" v-bind:value="model_type.value" :key="index">
+                        {{ model_type.text }}
+                    </option>
+                </select>
+            </div>
+
             <div class="m-2">
                 <input
                     class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
@@ -75,7 +84,7 @@
                 </div>
             </div>
 
-            <div v-model="errors" v-for="error in errors" class="text-danger">
+            <div v-model="errors" v-for="(error, index) in errors" class="text-danger" :key="index">
                 {{ error }}
             </div>
 
@@ -103,11 +112,20 @@ export default {
             newChatGroup: {
                 name: '',
                 users: [],
+                model_type: ''
             },
             errors: [],
-
             nothingFound: '',
             userSearchStr: '',
+
+            selected_model_type: 'PRIVATE',
+            selected_chatting_type: 'PRIVATE',
+
+            model_types: [
+                { text: 'Private chat', value: 'PRIVATE' },
+                { text: 'Protected chat', value: 'PROTECTED' },
+                { text: 'Public chat', value: 'PUBLIC' }
+            ]
         }
     },
 
@@ -184,6 +202,8 @@ export default {
 
             // add self
             this.newChatGroup.users.push(this.user);
+            this.newChatGroup.model_type = this.resolveNewGroupType(this.selected_model_type);
+            this.newChatGroup.chatting_type = this.resolveNewChattingType(this.selected_chatting_type);
 
             axios
             .post('/api/chat/group/store', this.newChatGroup)
@@ -261,7 +281,6 @@ export default {
                 let first_name = users[userInd].first_name;
                 let last_name = users[userInd].last_name;
 
-                // 'John Doe'
                 let text = first_name + ' ' + last_name;
 
                 // If input match anything in this string, return as match
@@ -277,6 +296,22 @@ export default {
         {
             let regex = new RegExp(find, 'i');
             return text.match(regex);
+        },
+
+        resolveNewGroupType(type)
+        {
+            if(!type){
+                return "PRIVATE";    
+            }
+            return type;
+        },
+
+        resolveNewChattingType(type)
+        {
+            if(!type){
+                return "PRIVATE";    
+            }
+            return type;
         },
 
     }

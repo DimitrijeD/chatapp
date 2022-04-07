@@ -114,6 +114,8 @@ class ChatGroupClusterSeeder extends Seeder
         // CHOOSE chat group data
         $chatGroupProps = [
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
+            'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
+            'chatting_type' => ChatGroup::CHATTING_TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ];
