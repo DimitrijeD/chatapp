@@ -28,7 +28,11 @@ class GroupController extends Controller
 
     public function store(StoreGroupRequest $request)
     {
-        $chatGroup = $this->chatGroupRepo->create(['name' => $request->name]);
+        $chatGroup = $this->chatGroupRepo->create([
+            'name' => $request->name,
+            'model_type' => $request->model_type,
+            'chatting_type' => $request->chatting_type,
+        ]);
 
         foreach($request->users as $user){
             $user = $this->userRepo->first(['id' => $user['id']]);
