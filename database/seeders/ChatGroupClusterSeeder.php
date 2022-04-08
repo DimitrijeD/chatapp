@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\ChatGroup;
 use Database\Seeders\clusters\ConfigResolvers\TimeConfigResolver;
 use Database\Seeders\clusters\ConfigResolvers\MessageConfigResolver;
 use Database\Seeders\clusters\ConfigResolvers\LastMessageSeenConfigResolver;
@@ -115,15 +115,13 @@ class ChatGroupClusterSeeder extends Seeder
         $chatGroupProps = [
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
             'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
-            'chatting_type' => ChatGroup::CHATTING_TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ];
 
         $this->chatGroup = (new ChatGroupBuilder($chatGroupProps))->makeModel();
         $this->messages = new MessagesBuilder($this->chatGroup->id);
-        $this->pivot = new GroupParticipantsPivot($this->users, $this->chatGroup->id);
-        $this->pivot->build();
+        $this->pivot = (new GroupParticipantsPivot($this->users, $this->chatGroup))->build();
     }
 
     public function run()
@@ -184,7 +182,8 @@ class ChatGroupClusterSeeder extends Seeder
                 'email' => 'qwe@qwe', 
                 'password' => 'qweqweqwe',
             ],
-        ]
+        ],
+        $creator_email = 'qwe@qwe',
     ) {
         $this->massSetterCalled = true;
 
@@ -226,14 +225,14 @@ class ChatGroupClusterSeeder extends Seeder
         // CHOOSE chat group data
         $chatGroupProps = [
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
+            'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ];
 
         $this->chatGroup = (new ChatGroupBuilder($chatGroupProps))->makeModel();
         $this->messages = new MessagesBuilder($this->chatGroup->id);
-        $this->pivot = new GroupParticipantsPivot($this->users, $this->chatGroup->id);
-        $this->pivot->build();
+        $this->pivot = (new GroupParticipantsPivot($this->users, $this->chatGroup))->build();
     }
 
 }

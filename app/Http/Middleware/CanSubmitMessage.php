@@ -5,8 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
+use App\Models\ParticipantPivot;
 
-class ChatGroupAccess
+class CanSubmitMessage
 {
     protected $chatGroupRepo;
 
@@ -14,7 +15,6 @@ class ChatGroupAccess
     {
         $this->chatGroupRepo = $chatGroupRepo;
     }
-
     /**
      * Handle an incoming request.
      *
@@ -26,7 +26,7 @@ class ChatGroupAccess
     {
         if(!$request->group_id)
             return response()->json(['errors' => __("Group doesn't exist.")], 404);
-
+        
         if(!$user = auth()->user())
             return response()->json(['errors' => __("Unauthenticated")], 403);
 
@@ -38,15 +38,13 @@ class ChatGroupAccess
         if(!$group)
             return response()->json(['errors' => __("Group doesn't exist.")], 404);
 
-        if($group->participants->contains($user)){
-            $request->merge([
-                "user" => $user,
-                "group" => $group,
-            ]);
-    
-            return $next($request);
+        foreach($group->participants as $participant){
+            if($participant->id == $user->id){
+                if($participant->pivot->participant_role == ParticipantPivot::ROLE_LISTENER)
+                    return response()->json(['error' => __("You cannot chat in this chat group, but you can still see messages")]);
+            }
         }
-
-        return response()->json(['errors' => __("You have no access rights to this chat group.")], 403);
+        
+        return $next($request);
     }
 }

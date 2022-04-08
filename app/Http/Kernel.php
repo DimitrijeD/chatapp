@@ -64,5 +64,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'chat_group_access' => \App\Http\Middleware\ChatGroupAccess::class,
+        'can_chat' => \App\Http\Middleware\CanSubmitMessage::class,
     ];
 }
