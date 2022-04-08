@@ -24,7 +24,7 @@ class StoreChatMessageRequest extends FormRequest
     public function rules()
     {
         return [
-            'text' => ['required', 'max:1000',],
+            'text' => ['required', 'string', 'max:1000',],
             'user_id' => ['required', 'integer'],
             'group_id' => ['required', 'integer'],
         ];

@@ -69,7 +69,8 @@ class AllConfigTypesTest extends TestCase
                 }
             }
         }
-        // didnt throw exception so i guess i works lmao === later
-        $this->assertTrue(true);
+
+        $this->markTestIncomplete('Check if created chats match given parameters');
+
     }
 }

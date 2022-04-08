@@ -3,8 +3,13 @@
 namespace App\Http\Requests\ChatGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\ChatGroup\IsChattingTypeValidRule;
-use App\Rules\ChatGroup\IsModelTypeValidRule;
+
+use App\Rules\ChatGroup\Store\IsModelTypeValidRule;
+use App\Rules\ChatGroup\Store\ParticipantsExistRule;
+use App\Rules\ChatGroup\Store\MoreThanOneParticipantRule;
+
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreGroupRequest extends FormRequest
 {
@@ -28,7 +33,18 @@ class StoreGroupRequest extends FormRequest
         return [
             'name' => ['string', 'max:255', 'nullable'],
             'model_type' => ['string', 'max:255', 'nullable', new IsModelTypeValidRule($this->model_type)],
-            'chatting_type' => ['string', 'max:255', 'nullable', new IsChattingTypeValidRule($this->chatting_type)],
+            'users' => [new MoreThanOneParticipantRule($this->users), new ParticipantsExistRule($this->users), ],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();
+
+        $response = response()->json([
+            'errors' => $errors->messages(),
+        ], 422);
+
+        throw new HttpResponseException($response);
     }
 }

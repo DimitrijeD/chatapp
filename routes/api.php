@@ -30,7 +30,7 @@ Route::get('/user-loggedin', [AuthenticationController::class, 'isLoggedIn']);
 //-----------------------------ChatMessage-----------------------------//
 Route::get('/chat/group/{group_id}/messages', [MessageController::class, 'getAllMessages'])->middleware(['chat_group_access', 'auth']);
 Route::get('/chat/group/{group_id}/from-msg/{latestMsg}', [MessageController::class, 'getMissingMessages'])->middleware(['chat_group_access', 'auth']);
-Route::post('/chat/message/store', [MessageController::class, 'store'])->middleware(['chat_group_access','auth']);
+Route::post('/chat/message/store', [MessageController::class, 'store'])->middleware(['chat_group_access','auth', 'can_chat']);
 Route::post('/chat/message/seen', [MessageController::class, 'messageIsSeen'])->middleware(['chat_group_access', 'auth']);
 //---------------------------------------------------------------------//
 

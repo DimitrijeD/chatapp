@@ -50,10 +50,22 @@
                 >
             </div>
 
-            <div class="overflow-y-auto user-list-height">
-                <div v-for="user in this.allUsers" class="flex flex-col m-1 cursor-pointer" :key="user.id">
-                    <div class="flex flex-row">
+            <div class="overflow-y-auto user-list-height select-none">
+                <div 
+                    v-for="user in this.allUsers" 
+                    class="flex flex-col m-1 cursor-pointer" 
+                    @click="selectedUserForChat(user)"
+                    :key="user.id"
+                >
+                    <div class="flex flex-row"
+                        v-bind:class="{
+                            'text-blue-500': !user.selectionStatus,
+                            'bg-white': !user.selectionStatus,
 
+                            'text-white':    user.selectionStatus,
+                            'bg-blue-400':   user.selectionStatus,
+                            'font-semibold': user.selectionStatus,
+                        }">
                         <!-- img -->
                         <div class="w-20 h-20">
                             <img
@@ -65,18 +77,7 @@
 
                         <!-- UserName -->
                         <div class="grid grid-cols-1 gap-0 place-content-center">
-                            <p
-                                @click="selectedUserForChat(user)"
-                                class="ml-2 rounded "
-                                v-bind:class="{
-                                    'text-blue-500': !user.selectionStatus,
-                                    'bg-white': !user.selectionStatus,
-
-                                    'text-white':    user.selectionStatus,
-                                    'bg-blue-400':   user.selectionStatus,
-                                    'font-semibold': user.selectionStatus,
-                                }"
-                            >
+                            <p class="ml-2 rounded ">
                                 {{ user.first_name }} {{ user.last_name }}
                             </p>
                         </div>
@@ -112,14 +113,13 @@ export default {
             newChatGroup: {
                 name: '',
                 users: [],
-                model_type: ''
+                model_type: '',
             },
             errors: [],
             nothingFound: '',
             userSearchStr: '',
 
             selected_model_type: 'PRIVATE',
-            selected_chatting_type: 'PRIVATE',
 
             model_types: [
                 { text: 'Private chat', value: 'PRIVATE' },
@@ -153,8 +153,9 @@ export default {
             this.newChatGroup = {
                 name: '',
                 users: [],
+                model_type: '',
             };
-            this.errors = null;
+            this.errors = [];
 
             this.showCreateDropdown = !this.showCreateDropdown;
         },
@@ -202,11 +203,9 @@ export default {
 
             // add self
             this.newChatGroup.users.push(this.user);
-            this.newChatGroup.model_type = this.resolveNewGroupType(this.selected_model_type);
-            this.newChatGroup.chatting_type = this.resolveNewChattingType(this.selected_chatting_type);
+            this.resolveGroupParams();
 
-            axios
-            .post('/api/chat/group/store', this.newChatGroup)
+            axios.post('/api/chat/group/store', this.newChatGroup)
             .then( res => {
                 this.$emit('createdGroup', res.data);
             });
@@ -241,7 +240,9 @@ export default {
             this.newChatGroup = {
                 name: '',
                 users: [],
+                model_type: '',
             };
+
             this.showCreateDropdown = false;
         },
 
@@ -260,20 +261,20 @@ export default {
             return array.indexOf(element);
         },
 
-        // this.groupsOriginal is constant and is used to filter chat ghroups multiple time (typing and erasing input)
+        // this.groupsOriginal is constant and is used to filter chat groups multiple times (typing and erasing input)
         searchInput()
         {
             this.nothingFound = '';
             // @todo req exp bugs when there are certain characters in string such as '?, *'
-            this.allUsers = this.findUsersBySearch(this.userSearchStr, this.allUsersOriginal);
+            this.allUsers = this.searchForUsers(this.userSearchStr, this.allUsersOriginal);
 
             if(!this.allUsers.length){
                 this.nothingFound = 'Nothing found :/';
             }
         },
 
-        // find all current groups searched user(strSearch - currently typed string into input) appears in
-        findUsersBySearch(strSearch, users)
+        // find all users which match string strSearch
+        searchForUsers(strSearch, users)
         {
             let arrOfSearchMatchedUsers = [];
 
@@ -298,22 +299,13 @@ export default {
             return text.match(regex);
         },
 
-        resolveNewGroupType(type)
+        resolveGroupParams()
         {
-            if(!type){
-                return "PRIVATE";    
-            }
-            return type;
-        },
+            this.newChatGroup.model_type = this.newChatGroup.users.length == 2
+                ? "PRIVATE"
+                : this.selected_model_type;
 
-        resolveNewChattingType(type)
-        {
-            if(!type){
-                return "PRIVATE";    
-            }
-            return type;
         },
-
     }
 
 }
