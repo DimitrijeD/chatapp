@@ -59,7 +59,7 @@ class AllConfigTypesTest extends TestCase
                                 'first_name' => 'Qwe',
                                 'last_name' => 'Qwe',
                                 'email' => 'qwe@qwe', 
-                                'password' => 'qweqweqwe',
+                                'password' => 'qweqweqweQ1',
                             ],
                         ],
                 

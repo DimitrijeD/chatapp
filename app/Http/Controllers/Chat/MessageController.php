@@ -7,11 +7,10 @@ use App\Events\MeSawMessage;
 use App\Events\MessageNotification;
 use App\Events\NewChatMessage;
 
-use Illuminate\Support\Facades\DB;
-
 use App\ChatApp\Repos\User\UserEloquentRepo;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
 use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
+use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 use App\Http\Requests\ChatMessage\StoreChatMessageRequest;
 use App\Http\Requests\ChatMessage\SeenChatMessageRequest;
@@ -20,29 +19,28 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    protected $chatGroupRepo, $userRepo, $chatMessageRepo;
+    protected $chatGroupRepo, $userRepo, $chatMessageRepo, $participantPivot;
 
-    public function __construct(ChatGroupEloquentRepo $chatGroupRepo, UserEloquentRepo $userRepo, ChatMessageEloquentRepo $chatMessageRepo)
+    public function __construct(ChatGroupEloquentRepo $chatGroupRepo, UserEloquentRepo $userRepo, ChatMessageEloquentRepo $chatMessageRepo, ParticipantPivotEloquentRepo $participantPivot)
     {
         $this->chatGroupRepo = $chatGroupRepo;
         $this->userRepo = $userRepo;
         $this->chatMessageRepo = $chatMessageRepo;
+        $this->participantPivot = $participantPivot;
     }
 
     public function getAllMessages(Request $request)
     {
         $messages = $this->chatMessageRepo->getMany(['group_id' => $request->group_id], ['user']);
 
-        $seenStates = DB::table('group_participants')
-            ->where('group_id', $request->group_id)
-            ->get();
+        $seenStates = $this->participantPivot->getMany(['group_id' => $request->group_id]);
 
         return ['messages' => $messages, 'seen_states' => $seenStates]; 
     }
 
-    public function getMissingMessages($group_id, $latestMsg)
+    public function getMissingMessages($group_id, $latest_msg_id)
     {
-        return $this->chatMessageRepo->getMissingMessages($group_id, $latestMsg);
+        return $this->chatMessageRepo->getMissingMessages($group_id, $latest_msg_id);
     }
 
     public function store(StoreChatMessageRequest $request)
@@ -55,13 +53,15 @@ class MessageController extends Controller
             'text' => $request->text,
         ]);
 
-        DB::table('group_participants')
-            ->where('user_id', $sender->id)
-            ->where('group_id', $request->group_id)
-            ->update([
-                'last_message_seen_id' => $message->id,
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
+        $pivot = $this->participantPivot->first([
+            'user_id' => $sender->id,
+            'group_id' => $request->group_id
+        ]);
+
+        $this->participantPivot->update($pivot, [
+            'last_message_seen_id' => $message->id,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
 
         // update groups field 'updated_at' to NOW in order to be able to sort users groups by 'time of last message'
         $this->chatGroupRepo->update($this->chatGroupRepo->find($request->group_id), ['updated_at' => date('Y-m-d H:i:s')]);
@@ -96,22 +96,28 @@ class MessageController extends Controller
     {
         $user_id = auth()->user()->id;
 
-        $success = DB::table('group_participants')
-            ->where('user_id', $user_id)
-            ->where('group_id', $request->group_id)
-            ->update([
-                'last_message_seen_id' => $request->lastMessageId,
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
+        $pivot = $this->participantPivot->first([
+            'user_id' => $user_id,
+            'group_id' => $request->group_id
+        ]);
 
-        if($success){
+        $updatedPivot = $this->participantPivot->update($pivot, [
+            'last_message_seen_id' => $request->lastMessageId,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if($updatedPivot){
             $seenData = [
                 'group_id' => $request->group_id,
                 'lastMessageId' => $request->lastMessageId,
                 'user_id' => $user_id
             ];
             broadcast(new MeSawMessage($seenData))->toOthers();
+
+            return response()->json('success', 200);
         }
+        
+        return response()->json('error', 400);
     }
 
 }

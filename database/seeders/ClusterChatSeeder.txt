@@ -9,7 +9,7 @@ php artisan db:seed --class=ChatGroupClusterSeeder
 
 Login with default user:
 *email     qwe@qwe
-*password  qweqweqwe
+*password  qweqweqweQ1
 
 And see result of seeder. 
 

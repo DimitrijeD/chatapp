@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Http\Traits\CreateValidationSlugTrait;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Traits\ProfilePictureTrait;
 use App\Jobs\SendEmailJob;
 
-use App\Models\AuthAttempts;
 use App\Models\User;
 use App\ChatApp\Repos\User\UserEloquentRepo;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\ChatApp\Repos\AccountVerification\EmailVerification;
 
 class RegisterController extends Controller
 {
     use ProfilePictureTrait;
-    use CreateValidationSlugTrait;
 
     public function register(RegisterRequest $request, UserEloquentRepo $userRepo)
     {
@@ -34,23 +34,13 @@ class RegisterController extends Controller
             'thumbnail' => $pathsToStoredProfilePics['thumbnails'],
         ]);
 
-        $hash = Str::random(64);
-        $dbHash = Hash::make($hash);
+        Auth::login($user);
 
-        AuthAttempts::create([
-            'user_id' => $user->id,
-            'hash' => $dbHash, 
-            'type' => 'mail_validation'
-        ]);
-
-        $userData = [
-            'email' => $user->email,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'url' => url("/mail-verification/uid/{$user->id}/h/{$hash}"),
-        ];
-
-        dispatch(new SendEmailJob($userData));
-
+        (new EmailVerification)->createOrUpdate($user->email, $user);
+        
+        return response()->json([
+            'success' => 'Your account has been created and verification email has been sent. Check your inbox.',
+            'user' => $user
+        ], 201);
     }
 }

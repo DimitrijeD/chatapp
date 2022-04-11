@@ -125,8 +125,6 @@ export default {
                 profilePicture: null,
             },
             errors:[],
-            mailVerfication: null,
-
         }
     },
 
@@ -143,8 +141,8 @@ export default {
             userData.append('profilePicture', this.form.profilePicture);
 
             axios.post('/api/register', userData)
-                .then(() =>{
-                    this.$router.push({ path: '/mail-verification/${this.form.email}' });
+                .then((res) =>{
+                    this.$router.push({ path: '/email-verification/init' });
                 }).catch((error) =>{
                     this.errors = error.response.data.errors;
                 });

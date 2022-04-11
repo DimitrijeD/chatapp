@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 use App\ChatApp\Repos\User\UserEloquentRepo;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
 use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
-use Illuminate\Http\Request;
-use App\Models\AuthAttempts;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\ChatApp\Repos\AccountVerification\AccountVerificationEloquentRepo;
+use App\ChatApp\Repos\AccountVerification\EmailVerification;
+
+use App\Models\AccountVerification;
 
 class AuthenticationController extends Controller
 {
@@ -19,10 +24,24 @@ class AuthenticationController extends Controller
     public function isAuthenticated()
     {
         $user = auth()->user();
-        if($user && $user->email_verified_at){
-            return $user;
+
+        if($user){
+            
+            if( $user->email_verified_at ){
+                return response()->json([
+                    'user' => $user
+                ], 200);
+            }
+
+            if( !$user->email_verified_at ){
+                return response()->json([
+                    'status' => 'must_verify_email',
+                    'email' => $user->email
+                ], 403);
+            }
         }
-        return false;
+
+        return response()->json(false, 401);
     }
 
     public function isLoggedIn()
@@ -33,81 +52,53 @@ class AuthenticationController extends Controller
         return false;
     }
 
-    public function testEloquent(UserEloquentRepo $userRepo, ChatGroupEloquentRepo $chatGroupRepo, ChatMessageEloquentRepo $chatMessageRepo)
+    public function emailVerificationAttempt(Request $request, UserEloquentRepo $userRepo, AccountVerificationEloquentRepo $accountVerificationRepo)
     {
-        $this->chatGroupRepo = $userRepo;
-        // $userRepo->first(['id' => 2]);
-        // $userRepo->update($userRepo->first(['id' => 2]), ['first_name' => 'name']);
-        // dd($userRepo->first(['id' => 2]));
+        $validator = Validator::make($request->route()->parameters(), [
+            'user_id' => ['required', 'integer'],
+            'code' =>  ['required', 'string', 'size:' . AccountVerification::EMAIL_HASH_LENGTH, ],
+        ]);
 
-        // $chatGroup = $chatGroupRepo->first(['id' => 1]);
-        // $chatGroup = $chatGroupRepo->find(1);
-        // $chatGroup = $chatGroupRepo->first(['id' => 1], ['participants']);
-        // $chatGroup = $chatGroupRepo->getMany([], ['participants', 'messages']);
-        // dd($chatGroup);
-
-        // $messages = $chatMessageRepo->get(['id'=>'50'], ['user']);
-        // $chatGroup = $chatGroupRepo->first(['id'=>1]);
-
-        // dd($chatGroup->getSeenStates($chatGroup));
-        // dd( ($chatGroupRepo->find(1))->participants);
-        // $t = auth()->user()
-        //     ->groups()
-        //     ->with('participants')
-        //     ->orderBy('updated_at', 'desc')
-        //     ->get();
-        // dd($t);
-
-        // dd($messageRepo->getMany(['group_id' => 1], ['user'], null));
-
-        // dd($chatMessageRepo->getMissingMessages(1, 65));
-
-        // dd($this->chatGroupRepo->update($this->chatGroupRepo->find(1), ['updated_at' => date('Y-m-d H:i:s')]));
-
-
-    }
-
-    public function checkSlugAuthenticity($user_id, $hash, UserEloquentRepo $userRepo)
-    {
-        $user = $userRepo->find($user_id);
-
-        if(!$user){
-            abort(404);
+        if(!$user = $userRepo->find($request->user_id)){
+            abort(403);
         }
 
-        $authAttempts = AuthAttempts::
-              where('user_id', $user->id)
-            ->where('type', 'mail_validation')
-            ->get();
+        $status = (new EmailVerification)->attempt($user, $request->code);
 
-        if(count($authAttempts) == 0 && $user->email_verified_at){
-            return redirect('/')->with([
-                'success' => __("You are verified."),
-                'user' => $user,
-            ]);
-        }
-
-        foreach($authAttempts as $attempt){
-            if( Hash::check($hash, $attempt->hash)){
-
-                $user->email_verified_at = date('Y-m-d H:i:s');
-                $user->save();
-
-                foreach($authAttempts as $attempt){
-                    $attempt->delete();
-                }
-                
-                Auth::login($user);
-
-                return redirect('/')->with([
-                    'success' => __("Successful authentication."),
+        switch($status){
+            case 'success':
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __("Account validated."),
                     'user' => $user,
                 ]);
-            }
-        }
 
-        // incorrect $attempt->hash received or brute force attacks.
-        abort(404);
+            case 'already_verified':
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __("You are already verified."),
+                    'user' => $user,
+                ]);
+
+            case 'not_verified_no_verification':
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __("There was a problem with your verification. You can resend verification."),
+                    'user' => $user,
+                ]);
+
+            case '404':
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 404
+                ]);
+
+            default:
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 404
+                ]);
+        }
     }
 
 }

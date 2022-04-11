@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'chat_group_access' => \App\Http\Middleware\ChatGroupAccess::class,
         'can_chat' => \App\Http\Middleware\CanSubmitMessage::class,
+        'has_not_verified_email' => \App\Http\Middleware\NotVerifiedEmail::class,
     ];
 }

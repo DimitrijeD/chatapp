@@ -4,7 +4,8 @@ import NotFound from "./components/NotFound.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Profile from "./components/Profile.vue";
-import MailVerification from './components/MailVerification.vue';
+import EmailVerification from './components/EmailVerification.vue';
+import EmailVerificationAttempt from './components/Auth/EmailVerificationAttempt.vue';
 
 import store from './store/index.js';
 
@@ -23,17 +24,17 @@ export default {
             component: Home,
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser){
-                    return next();
+                    return next()
                 }
 
                 axios.get('/api/authenticated')
                 .then((res) => {
-                    let user = res.data; 
+                    let user = res.data.user
                     if( !user ){
                         return next({ path: '/login' })
                     }
-                    store.commit('setUser', user);
-                    return next();
+                    store.commit('setUser', user)
+                    return next()
                 });
             },
         },
@@ -44,17 +45,17 @@ export default {
             name: "About",
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser){
-                    return next();
+                    return next()
                 }
 
                 axios.get('/api/authenticated')
                 .then((res) => {
-                    let user = res.data; 
+                    let user = res.data.user
                     if( !user ){
                         return next({ path: '/login' })
                     }
-                    store.commit('setUser', user);
-                    return next();
+                    store.commit('setUser', user)
+                    return next()
                 });
             },
         },
@@ -64,24 +65,25 @@ export default {
             component: Login,
             name: 'Login',
             beforeEnter: (to, from, next) => {
-                axios.get('/api/user-loggedin')
-                .then((res) => {
-                    if(res.data){
-                        if(!store.getters.StateUser){
-                            axios.get('/api/authenticated')
-                            .then((res) => {
-                                let user = res.data; 
-                                if( !user ){
-                                    return next({ path: '/login' })
-                                }
-
-                                // commit user to store 
-                                store.commit('setUser', user);
-                                next({ path: '/profile' })
-                            });
+                axios.get('/api/authenticated').then((res) => {
+                    if(!store.getters.StateUser){
+                        let user = res.data.user
+                        if( !user ){
+                            return next({ path: '/login' })
                         }
+                        // commit user to store 
+                        store.commit('setUser', user)
                     }
-                    next();
+                    return next({ path: '/profile' })
+                })
+                .catch((error) => {
+                    if (error.response.status == 403 ) {
+                        return next({ path: '/email-verification/init' })
+                    }
+
+                    if (error.response.status == 401 ) {
+                        return next()
+                    }
                 });
             },
         },
@@ -94,7 +96,7 @@ export default {
                 axios.get('/api/user-loggedin')
                 .then((res) => {
                     if( !res.data ){
-                        next();
+                        return next()
                     }
                 });
             },
@@ -105,24 +107,36 @@ export default {
             component: Profile,
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser){
-                    return next();
+                    return next()
                 }
 
                 axios.get('/api/authenticated')
                 .then((res) => {
-                    let user = res.data; 
-                    if( !user ){
-                        return next({ path: '/login' })
-                    }
-                    store.commit('setUser', user);
-                    return next();
+                    let user = res.data.user
+                    store.commit('setUser', user)
+                    return next()
+                }).catch(()=>{
+                    return next({ path: '/login' })
                 });
             },
         },
 
         {
-            path: '/mail-verification/:slug?',
-            component:  MailVerification,
+            name: "email-verification",
+            path: '/email-verification/init',
+            component: EmailVerification,
+        },
+
+        {
+            path: '/email-verification/uid/:user_id/c/:code',
+            component: EmailVerificationAttempt,
+            beforeEnter: (to, from, next) => {
+                // if user is not in store
+                if(!store.getters.StateUser){
+                    return next()
+                }
+                return next({ path: '/profile' })
+            },
         },
 
     ]
