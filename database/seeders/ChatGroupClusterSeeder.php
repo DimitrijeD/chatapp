@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Models\ChatGroup;
 use Database\Seeders\clusters\ConfigResolvers\TimeConfigResolver;
 use Database\Seeders\clusters\ConfigResolvers\MessageConfigResolver;
@@ -83,25 +82,25 @@ class ChatGroupClusterSeeder extends Seeder
                 'first_name' => 'Qwe',
                 'last_name' => 'Qwe',
                 'email' => 'qwe@qwe', 
-                'password' => 'qweqweqwe',
+                'password' => 'qweqweqweQ1',
             ],
             [
                 'first_name' => 'Asd',
                 'last_name' => 'Asd',
                 'email' => 'asd@asd', 
-                'password' => 'qweqweqwe',
+                'password' => 'qweqweqweQ1',
             ],
             [
                 'first_name' => 'Wer',
                 'last_name' => 'Wer',
                 'email' => 'wer@wer', 
-                'password' => 'qweqweqwe',
+                'password' => 'qweqweqweQ1',
             ],
             [
                 'first_name' => 'Ert',
                 'last_name' => 'Ert',
                 'email' => 'Ert@Ert', 
-                'password' => 'qweqweqwe',
+                'password' => 'qweqweqweQ1',
             ],
         ];   
 
@@ -151,7 +150,12 @@ class ChatGroupClusterSeeder extends Seeder
 
         $this->pivot->addLastMessageSeenId($lastMessageSeenUpdateData);
 
-        return $this->chatGroup;
+        return [
+            'group' => $this->chatGroup,
+            'messages' => $this->createdMessages,
+            'users' => $this->users,
+            'pivots' => $this->pivot->getAllGroupPivots()
+        ];
     }
 
     public function massSetter(
@@ -180,7 +184,7 @@ class ChatGroupClusterSeeder extends Seeder
                 'first_name' => 'Qwe',
                 'last_name' => 'Qwe',
                 'email' => 'qwe@qwe', 
-                'password' => 'qweqweqwe',
+                'password' => 'qweqweqweQ1',
             ],
         ],
         $creator_email = 'qwe@qwe',

@@ -82,7 +82,10 @@ trait CRUDTrait
 
     public function updateOrCreate(array $identifiableData, array $data)
     {
-        //
+        if($model = $this->get($identifiableData))
+            return $this->update($model, $data);
+
+        return $this->create(array_merge($identifiableData, $data));
     }
 
     public function getMany(array $params, array $with = [])

@@ -135,6 +135,8 @@ export default {
     mounted() {
         this.getGroupsByUserWithParticipants();
         // this.getGroupsByUserWithParticipants_v2();
+
+        // this.getTestNewQuery();
     },
 
     watch: {
@@ -172,6 +174,16 @@ export default {
     },
 
     methods:{
+        // getTestNewQuery(){
+        //     axios.get('/api/chat/user/groups')
+        //         .then((res)=>{
+        //             const groups = res.data;
+        //             for(let i = 0; i < groups.length; i++){
+        //                 console.log(groups[i].updated_at, groups[i].id);
+        //             }
+        //         })
+        // },
+
         manageDropdown()
         {
             this.showExistingChats = !this.showExistingChats;

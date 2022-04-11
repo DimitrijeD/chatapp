@@ -24,10 +24,15 @@ class ChatGroup extends Model
     const MODEL_TYPE_DEFAULT = 'PUBLIC_OPEN';
 
     protected $fillable = [
-        'name', 'model_type'
+        'name', 'model_type', 'updated_at'
     ];
 
     protected $table = 'chat_groups';
+    
+    protected $casts = [
+        'updated_at' => 'datetime',
+        'created_at' => 'datetime',
+    ];
 
     public function messages()
     {
@@ -37,7 +42,7 @@ class ChatGroup extends Model
     public function participants()
     {
         return $this->belongsToMany(User::class, 'group_participants', 'group_id', 'user_id')
-            ->withPivot(['last_message_seen_id', 'user_id', 'participant_role']);
+            ->withPivot(['last_message_seen_id', 'user_id', 'participant_role', 'updated_at']);
     }
 
 }

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\clusters\ModelBuilders;
 
-use Illuminate\Support\Facades\DB;
 use Database\Seeders\clusters\Contracts\Cluster;
 use App\Models\ChatGroup;
+use App\Models\ParticipantPivot;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 class GroupParticipantsPivot implements Cluster
@@ -26,14 +26,16 @@ class GroupParticipantsPivot implements Cluster
         $request_initiator_id = $this->users->first()->id;
 
         foreach($this->users as $user){
-            DB::table('group_participants')->insert([
-                'user_id'              => $user->id,
-                'group_id'             => $this->group->id,
-                'last_message_seen_id' => null,
-                'participant_role'     => $this->participantPivotRepo->roleResolver($user->id, $request_initiator_id, $this->group->model_type),
-                'updated_at'           => $now, 
-                'created_at'           => $this->group->created_at
-            ]);
+            ParticipantPivot::create(
+                [
+                    'user_id'              => $user->id,
+                    'group_id'             => $this->group->id,
+                    'last_message_seen_id' => null,
+                    'participant_role'     => $this->participantPivotRepo->roleResolver($user->id, $request_initiator_id, $this->group->model_type),
+                    'updated_at'           => $this->group->created_at, 
+                    'created_at'           => $this->group->created_at
+                ]
+            );
         }
 
         return $this;
@@ -47,7 +49,7 @@ class GroupParticipantsPivot implements Cluster
     public function addLastMessageSeenId(array $pivotRecords)
     {
         foreach($pivotRecords as $pivotRecord){
-            DB::table('group_participants')->where([
+            ParticipantPivot::where([
                 'user_id'  => $pivotRecord['user_id'],
                 'group_id' => $this->group->id,
             ])->update([
@@ -55,5 +57,11 @@ class GroupParticipantsPivot implements Cluster
                 'updated_at' => $pivotRecord['updated_at'],
             ]);
         }
+    }
+
+    // Returns dictionary where index is user_id.
+    public function getAllGroupPivots()
+    {
+        return ParticipantPivot::where(['group_id' => $this->group->id])->get()->keyBy('user_id');
     }
 }

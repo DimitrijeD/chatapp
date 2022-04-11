@@ -10,9 +10,12 @@ class ChatMessage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'group_id',
-        'user_id',
-        'text',
+        'group_id', 'user_id', 'text', 'updated_at'
+    ];
+
+    protected $casts = [
+        'updated_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function user()

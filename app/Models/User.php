@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\AccountVerification;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -43,12 +44,19 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function groups()
     {
         return $this->belongsToMany(ChatGroup::class, 'group_participants', 'user_id', 'group_id')
-            ->withPivot(['last_message_seen_id', 'group_id']);
+            ->withPivot(['last_message_seen_id', 'group_id', 'updated_at']);
+    }
+
+    public function account_verification()
+    {
+        return $this->hasOne(AccountVerification::class);
     }
 
     // public function group($group_id){

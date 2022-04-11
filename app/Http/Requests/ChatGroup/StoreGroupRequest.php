@@ -9,6 +9,7 @@ use App\Rules\ChatGroup\Store\ParticipantsExistRule;
 use App\Rules\ChatGroup\Store\MoreThanOneParticipantRule;
 
 use Illuminate\Contracts\Validation\Validator;
+// use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreGroupRequest extends FormRequest

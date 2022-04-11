@@ -51,7 +51,9 @@ class GroupController extends Controller
 
     public function getGroupsByUser()
     {
-        return response()->json(auth()->user()->groups, 200);
+        $groups = (auth()->user()->groups()->with('participants'))->orderBy('updated_at', 'desc')->get();
+
+        return response()->json($groups, 200);
     }
 
     // return all groups that belong to this user, with participants
@@ -87,7 +89,7 @@ class GroupController extends Controller
 
     public function getGroupById(Request $request)
     {
-        return response()->json($this->chatGroupRepo->find($request->group_id), 200);
+        return response()->json($this->chatGroupRepo->get(['id' => $request->group_id], ['participants']), 200);
     }
 
     public function getGroupById_WithParticipants(Request $request)

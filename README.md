@@ -81,7 +81,7 @@ Login with user:
 
 - http://chatapp.test/login
 - email:    qwe@qwe
-- password: qweqweqwe
+- password: qweqweqweQ1
 
 For registration feature (otherwise not required) you must setup mail data in .env and run command in separate console for queueing emails:
 

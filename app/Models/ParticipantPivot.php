@@ -22,7 +22,12 @@ class ParticipantPivot extends Model
     ];
 
     protected $fillable = [
-        'user_id', 'group_id', 'last_message_seen_id', 'participant_role'
+        'user_id', 'group_id', 'last_message_seen_id', 'participant_role', 'updated_at'
+    ];
+
+    protected $casts = [
+        'updated_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     protected $table = 'group_participants';
