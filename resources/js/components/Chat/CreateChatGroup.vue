@@ -124,7 +124,7 @@ export default {
             model_types: [
                 { text: 'Private chat', value: 'PRIVATE' },
                 { text: 'Protected chat', value: 'PROTECTED' },
-                { text: 'Public chat', value: 'PUBLIC' }
+                { text: 'Public chat', value: 'PUBLIC_OPEN' }
             ]
         }
     },
