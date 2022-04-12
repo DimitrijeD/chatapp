@@ -1,10 +1,10 @@
 import Home from './components/Home.vue';
 import About from './components/About.vue';
 import NotFound from "./components/NotFound.vue";
-import Login from "./components/Login.vue";
-import Register from "./components/Register.vue";
+import Login from "./components/Auth/Login.vue";
+import Register from "./components/Auth/Register.vue";
 import Profile from "./components/Profile.vue";
-import EmailVerification from './components/EmailVerification.vue';
+import EmailVerification from './components/Auth/EmailVerification.vue';
 import EmailVerificationAttempt from './components/Auth/EmailVerificationAttempt.vue';
 
 import store from './store/index.js';
