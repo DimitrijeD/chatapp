@@ -40,7 +40,7 @@ Route::post('/chat/group/store', [GroupController::class, 'store'])->middleware(
 Route::get('/chat/user/groups', [GroupController::class, 'getGroupsByUser'])->middleware(['auth']);
 
 Route::get('/chat/user/groups-with-participants', [GroupController::class, 'getGroupsByUserWithParticipants'])->middleware(['auth']);
-Route::get('/chat/user/groups-without-self', [GroupController::class, 'getGroupsByUserWithoutSelf'])->middleware(['auth']);
+// Route::get('/chat/user/groups-without-self', [GroupController::class, 'getGroupsByUserWithoutSelf'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}/with-participants', [GroupController::class, 'getGroupById_WithParticipants'])->middleware(['chat_group_access', 'auth']);
 Route::get('/chat/group/{group_id}/without-self', [GroupController::class, 'getGroupById_WithoutSelf'])->middleware(['chat_group_access', 'auth']);
 Route::get('/chat/group/{group_id}', [GroupController::class, 'getGroupById'])->middleware(['chat_group_access', 'auth']);

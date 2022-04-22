@@ -46,12 +46,14 @@ class GroupController extends Controller
             ]);
         }
 
-        return response()->json($chatGroup, 201);
+        return response()->json($this->chatGroupRepo->first(['id' => $chatGroup->id], ['participants']), 201);
     }
 
     public function getGroupsByUser()
     {
-        $groups = (auth()->user()->groups()->with('participants'))->orderBy('updated_at', 'desc')->get();
+        $groups = (auth()->user()->groups()->with('participants'))
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return response()->json($groups, 200);
     }

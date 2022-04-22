@@ -18,6 +18,7 @@ class CreateChatGroupsTable extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('model_type')->default(ChatGroup::MODEL_TYPE_DEFAULT); 
+            $table->integer('last_msg_id')->nullable();
             $table->timestamps();
         });
     }

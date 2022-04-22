@@ -1,9 +1,9 @@
 <template>
-    <div class="mb-2 mt-2">
+    <div class="m-2">
         <div
             v-for="user in usersTyping"
             v-bind:key="user.id"
-            class="italic text-sm text-gray-500 ml-2"
+            class="italic text-sm text-gray-500 ml-2 select-none"
         >
             <div v-if="user">
                 {{ user.first_name }} is typing ...
@@ -17,7 +17,6 @@
 export default {
     props:[
         'group_id',
-        'receivedMessage'
     ],
 
     /**
@@ -46,15 +45,16 @@ export default {
         Echo.private("group." + this.group_id)
         .listenForWhisper('typing', user => {
             this.addOrUpdateTyper(user);
-        });
+        })
+
+        Echo.private("group." + this.group_id)
+        .listenForWhisper('stoped-typing', user => {
+            this.removeTyper(user.id)
+        })
     },
 
     watch: {
-        receivedMessage: {
-            handler: function(newValue, oldValue) {
-                this.removeTyper(newValue.user_id);
-            }
-        }
+
     },
 
     methods:{

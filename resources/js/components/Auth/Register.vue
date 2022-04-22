@@ -1,114 +1,102 @@
 <template>
-    <div class="flex flex-wrap w-full justify-center mt-3">
-
-        <form @submit.prevent="register" enctype="multipart/form-data">
-            <div class="flex flex-wrap max-w-xl">
-                <div class="p-2 text-2xl text-gray-800 font-semibold"><h1>Register an account</h1></div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg">First Name</label>
-                    <div v-if="errors.first_name">
-                        <span class="w-full text-red-500" v-for="first_nameError in errors.first_name">
-                            {{ first_nameError }}
-                            <br>
-                        </span>
-                    </div>
-                    <input
-                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        placeholder="First name"
-                        type="text"
-                        v-model="form.first_name"
-                        required
-                    >
+    <div class="flex h-screen justify-center items-center">
+        <div class="w-8/12">
+            <div class="my-3">
+                <div v-if="errors.first_name">
+                    <span class="w-full text-red-500" v-for="(error, index) in errors.first_name" :key="index">
+                        {{ error }}
+                        <br>
+                    </span>
                 </div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg">Last Name</label>
-                    <div v-if="errors.last_name">
-                        <span class="w-full text-red-500" v-for="last_nameError in errors.last_name">
-                            {{ last_nameError }}
-                            <br>
-                        </span>
-                    </div>
-                    <input
-                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        placeholder="Last name"
-                        type="text"
-                        v-model="form.last_name"
-                        required
-                    >
-                </div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg" >Your e-mail</label>
-                    <div v-if="errors.email">
-                        <span class="w-full text-red-500" v-for="emailError in errors.email">
-                            {{ emailError }}
-                            <br>
-                        </span>
-                    </div>
-                    <input
-                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        placeholder="Email"
-                        type="email"
-                        v-model="form.email"
-                        required
-                    >
-                </div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg">Password</label>
-                    <div v-if="errors.password">
-                        <span class="w-full text-red-500" v-for="passwordError in errors.password">
-                            {{ passwordError }}
-                            <br>
-                        </span>
-                    </div>
-                    <input
-                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        placeholder="Password"
-                        type="password"
-                        v-model="form.password"
-                        name="password"
-                        required
-                    >
-                </div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg">Confirm Password</label>
-                    <input
-                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        placeholder="Confirm Password"
-                        type="password"
-                        v-model="form.password_confirmation"
-                        name="password_confirmation"
-                        required
-                    >
-                </div>
-
-                <div class="p-2 w-full mb-2">
-                    <label class="w-full text-lg">Profile Picture</label>
-                    <div v-if="errors.profilePicture">
-                        <span class="w-full text-red-500" v-for="profilePictureError in errors.profilePicture">
-                            {{ profilePictureError }}
-                            <br>
-                        </span>
-                    </div>
-                    <input
-                        type="file"
-                        @change="onProfilePictureSelected"
-                        name="profilePictureName"
-                        class="w-full bg-gray-200 rounded border border-gray-400 focus:outline-none focus:border-indigo-500 text-base px-4 py-2"
-                        required
-                    >
-                </div>
-
-                <div class="p-2 w-full mt-3">
-                    <button type="submit" class="flex text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Register</button>
-                </div>
+                <input
+                    class="shadow-inner tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    placeholder="First name"
+                    type="text"
+                    v-model="form.first_name"
+                    required
+                >
             </div>
-        </form>
 
+            <div class="my-3">
+                <div v-if="errors.last_name">
+                    <span class="w-full text-red-500" v-for="(error, index) in errors.last_name" :key="index">
+                        {{ error }}
+                        <br>
+                    </span>
+                </div>
+                <input
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    placeholder="Last name"
+                    type="text"
+                    v-model="form.last_name"
+                    required
+                >
+            </div>
+
+            <div class="my-3">
+                <div v-if="errors.email">
+                    <span class="w-full text-red-500" v-for="(error, index) in errors.email" :key="index">
+                        {{ error }}
+                        <br>
+                    </span>
+                </div>
+                <input
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    placeholder="Email"
+                    type="email"
+                    v-model="form.email"
+                    required
+                >
+            </div>
+
+            <div class="my-3">
+                <div v-if="errors.password">
+                    <span class="w-full text-red-500" v-for="(error, index) in errors.password" :key="index">
+                        {{ error }}
+                        <br>
+                    </span>
+                </div>
+                <input
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    placeholder="Password"
+                    type="password"
+                    v-model="form.password"
+                    name="password"
+                    required
+                >
+            </div>
+
+            <div class="my-3">
+                <input
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    placeholder="Confirm Password"
+                    type="password"
+                    v-model="form.password_confirmation"
+                    name="password_confirmation"
+                    required
+                >
+            </div>
+
+            <div class="my-3">
+                <div v-if="errors.profilePicture">
+                    <span class="w-full text-red-500" v-for="(error, index) in errors.profilePicture" :key="index">
+                        {{ index }}
+                        <br>
+                    </span>
+                </div>
+                <input
+                    type="file"
+                    @change="onProfilePictureSelected"
+                    name="profilePictureName"
+                    class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                    required
+                >
+            </div>
+
+            <div class="p-2 w-full mt-3">
+                <button type="submit" class="tnx-hver w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded">Register</button>
+            </div>
+        </div>
     </div>
 </template>
 

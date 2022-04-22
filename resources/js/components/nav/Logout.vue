@@ -7,8 +7,8 @@ export default {
     methods: {
         logout(){
             axios.get('/api/logout').then(()=>{
-                this.$store.dispatch("LogOut");
-                this.$router.push({ path: '/' })
+                this.$store.dispatch("logout")
+                this.$router.push({ path: '/login' })
             });
         },
     },

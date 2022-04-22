@@ -64,7 +64,10 @@ class MessageController extends Controller
         ]);
 
         // update groups field 'updated_at' to NOW in order to be able to sort users groups by 'time of last message'
-        $this->chatGroupRepo->update($this->chatGroupRepo->find($request->group_id), ['updated_at' => date('Y-m-d H:i:s')]);
+        $this->chatGroupRepo->update(
+            $this->chatGroupRepo->find($request->group_id), 
+            ['updated_at' => date('Y-m-d H:i:s'), 'last_msg_id' => $message->id]
+        );
 
         broadcast(new NewChatMessage($message))->toOthers();
         $this->newChatMessageNotification($request->group_id, $sender, $message);
@@ -107,13 +110,7 @@ class MessageController extends Controller
         ]);
 
         if($updatedPivot){
-            $seenData = [
-                'group_id' => $request->group_id,
-                'lastMessageId' => $request->lastMessageId,
-                'user_id' => $user_id
-            ];
-            broadcast(new MeSawMessage($seenData))->toOthers();
-
+            broadcast(new MeSawMessage($updatedPivot))->toOthers();
             return response()->json('success', 200);
         }
         
