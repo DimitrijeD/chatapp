@@ -1,44 +1,33 @@
 <template>
-    <div class="flex space-x-2 mx-3 my-4">
-
-        <!-- Users thumbnail -->
-        <div class="flex-none w-20 h-20">
+    <div class="my-2.5 border-2 border-opacity-20"
+        :class="{
+        'bg-blue-100 rounded-r-2xl rounded-bl-2xl border-blue-300': !isSelf,
+        'bg-gray-100 rounded-l-2xl rounded-br-2xl border-gray-300': isSelf,
+    }">
+        <div class="p-3">
             <img
                 :src="message.user.thumbnail"
                 alt="no img :/"
-                class="object-cover relative border border-gray-100 shadow-sm h-full"
+                class="w-16 h-16 mr-3 mb-0.5 select-none object-cover border-2 border-gray-200 rounded-full shadow-sm float-left"
             >
-        </div>
-
-
-        <div class="flex-grow">
-            <!-- Users Name -->
-            <div >
-                <span class="text-sm mb-1.5 text-gray-700 truncate">
+            <div class="mb-3 text-base font-serif">
+                <!-- Users Name -->
+                <span class="text-gray-600 truncate font-medium">
                     {{ message.user.first_name }} {{ message.user.last_name }}
                 </span>
                                 
                 <!-- When was message created -->
                 <vue-moments-ago
-                    class="text-gray-400 text-sm float-right mb-1.5"
+                    class="text-gray-500 float-right pr-2.5"
                     prefix=""
                     suffix="ago"
                     :date="message.created_at"
                     lang="en"
                 />
             </div>
-
-            <!-- Message text box -->
-            <div class="w-full">
-                <div class="p-3 break-all text-base text-gray-700 rounded-tr-lg rounded-bl-lg filter drop-shadow-md"
-                    v-bind:class="{
-                        'bg-blue-100': !isSelf,
-                        'bg-gray-100':  isSelf,
-                    }"
-                >
-                    {{ message.text }} msgID = {{ message.id }}
-                </div>
-            </div>
+            <p class="mt-0.5 break-all text-base text-gray-700 font-sans tracking-wide ">
+                {{ message.text }}
+            </p>
         </div>
     </div>
 </template>
@@ -65,7 +54,7 @@ export default {
 
     created(){
 
-},
+    },
 
     computed: {
         ...mapGetters({ user: "StateUser" }),

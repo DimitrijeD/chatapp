@@ -40,9 +40,7 @@ class CreateChatGroupTest extends TestCase
     {
         $response = $this->post($this->storeGroupEndpoint, $this->userFormData);
 
-        $response->assertStatus(201)->assertJson([
-            "name" => $this->userFormData['name'],
-        ]);
+        $response->assertStatus(201);
     }
 
     public function test_name_too_long()

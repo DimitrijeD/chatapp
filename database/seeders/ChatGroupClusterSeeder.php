@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\ChatGroup;
+use App\Models\ChatMessage;
+
 use Database\Seeders\clusters\ConfigResolvers\TimeConfigResolver;
 use Database\Seeders\clusters\ConfigResolvers\MessageConfigResolver;
 use Database\Seeders\clusters\ConfigResolvers\LastMessageSeenConfigResolver;
@@ -90,18 +92,6 @@ class ChatGroupClusterSeeder extends Seeder
                 'email' => 'asd@asd', 
                 'password' => 'qweqweqweQ1',
             ],
-            [
-                'first_name' => 'Wer',
-                'last_name' => 'Wer',
-                'email' => 'wer@wer', 
-                'password' => 'qweqweqweQ1',
-            ],
-            [
-                'first_name' => 'Ert',
-                'last_name' => 'Ert',
-                'email' => 'Ert@Ert', 
-                'password' => 'qweqweqweQ1',
-            ],
         ];   
 
         $this->users = (new BuildUsers($participants, $this->numUsers))
@@ -149,6 +139,9 @@ class ChatGroupClusterSeeder extends Seeder
             ->build();
 
         $this->pivot->addLastMessageSeenId($lastMessageSeenUpdateData);
+
+        $this->chatGroup->last_msg_id = (ChatMessage::where('group_id', $this->chatGroup->id)->latest()->first())->id;
+        $this->chatGroup->save();
 
         return [
             'group' => $this->chatGroup,

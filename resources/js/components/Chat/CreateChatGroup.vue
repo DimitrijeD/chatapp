@@ -2,102 +2,88 @@
     <div>
         <button
             @click="showDropdown()"
-            class="width-300 height-44 py-2 pr-2 text-base font-medium"
+            class="width-300 height-44 py-2 pr-2 text-xl text-blue-50 font-medium"
             v-bind:class="{
-                'bg-blue-500': showCreateDropdown,
-                'text-white': showCreateDropdown,
-
-                'text-blue-500':       !showCreateDropdown,
-                'hover:text-blue-700': !showCreateDropdown,
-                'hover:bg-blue-50':    !showCreateDropdown,
-                'border-2':            !showCreateDropdown,
-                'border-blue-300':     !showCreateDropdown,
+                'bg-blue-800 hover:bg-blue-600': showCreateDropdown,
+                'hover:bg-blue-800': !showCreateDropdown,
             }"
         >
             Create new chat group
         </button>
 
-        <div
-            v-if="showCreateDropdown"
-            class="width-300 z-50 absolute bg-white border-b-2 border-l-2 border-r-2 border-blue-300"
-        >
+        <transition name="slide-fade-nav-dropdowns">
+            <div
+                v-if="showCreateDropdown"
+                class="width-300 z-50 absolute bg-gray-100 mt-1 shadow-2xl"
+            >
 
-            <div class="m-2">
-                <input
-                    class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                    placeholder="Name of new group chat"
-                    type="text"
-                    v-model="newChatGroup.name"
-                >
-            </div>
+                <div class="m-2">
+                    <input
+                        class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                        placeholder="Name of new group chat"
+                        type="text"
+                        v-model="newChatGroup.name"
+                    >
+                </div>
 
-            <!-- Chose group type -->
-            <div class="m-2">
-                <select class="w-full p-2 bg-gray-50 focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset" v-model="selected_model_type">
-                    <option v-for="(model_type, index) in model_types" v-bind:value="model_type.value" :key="index">
-                        {{ model_type.text }}
-                    </option>
-                </select>
-            </div>
+                <!-- Chose group type -->
+                <div class="m-2">
+                    <select class="text-gray-400 a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset" v-model="selected_model_type">
+                        <option v-for="(model_type, index) in model_types" v-bind:value="model_type.value" :key="index">
+                            {{ model_type.text }}
+                        </option>
+                    </select>
+                </div>
 
-            <div class="m-2">
-                <input
-                    class="flex w-full p-2 text-base focus:bg-blue-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                    placeholder="Find people to chat"
-                    type="text"
-                    @keyup="searchInput"
-                    v-model="userSearchStr"
-                >
-            </div>
+                <div class="m-2">
+                    <input
+                        class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                        placeholder="Find people to chat"
+                        type="text"
+                        @keyup="searchInput"
+                        v-model="userSearchStr"
+                    >
+                </div>
 
-            <div class="overflow-y-auto user-list-height select-none">
-                <div 
-                    v-for="user in this.allUsers" 
-                    class="flex flex-col m-1 cursor-pointer" 
-                    @click="selectedUserForChat(user)"
-                    :key="user.id"
-                >
-                    <div class="flex flex-row"
-                        v-bind:class="{
-                            'text-blue-500': !user.selectionStatus,
-                            'bg-white': !user.selectionStatus,
-
-                            'text-white':    user.selectionStatus,
-                            'bg-blue-400':   user.selectionStatus,
-                            'font-semibold': user.selectionStatus,
-                        }">
-                        <!-- img -->
-                        <div class="w-20 h-20">
+                <div class="overflow-y-auto user-list-height select-none pt-1">
+                    <div 
+                        v-for="user in this.allUsers" 
+                        class="flex flex-col m-2 cursor-pointer " 
+                        @click="selectedUserForChat(user)"
+                        :key="user.id"
+                    >
+                        <div 
+                            v-bind:class="{
+                                'text-blue-500 bg-white hover:bg-red-50': !user.selectionStatus,
+                                'text-white bg-blue-400 font-semibold': user.selectionStatus,
+                            }">
+                            
                             <img
                                 :src="user.thumbnail"
                                 alt="no img :/"
-                                class="object-cover relative border border-gray-100 shadow-sm h-full"
+                                class="w-16 h-16 inline-block m-2 object-cover border border-gray-100 rounded-full"
                             >
-                        </div>
 
-                        <!-- UserName -->
-                        <div class="grid grid-cols-1 gap-0 place-content-center">
-                            <p class="ml-2 rounded ">
+                            <p class="ml-2 inline-block">
                                 {{ user.first_name }} {{ user.last_name }}
                             </p>
                         </div>
                     </div>
                 </div>
+
+                <div v-for="(error, index) in errors" class="text-danger" :key="index">
+                    {{ error }}
+                </div>
+
+                <div
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-base mt-2 p-2 text-center cursor-pointer"
+                    @click="createNewChatGroup()"
+                >
+                    Create chat group
+                </div>
+
             </div>
-
-            <div v-model="errors" v-for="(error, index) in errors" class="text-danger" :key="index">
-                {{ error }}
-            </div>
-
-            <div
-                class="bg-blue-400 hover:bg-blue-500 text-white text-base mt-2 p-2 text-center cursor-pointer"
-                @click="createNewChatGroup()"
-            >
-                Create chat group
-            </div>
-
-        </div>
-
+        </transition>
     </div>
 </template>
 
@@ -197,18 +183,12 @@ export default {
         createNewChatGroup()
         {
             this.checkForErrors();
-            if(this.errors.length > 0){
-                return;
-            }
 
-            // add self
-            this.newChatGroup.users.push(this.user);
+            if(this.errors.length > 0) return
+
             this.resolveGroupParams();
 
-            axios.post('/api/chat/group/store', this.newChatGroup)
-            .then( res => {
-                this.$emit('createdGroup', res.data);
-            });
+            this.$store.dispatch('groups/storeGroup', this.newChatGroup)
 
             this.resetComponentVars();
         },
@@ -301,6 +281,8 @@ export default {
 
         resolveGroupParams()
         {
+            this.newChatGroup.users.push(this.user);
+
             this.newChatGroup.model_type = this.newChatGroup.users.length == 2
                 ? "PRIVATE"
                 : this.selected_model_type;
@@ -326,5 +308,9 @@ export default {
 
 .user-list-height{
     height: 350px;
+}
+
+.a-input {
+    @apply w-full p-2 text-base bg-white ;
 }
 </style>

@@ -1,28 +1,12 @@
 <template>
     <div>
-        <!-- Wrapper for chat nav bar-->
-        <div class="flex justify-start">
-            <create-chat-group
-                @createdGroup="getFreshGroupInstance"
-            />
-
-            <group-list
-                :groupsWithUnseenMessages="groupsWithUnseenMessages"
-                :groupIdAcknowledged="groupIdAcknowledged"
-                @openWindow="createNewWindow"
-            />
-        </div>
-
-        <!-- Wrapper for chat windows-->
+        <!-- Wrapper for opened and minimized chat windows-->
         <div class="small-container fixed bottom-0 inset-x-0">
             <div class="flex justify-start">
                 <chat-window
-                    v-for="chat in openedChatWindows"
-                    :key="chat.chatGroup.group.id"
-                    :chatGroup="chat.chatGroup"
-                    :windowIndex="chat.chatGroup.group.id"
-                    @closeWindow="closeWindow"
-                    @groupAcknowledged = "groupAcknowledged"
+                    v-for="group in openedChatWindows"
+                    :key="group.id"
+                    :group="group"
                 >
                 </chat-window>
             </div>
@@ -32,128 +16,84 @@
 
 <script>
 
-import GroupList from "./GroupList.vue";
 import ChatWindow from "./ChatWindow/ChatWindow.vue";
-import CreateChatGroup from "./CreateChatGroup.vue";
 import { mapGetters } from 'vuex';
 
 export default {
     components:{
-        'group-list': GroupList,
         'chat-window': ChatWindow,
-        'create-chat-group': CreateChatGroup,
     },
 
     data(){
         return{
-            openedChatWindows: [],
-            groupsWithUnseenMessages: [],
-            groupIdAcknowledged: null,
+
         }
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ 
+            user: "StateUser",
+            openedChatWindows: "groups/getOpenedGroups",
+            allGroups: "groups/allGroups"
+        }),
     },
 
     created(){
-        this.getInitialUnseenMessagesState();
-        this.connectToMessageNotifications();
-
-        // axios.get('/api/chat/user/groups-without-self-v2')
-        // .then((res)=>{    
-        //     console.log(res.data);
-        // })
+        this.$store.dispatch('groups/getGroups')
+        this.connectToActiveChatting();
     },
+
 
     methods:
     {
-        getInitialUnseenMessagesState()
-        {
-            axios.get('/api/user/unseen-states')
-            .then((res)=>{    
-                this.groupsWithUnseenMessages = res.data;
-            })
-        },
-
-        connectToMessageNotifications()
+        connectToActiveChatting()
         {
             Echo.private("App.Models.User." + this.user.id)
             .listen('.message.notification', e => {
-                this.handleNewMessageNotifications(e.messageNotification);
+                const notif = e.messageNotification
+                this.$store.dispatch('groups/openGroup', notif.group_id)
             });
-        },
-
-        // What to do when receiving new message.
-        handleNewMessageNotifications(notification)
-        {
-            this.messageReceivedButWindowNotOpenYet(notification);
-        },
-
-        // When getting window instance from GroupList component (list of chats), data is already loaded
-        createNewWindow(chatGroup)
-        {
-            this.addComponentToArray(chatGroup);
-        },
-
-        // New chat group is created and requires additional data,
-        // Get fresh instance of chat group,
-        getFreshGroupInstance(chatGroup)
-        {
-            axios.get('/api/chat/group/' + chatGroup.id + '/without-self/')
-            .then( res => {
-                this.addComponentToArray(res.data);
-            });
-        },
-
-        // When user sends message in chat, for all users (which participate in that chat) fresh chat window will be opened
-        // whether or not they want to see it or not, which could be slightly anoying
-        // messageReceivedButWindowNotOpenYet - So open it :)
-        messageReceivedButWindowNotOpenYet(notification)
-        {
-            axios.get('/api/chat/group/' + notification.group_id + '/with-participants')
-            .then(res => {
-                this.createNewWindow(res.data);
-            });
-        },
-
-        addComponentToArray(chatGroup)
-        {
-            // if chat window is not already open, open it,
-            // if window is already open, do not open same window multiple times
-            if( ! this.getWindowIndexById(chatGroup.group.id) ){
-                this.openedChatWindows.push({
-                    'type': 'chat-window',
-                    id: chatGroup.group.id,
-                    'chatGroup': chatGroup
-                });
-            }
-        },
-
-        // Chat windows are closed by removing chat that element from 'this.openedChatWindows'
-        closeWindow(group_id)
-        {
-            let indexOfTarget = this.getWindowIndexById(group_id);
-            if (indexOfTarget) {
-                this.openedChatWindows.splice(indexOfTarget, 1);
-            }
-        },
-
-        getWindowIndexById(group_id)
-        {
-            for (var index in this.openedChatWindows){
-                if (this.openedChatWindows.hasOwnProperty(index) && this.openedChatWindows[index].chatGroup.group.id == group_id) {
-                    return index;
-                }
-            }
-            return null;
-        },
-
-        groupAcknowledged(group_id)
-        {
-            this.groupIdAcknowledged = group_id;
         },
 
     },
 }
 </script>
+
+<style>
+/* Navigation dropdowns */
+.slide-fade-nav-dropdowns-enter-active {
+    transition: all .1s ease;
+}
+.slide-fade-nav-dropdowns-leave-active {
+    transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-nav-dropdowns-enter {
+    transform: translateY(-5rem);
+    opacity: 0;
+}
+
+.slide-fade-nav-dropdowns-leave-to {
+    transform: translateY(-5rem);
+    opacity: 0;
+}
+/* ------------------------------  */
+
+/* Chat Window */
+.slide-fade-chat-window-enter-active {
+    transition: all .1s ease;
+}
+.slide-fade-chat-window-leave-active {
+    transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-chat-window-enter {
+    transform: translateY(-5rem);
+    opacity: 0;
+}
+
+.slide-fade-chat-window-leave-to {
+    transform: translateY(5rem);
+    opacity: 0;
+}
+/* ------------------------------  */
+
+</style>

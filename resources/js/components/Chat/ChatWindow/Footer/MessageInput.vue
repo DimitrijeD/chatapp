@@ -1,7 +1,5 @@
 <template>
     <div class="w-full flex ">
-        
-        <!-- Message input -->
         <textarea
             class="flex-auto bg-blue-50 p-2 w-full resize-none text-base focus:bg-white focus:outline-none focus:ring-1 focus:border-primary ring-inset"
             rows="3"
@@ -11,14 +9,12 @@
             v-model="message"
             placeholder="type..."
         ></textarea>
-
         <button
             @click="whenMessageSent()"
             class="button-send-msg text-base bg-blue-400 text-white hover:bg-blue-500"
         >
             Send
         </button>
-
     </div>
 </template>
 
@@ -55,7 +51,8 @@ export default {
 
     methods: {
         whenMessageSent(){
-            this.sendMessage();
+            this.sendMessage()
+            this.userStopedTyping()
         },
 
         sendMessage()
@@ -84,6 +81,16 @@ export default {
                 'first_name': this.user.first_name,
                 'last_name': this.user.last_name,
             });
+        },
+
+        userStopedTyping()
+        {
+            Echo.private("group." + this.group_id)
+            .whisper('stoped-typing', {
+                'id': this.user.id,
+                'first_name': this.user.first_name,
+                'last_name': this.user.last_name,
+            })
         },
 
         formatMessage()

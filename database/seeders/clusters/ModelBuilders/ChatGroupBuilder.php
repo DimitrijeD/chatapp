@@ -15,6 +15,7 @@ class ChatGroupBuilder
 
     public function makeModel()
     {
-        return ChatGroup::factory()->create($this->properties);
+        return ChatGroup::factory()->create($this->properties); 
     }
+
 }

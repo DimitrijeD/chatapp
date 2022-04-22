@@ -12,9 +12,8 @@ class LoginController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        if( Auth::attempt($request->only('email', 'password')) ){
-            return response()->json(Auth::user(), 200);
-        }
+        if( Auth::attempt($request->only('email', 'password')) ) return response()->json(Auth::user(), 200);
+
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.']
         ]);
@@ -24,9 +23,7 @@ class LoginController extends Controller
     {
         Auth::logout();
         $request->session()->invalidate();
- 
         $request->session()->regenerateToken();
-     
         return redirect('/');
     }
 }

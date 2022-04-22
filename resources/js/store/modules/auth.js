@@ -1,43 +1,32 @@
-import axios from "axios";
-
 const state = {
-  user: null,
-};
-
+    user: null,
+}
 
 const getters = {
     StateUser: (state) => state.user,
-    
-};
+}
 
 const actions = {
+    storeUser: (context, user) => context.commit('setUser', user), 
+
+    logout: ({ commit }) => commit("logout"),
+
     getUser(context) {
         axios.get('/api/user').then((res)=>{
-            context.commit('setUser', res.data);
-        });
+            context.commit('setUser', res.data)
+        })
     },
-
-    LogOut({ commit }) {
-        let user = null;
-        commit("logout", user);
-    },
-};
+}
 
 const mutations = {
-    setUser(state, user)
-    {
-        state.user = user; 
+    setUser: (state, user) => state.user = user,
 
-    },
-
-    logout(state, user) {
-        state.user = user;
-    },
-};
+    logout: (state) => state.user = null,
+}
 
 export default {
-  state,
-  getters,
-  actions,
-  mutations,
-};
+    state,
+    getters,
+    actions,
+    mutations,
+}

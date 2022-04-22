@@ -31,7 +31,6 @@ class ParticipantsController extends Controller
             // 1. props exist, so no errors occur when groups have no messages
             // 2. same as above
             // 3. if last message ID in group is NOT EQUAL message ID which user 'acknowledged', then he has unseen messages in that group,
-            //      @bug theres a problem, for new groups receivers do not pass this check (should be true but isnt) because $group->pivot->last_message_seen_id=null for new groups/new users added to group and 3. if comparison doesnt return true for some reason, or bug is somewhere else :/
             // 4. if user is not owner of last message:
             //      to prevent strange behavior when user sends message, refreshes page, and his message is treated as last unseen to him
             if(    isset($lastMessageInGroup->id)

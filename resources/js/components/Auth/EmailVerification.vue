@@ -50,22 +50,23 @@ export default {
     },
 
     mounted(){
-        this.getUnAuthUser();
+        // user is loggedin but email not verified, so we should get his email which is necessary for resending verification
+        this.getUnAuthUser() 
     },
 
     methods: {
         getUnAuthUser()
         {
             axios.get('/api/authenticated').then((res) => {
-                this.$router.push({ path: '/profile' });
+                this.$router.push({ path: '/profile' })
             }).catch((error) => {
-                // console.log(error.response.status);
-
                 if(error.response.data?.email){
-                    this.email = error.response.data.email;
-                    this.status = "Verification has been sent.";
-                    this.status_type = true;
-                }
+                    this.email = error.response.data.email
+                    this.status = "Verification has been sent."
+                    this.status_type = true
+                } 
+                // @todo catch error if user is accualy successfully verified but his page remained open. 
+                // If user clicks resend again, redirect to profile page
             });
         },
 
@@ -73,12 +74,11 @@ export default {
         {
             axios.post('/api/email-verification/create-or-update', {email: this.email})
                 .then((res)=>{
-                    // console.log('server response is: ', res.data);
-                    this.status = 'Another email has been sent. Please check if you inserted correct email.';
+                    this.status = 'Another email has been sent. Please check if you inserted correct email.'
                 }).catch((error) =>{
                     if(error.response.status == 429){
-                        this.status = "Please wait for 1 minute before requesting another email.";
-                        this.status_type = false;
+                        this.status = "Please wait for 1 minute before requesting another email."
+                        this.status_type = false
                     }
                 });
         }
