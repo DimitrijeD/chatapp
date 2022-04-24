@@ -29,15 +29,6 @@ class MessageController extends Controller
         $this->participantPivot = $participantPivot;
     }
 
-    public function getAllMessages(Request $request)
-    {
-        $messages = $this->chatMessageRepo->getMany(['group_id' => $request->group_id], ['user']);
-
-        $seenStates = $this->participantPivot->getMany(['group_id' => $request->group_id]);
-
-        return ['messages' => $messages, 'seen_states' => $seenStates]; 
-    }
-
     public function getMissingMessages($group_id, $latest_msg_id)
     {
         return $this->chatMessageRepo->getMissingMessages($group_id, $latest_msg_id);
@@ -69,10 +60,12 @@ class MessageController extends Controller
             ['updated_at' => date('Y-m-d H:i:s'), 'last_msg_id' => $message->id]
         );
 
+        $message->user;
+        
         broadcast(new NewChatMessage($message))->toOthers();
         $this->newChatMessageNotification($request->group_id, $sender, $message);
 
-        return $message;
+        return response()->json($message, 201);
     }
 
     /**
@@ -115,6 +108,11 @@ class MessageController extends Controller
         }
         
         return response()->json('error', 400);
+    }
+
+    public function getLatestMessages(Request $request)
+    {
+        return $this->chatMessageRepo->getLatestMessages($request->group_id);
     }
 
 }

@@ -57,19 +57,12 @@ export default {
 
         sendMessage()
         {
-            if(this.message===''){
-                return;
-            }
-
-            axios.post(this.storeMessageEndpoint, this.formatMessage())
-            .then(res => {
-                if( res.status === 201 ){
-                    this.message = '';
-                    this.$emit('messageSent');
-                }
-            })
-            .catch( error => {
-                console.log(error);
+            if(this.message==='') return
+            this.$store.dispatch('groups/storeMessage', this.formatMessage()).then(()=> {
+                this.message = ''
+            }).catch(error => {
+                console.log('message input component')
+                console.log(error)
             })
         },
 

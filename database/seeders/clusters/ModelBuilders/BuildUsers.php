@@ -4,14 +4,15 @@ namespace Database\Seeders\clusters\ModelBuilders;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Database\Factories\UserFactory;
 
 class BuildUsers
 {
     public $participants, $numUsers, $users;
 
-    public function __construct($participants, $numUsers)
+    public function __construct($participants = [], $numUsers = 2)
     {
-        $this->participants = $participants;
+        $this->participants = count($participants) > 1 ? $participants : $this->useDefault();
         $this->numUsers = $numUsers; 
         $this->users = collect([]);
     }
@@ -37,7 +38,6 @@ class BuildUsers
                     'first_name' => $participant['first_name'], 
                     'last_name' => $participant['last_name'], 
                     'email' => $participant['email'], 
-                    'password' => Hash::make($participant['password']),
                 ]));
             }
         }
@@ -51,6 +51,22 @@ class BuildUsers
             return User::factory($num)->create();
         }
         return [];
+    }
+
+    private function useDefault()
+    {
+        return [
+            [
+                'first_name' => 'Qwe',
+                'last_name' => 'Qwe',
+                'email' => 'qwe@qwe', 
+            ],
+            [
+                'first_name' => 'Asd',
+                'last_name' => 'Asd',
+                'email' => 'asd@asd', 
+            ],
+        ];
     }
 
 }

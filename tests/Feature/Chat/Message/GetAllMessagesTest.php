@@ -34,82 +34,81 @@ class GetAllMessagesTest extends TestCase
         Auth::login($this->user);
         $this->withHeaders([ 'Accept' => 'application/json', ]);
 
-        $this->getAllMessagesEndpoint = "/api/chat/group/{$this->group->id}/messages";
     }
 
-    public function test_user_gets_all_messages()
-    {   
-        $response = $this->get($this->getAllMessagesEndpoint);
+    // public function test_user_gets_all_messages()
+    // {   
+    //     $response = $this->get($this->getAllMessagesEndpoint);
 
-        $response->assertJsonStructure(['messages' => [
-            [
-                'id', 
-                'group_id', 
-                'user_id', 
-                'text', 
-                'created_at', 
-                'updated_at',
-                'user' => [
-                    'id',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'image',
-                    'thumbnail',
-                    'email_verified_at',
-                    'created_at',
-                    'updated_at'
-                ]
-            ]
-        ]]);
-    }
+    //     $response->assertJsonStructure(['messages' => [
+    //         [
+    //             'id', 
+    //             'group_id', 
+    //             'user_id', 
+    //             'text', 
+    //             'created_at', 
+    //             'updated_at',
+    //             'user' => [
+    //                 'id',
+    //                 'first_name',
+    //                 'last_name',
+    //                 'email',
+    //                 'image',
+    //                 'thumbnail',
+    //                 'email_verified_at',
+    //                 'created_at',
+    //                 'updated_at'
+    //             ]
+    //         ]
+    //     ]]);
+    // }
 
-    public function test_other_user_also_gets_all_messages()
-    {   
-        Auth::logout($this->user);
-        Auth::login($this->otherUser);
+    // public function test_other_user_also_gets_all_messages()
+    // {   
+    //     Auth::logout($this->user);
+    //     Auth::login($this->otherUser);
 
-        $response = $this->get($this->getAllMessagesEndpoint);
+    //     $response = $this->get($this->getAllMessagesEndpoint);
 
-        $response->assertJsonStructure(['messages' => [
-            [
-                'id', 
-                'group_id', 
-                'user_id', 
-                'text', 
-                'created_at', 
-                'updated_at',
-                'user' => [
-                    'id',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'image',
-                    'thumbnail',
-                    'email_verified_at',
-                    'created_at',
-                    'updated_at'
-                ]
-            ]
-        ]]);
-    }
+    //     $response->assertJsonStructure(['messages' => [
+    //         [
+    //             'id', 
+    //             'group_id', 
+    //             'user_id', 
+    //             'text', 
+    //             'created_at', 
+    //             'updated_at',
+    //             'user' => [
+    //                 'id',
+    //                 'first_name',
+    //                 'last_name',
+    //                 'email',
+    //                 'image',
+    //                 'thumbnail',
+    //                 'email_verified_at',
+    //                 'created_at',
+    //                 'updated_at'
+    //             ]
+    //         ]
+    //     ]]);
+    // }
 
-    public function test_guest_cannot_get_messages()
-    {   
-        Auth::logout($this->user);
+    // public function test_guest_cannot_get_messages()
+    // {   
+    //     Auth::logout($this->user);
 
-        $response = $this->get($this->getAllMessagesEndpoint);
+    //     $response = $this->get($this->getAllMessagesEndpoint);
 
-        $response->assertStatus(401);
-    }
+    //     $response->assertStatus(401);
+    // }
 
-    public function test_non_participant_cannot_get_messages()
-    {   
-        Auth::logout($this->user);
-        Auth::login(User::factory()->create());
+    // public function test_non_participant_cannot_get_messages()
+    // {   
+    //     Auth::logout($this->user);
+    //     Auth::login(User::factory()->create());
 
-        $response = $this->get($this->getAllMessagesEndpoint);
+    //     $response = $this->get($this->getAllMessagesEndpoint);
 
-        $response->assertStatus(403);
-    }
+    //     $response->assertStatus(403);
+    // }
 }

@@ -9,10 +9,11 @@ use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 class GroupParticipantsPivot implements Cluster
 {
-    public function __construct($users, $chatGroup)
+    public function __construct($users, $chatGroup, $creator_id)
     {
         $this->users = $users; 
         $this->group = $chatGroup;
+        $this->creator_id = $creator_id;
         $this->participantPivotRepo = resolve(ParticipantPivotEloquentRepo::class);
     }
     /**
@@ -23,7 +24,6 @@ class GroupParticipantsPivot implements Cluster
     public function build()
     {
         $now = now();
-        $request_initiator_id = $this->users->first()->id;
 
         foreach($this->users as $user){
             ParticipantPivot::create(
@@ -31,7 +31,7 @@ class GroupParticipantsPivot implements Cluster
                     'user_id'              => $user->id,
                     'group_id'             => $this->group->id,
                     'last_message_seen_id' => null,
-                    'participant_role'     => $this->participantPivotRepo->roleResolver($user->id, $request_initiator_id, $this->group->model_type),
+                    'participant_role'     => $this->participantPivotRepo->roleResolver($user->id, $this->creator_id, $this->group->model_type),
                     'updated_at'           => $this->group->created_at, 
                     'created_at'           => $this->group->created_at
                 ]

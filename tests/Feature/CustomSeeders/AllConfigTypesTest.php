@@ -23,47 +23,28 @@ class AllConfigTypesTest extends TestCase
 
     public function test_all_types_create_valid_chat()
     {
-        $msgTypes = $this->chatGroupSeeder::DISTRIBUTION_TYPES;
-        $timeTypes = $this->chatGroupSeeder::DISTRIBUTION_TYPES;
-        $seenTypes = $this->chatGroupSeeder::DISTRIBUTION_TYPES;
+        foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $msgType){
+            foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $timeType){
+                foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $seenType){
 
-        $dataCreated = 0;
-
-        foreach($msgTypes as $msgType){
-            foreach($timeTypes as $timeType){
-                foreach($seenTypes as $seenType){
-
-                    $this->chatGroupSeeder->massSetter(
-                        $numMessages = 40, 
-                        $minTextLen = 10, 
-                        $maxTextLen = 100, 
-                        $msgType = 'DEFAULT', 
-                        $timeType = 'DEFAULT',
-                        $seenType = 'DEFAULT',
-                        $minTime_ = [
+                    $this->chatGroupSeeder->massSetter([
+                        'numUsers' => 3,
+                        'maxTextLen' => 20,
+                        'minTime' => [
                             'year'  => 2022, 
                             'month' => 3, 
                             'day'   => 1, 
                             'hour'  => 0,
                         ],
-                        $maxTime_ = [
+                        'maxTime' => [
                             'year'  => 2022, 
                             'month' => 4, 
                             'day'   => 1, 
                             'hour'  => 1,
                         ],
-                        $defaultTimeInterval_ = false,
-                        $numUsers = 3,
-                        $participants_ = [
-                            [
-                                'first_name' => 'Qwe',
-                                'last_name' => 'Qwe',
-                                'email' => 'qwe@qwe', 
-                                'password' => 'qweqweqweQ1',
-                            ],
-                        ],
-                
-                    );
+                        'numMessages' => 20
+                    ]);
+
                     $this->chatGroupSeeder->run();
 
                 }

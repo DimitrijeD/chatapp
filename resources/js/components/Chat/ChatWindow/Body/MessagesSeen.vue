@@ -9,7 +9,6 @@
                 >
             </div>
         </div>
-        {{ toRenderOrNot() }}
     </div>
 </template>
 
@@ -25,9 +24,6 @@ export default {
     data(){
         return{
             hasAnyPeopleSeen: true,
-            checker: false,
-            num_seen: 0,
-            pack: 0,
         }
     },
 
@@ -39,24 +35,18 @@ export default {
 
     },
 
-    methods: {
+    methods: 
+    {
         isThisLastSeenMessage(participant)
         {
             let p = participant.pivot 
             if(p.last_message_seen_id == this.msgId && this.user.id != p.user_id ){
-                this.checker = true
-                this.num_seen++
                 return true
             }
             return false
         },
-
-        toRenderOrNot()
-        {
-            this.hasAnyPeopleSeen = this.checker
-            this.pack = this.num_seen / 11
-        },
     }
+
 
 }
 </script>

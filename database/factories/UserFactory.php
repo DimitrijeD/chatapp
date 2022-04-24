@@ -15,6 +15,8 @@ class UserFactory extends Factory
      */
     protected $model = User::class;
 
+    const PASSWORD = '$2y$10$OzosT7AoTUDVzRfml.zozOlsxSljp4q3zVOhC5TuZvmrNl.MknU9G'; // qweqweqweQ1
+    
     /**
      * Define the model's default state.
      *
@@ -27,7 +29,7 @@ class UserFactory extends Factory
             'last_name' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => self::PASSWORD,
             'remember_token' => NULL,
             'image' => '/basic-images/basic-avatar.jpg',
             'thumbnail' => '/basic-images/basic-avatar.jpg',

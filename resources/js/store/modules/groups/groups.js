@@ -4,12 +4,13 @@ import {
     getById, 
     getBySearchString, 
     getGroupIndexById, 
-    getLatestMessageId, 
+    getLastOwnedMsgId, 
     getParticipantIndexInGroupByGroupId, 
-    numOfUnseenGroups, 
+    getNumOfUnseenGroups, 
     getGroupsFrom_openedGroupsIds, 
     getGroupsFrom_filteredGroupsIds,
-    findGroupIndexByIdIn_openedGroupsIds,
+    getGroupIndexByIdIn_openedGroupsIds,
+    nowISO,
 } from './getters.js'
 
 import {
@@ -36,11 +37,12 @@ const getters = {
     
     openedGroupsIds: (state) => state.openedGroupsIds,
 
-    numOfUnseenGroups:(state) => numOfUnseenGroups(state.groups),
+    numOfUnseenGroups:(state) => getNumOfUnseenGroups(state.groups),
 
     getOpenedGroups: (state) => getGroupsFrom_openedGroupsIds(state.groups, state.openedGroupsIds),
 
     filteredGroups: (state) => sort_filteredGroups_by_updated_at(getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds)),
+
 }
 
 const actions = 
@@ -85,11 +87,10 @@ const actions =
                 groups = propInit(groups)
                 groups = attachUnseenStateBool(groups, context.rootState.auth.user.id)
                 const group = groups[0]
-                
+
                 context.commit('addGroup', group)
                 context.commit('addToOpenedGroups', group.id)
                 context.commit('addToFilteredGroups', group.id)
-                context.dispatch('groups/getAllMessages', { group_id: group.id }, {root:true})
             })
             .catch((error) => {
                 console.log('error trying to get group by id in (groups.js) which doesnt exist in store nor in database, openGroup action')
@@ -101,39 +102,8 @@ const actions =
 
     closeGroup({ commit, state }, id)
     {
-        const index = findGroupIndexByIdIn_openedGroupsIds(state.openedGroupsIds, id)
+        const index = getGroupIndexByIdIn_openedGroupsIds(state.openedGroupsIds, id)
         if(Number.isInteger(index)) commit('closeWindow', index)
-    },
-
-    addMessages(context, data)
-    {
-        const grI = getGroupIndexById(context.state.groups, data.group_id)
-        if(grI == undefined){
-            console.log('group with this index doesnt exist, also possible, group with this ID is not in store')
-            return 0
-        }
-
-        context.commit('mergeMessagesInGroup', {
-            grI: grI,
-            messages: data.messages
-        })
-
-        const last_msg_id = getLatestMessageId(context.state.groups[grI].messages)
-
-        context.commit('setLastMessageIdInGroup', {
-            grI: grI,
-            last_msg_id: last_msg_id
-        })
-        
-        context.commit('updateGroup_updated_at', { 
-            grI: grI,
-            updated_at: new Date(Date.now()).toISOString()
-         })
-        
-        // set has unseen state only if he is not owner of that message
-        if(context.rootState.auth.user.id != context.state.groups[grI].messages[last_msg_id].user_id) {
-            context.commit('hasUnseenState', { grI: grI })
-        }
     },
 
     setAllMessagesAcknowledged({ commit, state }, data)
@@ -157,24 +127,6 @@ const actions =
         })
     },
 
-    getAllMessages(context, data)
-    {
-        axios.get('/api/chat/group/' + data.group_id + '/messages')
-        .then(res => {
-            const messages = Object.assign({}, helpers.createHashMap_OneToOne(res.data.messages, 'id') )
-
-            if(Object.keys(messages).length) context.dispatch('groups/addMessages', {
-                group_id: data.group_id,
-                messages: messages,
-                seen_states: res.data.seen_states
-            }, {root:true})
-
-        })
-        .catch(error => {
-            console.log('error in getting messages', error)
-        });
-    },
-
     seenEvent({ commit, state }, e)
     {
         const grI = getGroupIndexById(state.groups, e.group_id)
@@ -186,6 +138,103 @@ const actions =
             pivot: e,
             grI: grI,
             prI: prI
+        })
+    },
+
+    storeMessage(context, message)
+    {
+        return axios.post('/api/chat/message/store', message)
+        .then(res => {
+            const message = helpers.createHashMap_OneToOne([res.data], 'id')
+            const grI = getGroupIndexById(context.state.groups, res.data.group_id)
+            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[grI].participants, res.data.user_id)
+
+            const data = {
+                messages: message,
+                grI: grI,
+                prI: prI,
+                lastAcknowledgedMessageId: res.data.id,
+                last_msg_id: res.data.id,
+                now: nowISO()
+            }
+
+            context.commit('mergeMessagesInGroup', data)
+            context.commit('setAcknowledgedMessages', data) 
+            context.commit('setLastMessageIdInGroup', data) 
+            context.commit('updateSeenPivotOnly_last_message_seen_id', data) 
+            context.commit('doesntUnseenState', data)
+        }).catch( error => {
+            console.log('groups/storeMessage')
+            console.log(error)
+        })
+    },
+
+    getMessages(context, request)
+    {
+        request.grI = getGroupIndexById(state.groups, request.group_id)
+        request.lastOwnedMsgId = getLastOwnedMsgId(state.groups[request.grI].messages)
+
+        if(isNaN(request.lastOwnedMsgId)) return
+
+        if(request.lastOwnedMsgId == 0){
+            context.dispatch('getInitMessages', request)
+
+        } else {
+            context.dispatch('getOnlyMissingMessages', request)
+        }
+    },
+
+    getInitMessages(context, request)
+    {
+        const endpoint = `/api/chat/group/${request.group_id}/latest-messages` 
+
+        return axios.get(endpoint).then(res => {
+            if(!res.data.length) return
+
+            const messages = helpers.createHashMap_OneToOne(res.data, 'id')
+            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id)
+            // console.log('number of fetched messages', res.data.length)
+
+            const data = {
+                messages: messages,
+                grI: request.grI,
+                prI: prI,
+                last_msg_id: getLastOwnedMsgId(res.data),
+                now: nowISO()
+            }
+
+            context.commit('mergeMessagesInGroup', data)
+            context.commit('setLastMessageIdInGroup', data) 
+        }).catch( error => {
+            console.log('groups/storeMessage')
+            console.log(error)
+        })
+    },
+
+    getOnlyMissingMessages(context, request)
+    {
+        const endpoint = `/api/chat/group/${request.group_id}/from-msg/${state.groups[request.grI].last_msg_id}`
+
+        return axios.get(endpoint).then(res => {
+            if(!res.data.length) return
+
+            const messages = helpers.createHashMap_OneToOne(res.data, 'id')
+            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id)
+
+            const data = {
+                messages: messages,
+                grI: request.grI,
+                prI: prI,
+                last_msg_id: getLastOwnedMsgId(res.data),
+                now: nowISO()
+            }
+
+            context.commit('mergeMessagesInGroup', data)
+            context.commit('setLastMessageIdInGroup', data) 
+            context.commit('hasUnseenState', data) // after pulling new messages, user must have unseen messages, otherwise code is dog
+        }).catch( error => {
+            console.log('groups/storeMessage')
+            console.log(error)
         })
     },
 
@@ -213,6 +262,11 @@ const mutations = {
     hasUnseenState: (state, data) => state.groups[data.grI].hasUnseenState = true,
 
     updateSeenPivot: (state, data) => state.groups[data.grI].participants[data.prI].pivot = data.pivot,
+
+    updateSeenPivotOnly_last_message_seen_id(state, data) {
+        state.groups[data.grI].participants[data.prI].pivot.last_message_seen_id = data.last_msg_id
+        state.groups[data.grI].participants[data.prI].pivot.updated_at = data.now
+    },
 
     addToFilteredGroups: (state, id) => state.filteredGroupsIds.push(id),
 

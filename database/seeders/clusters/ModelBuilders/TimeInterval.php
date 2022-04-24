@@ -8,11 +8,22 @@ class TimeInterval
 {
     public $minTime, $maxTime;
 
-    public function __construct($minTime, $maxTime, $defaultTimeInterval)
+    public function __construct($minTime = null, $maxTime = null, $defaultTimeInterval = true)
     {
         $this->minTime = $minTime; 
         $this->maxTime = $maxTime; 
-        $this->defaultTimeInterval = $defaultTimeInterval;
+
+        if($defaultTimeInterval){
+            // forced default time
+            $this->defaultTimeInterval = true;
+        } elseif($this->minTime && $this->maxTime) {
+            // defaultTimeInterval may be ommited, but is replaced by defined time period as minTime and maxTime
+            $this->defaultTimeInterval = false;
+        } else {
+            // min or max or defaultTimeInterval or all 
+            // are not defined fallback to true
+            $this->defaultTimeInterval = true; 
+        }
     }
 
     /**
@@ -25,14 +36,10 @@ class TimeInterval
     {   
         $this->timeInterval = [];
 
-        if($this->defaultTimeInterval){
-            return $this->createDefaultTime();;
-        }
+        if($this->defaultTimeInterval) return $this->createDefaultTime();
 
-        if($this->minTime && $this->maxTime){
-            $timeInterval['maxTime'] = Carbon::create($this->maxTime['year'], $this->maxTime['month'], $this->maxTime['day'], $this->maxTime['hour']);    
-            $timeInterval['minTime'] = Carbon::create($this->minTime['year'], $this->minTime['month'], $this->minTime['day'], $this->minTime['hour']);
-        }  
+        $timeInterval['maxTime'] = Carbon::create($this->maxTime['year'], $this->maxTime['month'], $this->maxTime['day'], $this->maxTime['hour']);    
+        $timeInterval['minTime'] = Carbon::create($this->minTime['year'], $this->minTime['month'], $this->minTime['day'], $this->minTime['hour']);
 
         if( (!$this->minTime && !$this->maxTime) || !$this->validateTimeInterval($timeInterval) ){
             $defaultInterval = $this->createDefaultTime();
