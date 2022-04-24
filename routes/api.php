@@ -19,8 +19,8 @@ Route::post('/register', [RegisterController::class, 'register'])->middleware(['
 Route::post('/login', [LoginController::class, 'login'])->middleware(['throttle:10,1', 'guest']);
 Route::get('/logout', [LoginController::class, 'logout'])->middleware(['auth']);
 
-Route::post('/email-verification/create-or-update', [AccountVerificationController::class, 'createOrUpdateForEmail'])->middleware(['throttle:30,1', 'has_not_verified_email']); //, 'guest'
-Route::get('/email-verification/uid/{user_id}/c/{code}', [AuthenticationController::class, 'emailVerificationAttempt'])->middleware(['throttle:50,1']);
+Route::post('/email-verification/create-or-update', [AccountVerificationController::class, 'createOrUpdateForEmail'])->middleware(['throttle:5,1', 'has_not_verified_email']); //, 'guest'
+Route::get('/email-verification/uid/{user_id}/c/{code}', [AuthenticationController::class, 'emailVerificationAttempt'])->middleware(['throttle:10,1']);
 
 Route::get('/authenticated', [AuthenticationController::class, 'isAuthenticated']);
 Route::get('/user-loggedin', [AuthenticationController::class, 'isLoggedIn']);
@@ -28,7 +28,7 @@ Route::get('/user-loggedin', [AuthenticationController::class, 'isLoggedIn']);
 
 
 //-----------------------------ChatMessage-----------------------------//
-Route::get('/chat/group/{group_id}/messages', [MessageController::class, 'getAllMessages'])->middleware(['chat_group_access', 'auth']);
+Route::get('/chat/group/{group_id}/latest-messages', [MessageController::class, 'getLatestMessages'])->middleware(['chat_group_access', 'auth']);
 Route::get('/chat/group/{group_id}/from-msg/{latest_msg_id}', [MessageController::class, 'getMissingMessages'])->middleware(['chat_group_access', 'auth']);
 Route::post('/chat/message/store', [MessageController::class, 'store'])->middleware(['chat_group_access','auth', 'can_chat']);
 Route::post('/chat/message/seen', [MessageController::class, 'messageIsSeen'])->middleware(['chat_group_access', 'auth']);

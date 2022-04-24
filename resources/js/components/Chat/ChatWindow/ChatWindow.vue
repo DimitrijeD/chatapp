@@ -41,7 +41,6 @@
 
                 <!-- Chat Window Footer -->
                 <message-input
-                    @messageSent="getMessages()"
                     :group_id="group.id"
                 />
                 <!-- -------------------- -->
@@ -93,66 +92,29 @@ export default {
     },
 
     methods: {   
-        minimizeWindow()
-        {
+        minimizeWindow(){
             this.isMinimized = !this.isMinimized
         },
 
-        openConfig()
-        {
+        openConfig(){
             this.showConfig = !this.showConfig
         },
 
-        /**
-         * If there are messages in chat group, get only those which have greater ID than "lastMessageId" 
-         *      then merge existing messages and received ones into 'this.messages' variable
-         * else 
-         *      there are no messages, get all messsages 
-         * 
-         */
-        getMessages()
-        {
-            this.$store.dispatch('groups/getAllMessages', {group_id: this.group.id})
-            //     console.log('this chat window already has messages, do "missing messages" get request');
-            //     axios.get('/api/chat/group/' + this.group.id + '/from-msg/' + lastMessageId)
-            //     .then(res => {
-
-            //         /**
-            //          * @TODO Before I finish this, I need to convert "this.messages" into hash table :
-            //          * this.messages = {
-            //          *      msgId1: { id: msgId1, text: 'older message text ' ...},
-            //          *      msgId2: { id: msgId2, text: 'newer message text ' ...},
-            //          *      ...
-            //          * } 
-            //          * this.messages = {
-            //          *      23: { id: 23, text: 'older message text ' ...},
-            //          *      75: { id: 75, text: 'newer message text ' ...},
-            //          *      ...
-            //          * }
-            //          */
-                     
-            //     })
-            //     .catch(error => {
-            //         // 
-            //     });
-            // } else {
-            //     // axios.get('/api/chat/group/' + this.group.id + '/messages')
-            //     // .then(res => {
-            //     //     this.messages = res.data;
-
-            //     // })
-            //     // .catch(error => {
-            //     //     // 
-            //     // });
+        getMessages(){
+            this.$store.dispatch('groups/getMessages', {group_id: this.group.id })
         },
+
+        findLatestMessageId: (messages) => Math.max(...Object.keys(messages)),
+
+        isUserOwnerOfLastMessage: (message, userId) => message.user_id == userId ? true : false,
 
         listenForNewMessages()
         {
             this.getMessages();
 
+            // this user is not listening to his own new message event
             Echo.private("group." + this.group.id)
             .listen('.message.new', e => {
-                // There is a new message in this chat group,
                 this.getMessages();
             });
         },
@@ -186,18 +148,6 @@ export default {
             });
         },
 
-        findLatestMessageId(messages)
-        {
-            return Math.max(...Object.keys(messages))
-        },
-
-        isUserOwnerOfLastMessage(message, userId)
-        {
-            if(message.user_id == userId){
-                return true;
-            }
-            return false;
-        },
     }
 }
 

@@ -24,10 +24,8 @@ class GetMissingMessagesTest extends TestCase
     {
         parent::setUp();
 
-        $this->chatGroupSeeder = (resolve(ChatGroupClusterSeeder::class));
+        $this->groupBuilderSetUp();
         
-        $this->allChatData = $this->chatGroupSeeder->run();
-
         $this->user      = $this->allChatData['users'][0];
         $this->otherUser = $this->allChatData['users'][1];
         
@@ -50,6 +48,18 @@ class GetMissingMessagesTest extends TestCase
         $this->getMissingMessagesEndpoint = "/api/chat/group/{$this->group->id}/from-msg/{$latest_msg_id}";
     }
 
+    private function groupBuilderSetUp()
+    {
+        $groupConfig = [
+
+        ];
+
+        $this->chatGroupSeeder = (resolve(ChatGroupClusterSeeder::class));
+        $this->chatGroupSeeder->massSetter($groupConfig);
+        $this->allChatData = $this->chatGroupSeeder->run();
+
+    }
+
     /**
      * Request should return only one message 
      */
@@ -62,9 +72,12 @@ class GetMissingMessagesTest extends TestCase
                 'id' => $this->last_message_in_group->id,
                 'user_id' => $this->last_message_in_group->user_id,
                 'group_id' => $this->last_message_in_group->group_id,
-                'text' => $this->last_message_in_group->text,
-                // 'updated_at' => $this->last_message_in_group->updated_at, // this shit still wont compare even tho it's same string. TNX AS LOT LARAVEL
-                'user' => [] // dont have users data in memory, and im too lazy to fetch him, what ever it works
+                'text' => $this->last_message_in_group->text, 
+                'updated_at' => $this->last_message_in_group->updated_at->jsonSerialize(),
+                'created_at' => $this->last_message_in_group->created_at->jsonSerialize(),
+                'user' => [
+
+                ],
             ]
         ]);
     }

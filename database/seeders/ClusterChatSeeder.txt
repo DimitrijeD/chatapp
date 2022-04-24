@@ -1,7 +1,7 @@
 ChatGroupClusterSeeder class creates fake chat group with participants, messages and last seen message. 
 It has many different configurations suitable for simulating all kinds of users input and how app behaves and looks under circumstances.
 
-Everything is configurable in seederConfig() method. 
+Everything is configurable in defaultSeederConfig() method. 
 There are examples to help you out decide what kind of chat you can and wish to create. 
 
 Run seeder:
@@ -38,7 +38,7 @@ For example, if you choose the following configuration:
     * EVEN Time 
     * MAX-ACTIVITY Last Message Seen 
 
-    * without changing any other values in seederConfig(),
+    * without changing any other values in defaultSeederConfig(),
 
     = 
     
@@ -58,7 +58,7 @@ For example, if you choose the following configuration:
 |                                                   |
 -----------------------------------------------------
 
-Within seederConfig() method you can configure:
+Within defaultSeederConfig() method you can configure:
     - chat type
     - number of messages to create,
     - number of users to add to this chat group and which users,

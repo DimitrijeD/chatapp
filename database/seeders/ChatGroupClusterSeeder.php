@@ -17,6 +17,10 @@ use Database\Seeders\clusters\ModelBuilders\GroupParticipantsPivot;
 use Database\Seeders\clusters\ModelBuilders\BuildUsers;
 use Database\Seeders\clusters\ModelBuilders\TimeInterval;
 
+use Database\Seeders\clusters\Init\GroupCreatorId;
+use Database\Seeders\clusters\Init\NumOfMessages;
+use Database\Seeders\clusters\Init\TextLen;
+
 class ChatGroupClusterSeeder extends Seeder
 {
     const DISTRIBUTION_MAX_ACTIVITY = 'MAX-ACTIVITY';
@@ -31,92 +35,49 @@ class ChatGroupClusterSeeder extends Seeder
         self::DISTRIBUTION_EVEN,
     ]; 
 
+    const MIN_TEXT_LEN = 10;
+    const MAX_TEXT_LEN = 200;
+
+    const MIN_NUM_MESSAGES = 10;
+    const MAX_NUM_MESSAGES = 100;
+
     /**
      * Define seeder's behaviour and type
      */
-    private function seederConfig()
+    private function defaultSeederConfig()
     {
-        $numMinMsg = 5;
-        $numMaxMsg = 60;
-        $this->numMessages = rand($numMinMsg, $numMaxMsg);
+        $this->numMessages = (new NumOfMessages())->get();
 
-        // OR CHOOSE how many messages should be created
-        // $this->numMessages = 46;
+        $this->minTextLen = self::MIN_TEXT_LEN;
+        $this->maxTextLen = self::MAX_TEXT_LEN;
 
-        // CHOOSE range of message text length (min must be at least 10)
-        $this->minTextLen = 10;
-        $this->maxTextLen = 100;
-
-        // CHOOSE one of DISTRIBUTION_TYPES for messages
         $this->msgType = self::DISTRIBUTION_DEFAULT;
-
-        // CHOOSE one of DISTRIBUTION_TYPES for timeline of dates messages were sent
         $this->timeType = self::DISTRIBUTION_DEFAULT;
-
-        // CHOOSE one of DISTRIBUTION_TYPES for when and what message each user saw last 
         $this->seenType = self::DISTRIBUTION_DEFAULT;
 
-        // CHOOSE from which
-        $minTime = [
-            'year'  => 2022, 
-            'month' => 3, 
-            'day'   => 1, 
-            'hour'  => 0,
-        ];
 
-        // CHOOSE to which date messages should be distributed in 
-        $maxTime = [
-            'year'  => 2022, 
-            'month' => 4, 
-            'day'   => 1, 
-            'hour'  => 1,
-        ];
-
-        // OR CHOOSE default time by setting this var to TRUE, which is last 30 days
-        $defaultTimeInterval = true;
-
-        // CHOOSE number of chat group participants
-        $this->numUsers = 2;
-
-        // If count($participants) > $this->numUsers , seeder will prioritize $participants as users to create
-        $participants = [
-            [
-                'first_name' => 'Qwe',
-                'last_name' => 'Qwe',
-                'email' => 'qwe@qwe', 
-                'password' => 'qweqweqweQ1',
-            ],
-            [
-                'first_name' => 'Asd',
-                'last_name' => 'Asd',
-                'email' => 'asd@asd', 
-                'password' => 'qweqweqweQ1',
-            ],
-        ];   
-
-        $this->users = (new BuildUsers($participants, $this->numUsers))
+        $this->users = (new BuildUsers([], null))
             ->resolve()
             ->build(); 
 
-        $this->timeInterval = (new TimeInterval($minTime, $maxTime, $defaultTimeInterval))->createTimeInterval();
+        $this->creator_id = (new GroupCreatorId($this->users, 'qwe@qwe'))->get();
 
-        // CHOOSE chat group data
-        $chatGroupProps = [
+        $this->timeInterval = (new TimeInterval(null, null, true))->createTimeInterval();
+
+        $this->chatGroup = (new ChatGroupBuilder([
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
             'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
-        ];
-
-        $this->chatGroup = (new ChatGroupBuilder($chatGroupProps))->makeModel();
+        ]))->makeModel();
         $this->messages = new MessagesBuilder($this->chatGroup->id);
-        $this->pivot = (new GroupParticipantsPivot($this->users, $this->chatGroup))->build();
+        $this->pivot = (new GroupParticipantsPivot($this->users, $this->chatGroup, $this->creator_id))->build();
     }
 
     public function run()
     {
         if(!isset($this->massSetterCalled)){
-            $this->seederConfig();
+            $this->defaultSeederConfig();
         } 
         $this->clusteredMessages = ( new MessageConfigResolver($this->users, $this->chatGroup->id, $this->msgType, $this->numMessages) )
             ->resolve()
@@ -151,85 +112,55 @@ class ChatGroupClusterSeeder extends Seeder
         ];
     }
 
-    public function massSetter(
-        $numMessages = 40, 
-        $minTextLen = 10, 
-        $maxTextLen = 100, 
-        $msgType = self::DISTRIBUTION_DEFAULT, 
-        $timeType = self::DISTRIBUTION_DEFAULT,
-        $seenType = self::DISTRIBUTION_DEFAULT,
-        $minTime_ = [
-            'year'  => 2022, 
-            'month' => 3, 
-            'day'   => 1, 
-            'hour'  => 0,
-        ],
-        $maxTime_ = [
-            'year'  => 2022, 
-            'month' => 4, 
-            'day'   => 1, 
-            'hour'  => 1,
-        ],
-        $defaultTimeInterval_ = false,
-        $numUsers = 3,
-        $participants_ = [
-            [
-                'first_name' => 'Qwe',
-                'last_name' => 'Qwe',
-                'email' => 'qwe@qwe', 
-                'password' => 'qweqweqweQ1',
-            ],
-        ],
-        $creator_email = 'qwe@qwe',
-    ) {
+    public function massSetter($init) 
+    {
+        if(!$init) return;
+
         $this->massSetterCalled = true;
 
-        $this->numMessages = $numMessages;
+        $this->numMessages = (new NumOfMessages( isset($init['numMessages']) ? $init['numMessages'] : 0 ))->get();
 
-        // CHOOSE range of message text length (min must be at least 10)
-        $this->minTextLen = $minTextLen;
-        $this->maxTextLen = $maxTextLen;
+        $this->minTextLen = isset($init['minTextLen']) && $init['minTextLen'] > self::MIN_TEXT_LEN 
+            ? $init['minTextLen'] 
+            : self::MIN_TEXT_LEN;
 
-        // CHOOSE one of DISTRIBUTION_TYPES for messages
-        $this->msgType = $msgType;
+        $textLen = new TextLen(
+            isset($init['minTextLen']) ? $init['minTextLen'] : 0, 
+            isset($init['maxTextLen']) ? $init['maxTextLen'] : 0);
 
-        // CHOOSE one of DISTRIBUTION_TYPES for timeline of dates messages were sent
-        $this->timeType = $timeType;
+        $this->minTextLen = $textLen->getMin();
+        $this->maxTextLen = $textLen->getMax();
 
-        // CHOOSE one of DISTRIBUTION_TYPES for when and what message each user saw last 
-        $this->seenType = $seenType;
+        $this->msgType  = isset($init['msgType'])  ? $init['msgType']  : self::DISTRIBUTION_DEFAULT;
+        $this->timeType = isset($init['timeType']) ? $init['timeType'] : self::DISTRIBUTION_DEFAULT;
+        $this->seenType = isset($init['seenType']) ? $init['seenType'] : self::DISTRIBUTION_DEFAULT;
 
-        // CHOOSE from which
-        $minTime = $minTime_;
+        $this->numUsers = isset($init['numUsers']) ? $init['numUsers'] : 0;
 
-        // CHOOSE to which date messages should be distributed in 
-        $maxTime = $maxTime_;
+        $this->users = (new BuildUsers(
+            isset($init['participants']) ? $init['participants'] : [], 
+            $this->numUsers
+        ))->resolve()->build(); 
 
-        // OR CHOOSE default time by setting this var to TRUE, which is last 30 days
-        $defaultTimeInterval = $defaultTimeInterval_;
+        $this->creator_id = (new GroupCreatorId( 
+            $this->users, 
+            isset($init['creator_email']) ? $init['creator_email'] : '' )
+        )->get();
 
-        // CHOOSE number of chat group participants
-        $this->numUsers = $numUsers;
+        $this->timeInterval = (new TimeInterval(
+            isset($init['minTime'])             ? $init['minTime']             : false,
+            isset($init['maxTime'])             ? $init['maxTime']             : false,
+            isset($init['defaultTimeInterval']) ? $init['defaultTimeInterval'] : null
+        ))->createTimeInterval();
 
-        $participants = $participants_;   
-
-        $this->users = (new BuildUsers($participants, $this->numUsers))
-            ->resolve()
-            ->build(); 
-
-        $this->timeInterval = (new TimeInterval($minTime, $maxTime, $defaultTimeInterval))->createTimeInterval();
-
-        // CHOOSE chat group data
-        $chatGroupProps = [
+        $this->chatGroup = (new ChatGroupBuilder([
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
             'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
-        ];
-
-        $this->chatGroup = (new ChatGroupBuilder($chatGroupProps))->makeModel();
-        $this->messages = new MessagesBuilder($this->chatGroup->id);
-        $this->pivot = (new GroupParticipantsPivot($this->users, $this->chatGroup))->build();
+        ]))->makeModel();
+        $this->messages  =  new MessagesBuilder($this->chatGroup->id);
+        $this->pivot     = (new GroupParticipantsPivot($this->users, $this->chatGroup, $this->creator_id))->build();
     }
 
 }

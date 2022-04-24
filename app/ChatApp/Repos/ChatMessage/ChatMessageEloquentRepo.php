@@ -23,4 +23,14 @@ class ChatMessageEloquentRepo implements ChatMessageRepo
             ->with('user')
             ->get();
     }
+
+    public function getLatestMessages($group_id)
+    {
+        return ChatMessage::
+              where('group_id', $group_id)
+            ->orderBy('id', 'desc')
+            ->with('user')
+            ->take(ChatMessage::INIT_NUM_MESSAGES)
+            ->get();
+    }
 }

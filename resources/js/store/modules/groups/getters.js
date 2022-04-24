@@ -65,9 +65,26 @@ export function getGroupIndexById(groups, id)
 }
 
 // expects hash map of messages: messages{ ... msgId: msgObject ... }
-export function getLatestMessageId(messages)
+export function getLastOwnedMsgId(messages)
 {
-    return Math.max(...Object.keys(messages))
+    if(Object.prototype.toString.call(messages).indexOf("Object")>-1){
+        let last_id = 0
+        for(let id in messages){
+            if(parseInt(id) > last_id) last_id = parseInt(id)
+        }
+
+        return last_id
+    }
+
+    if(Object.prototype.toString.call(messages).indexOf("Array")>-1){
+        if(!messages.length) return 0
+        let last_id = 0
+        for(let i in messages){
+            if(messages[i].id > last_id) last_id = messages[i].id 
+        }
+        
+        return last_id
+    }
 }
 
 export function getParticipantIndexInGroupByGroupId(participants, user_id)
@@ -81,7 +98,7 @@ export function getParticipantIndexInGroupByGroupId(participants, user_id)
     return undefined
 }
 
-export function numOfUnseenGroups(groups)
+export function getNumOfUnseenGroups(groups)
 {
     let num = 0
     
@@ -127,9 +144,15 @@ export function getGroupsFrom_filteredGroupsIds(groups, filteredGroupsIds)
     return filteredGroups
 }
 
-export function findGroupIndexByIdIn_openedGroupsIds(openedGroupsIds, id)
+export function getGroupIndexByIdIn_openedGroupsIds(openedGroupsIds, id)
 {
     return openedGroupsIds.findIndex((group_id, index) => {
         if(group_id == id) return true;
     })
 }
+
+export function nowISO()
+{
+    return (new Date(Date.now())).toISOString();  
+}
+

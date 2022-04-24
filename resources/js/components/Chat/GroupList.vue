@@ -87,10 +87,6 @@
 import { mapGetters } from "vuex";
 
 export default {
-    props: [
-
-    ],
-
     data(){
         return {
             showExistingChats: false,
@@ -107,11 +103,6 @@ export default {
             groups: "groups/filteredGroups",
         }),
 
-        numOfUnseenGroups(){
-            this.asd()
-            return 'asd'
-        },
-
         dropdownText(){
             let num = this.$store.getters['groups/numOfUnseenGroups']
             if(!num) {
@@ -121,7 +112,6 @@ export default {
             this.newMessage = true
             return 'New Messages in ' + num + ' chats'
         }
-
     },
 
     created(){  
@@ -131,40 +121,6 @@ export default {
     mounted() {
         this.groupsWithUnseenMessages
     },
-
-    // watch: {
-    //     groupsWithUnseenMessages:
-    //     {
-    //         handler: function(newValue, oldValue) {
-
-    //             if(newValue.length){
-    //                 this.dropdownText = 'New Messages in ' + newValue.length + ' chats';
-    //                 this.newMessage = true;
-    //             } else {
-    //                 this.dropdownText = 'Chat groups';
-    //                 this.newMessage = false;
-    //             }
-
-    //         },
-    //         deep: true
-    //     },
-
-    //     groupIdAcknowledged:
-    //     {
-    //         handler: function (newValue, oldValue)
-    //         {
-    //             if(newValue){
-    //                 let groupAcknowledgedIndex = this.findGroupById(newValue, this.groups);
-    //                 this.groups[groupAcknowledgedIndex].hasUnseenState = false;
-
-    //                 let onlyUnseenGroupsIndex = this.findGroupById_forUnseensOnly(newValue, this.groupsWithUnseenMessages);
-
-    //                 this.groupsWithUnseenMessages.splice(onlyUnseenGroupsIndex, 1);
-    //             }
-    //         }
-    //     },
-
-    // },
 
     methods:{
         manageDropdown()
@@ -191,34 +147,10 @@ export default {
             //this.$store.getters.filterGroupsBySearchString(this.searchStr)
             this.$store.dispatch('groups/filterGroupsBySearchString', this.searchStr)
             
-
             if(!this.groups.length){
                 this.nothingFound = 'Nothing found :/';
             }
         },
-
-        asd(){
-            
-        },
-
-
-
-        // findGroupById(id, arrOfGroups){
-        //     for(let index in arrOfGroups){
-        //         if(arrOfGroups.hasOwnProperty(index) && arrOfGroups[index].group.id == id){
-        //             return index;
-        //         }
-        //     }
-        // },
-
-        // findGroupById_forUnseensOnly(id, arrOfGroups){
-        //     for(let index in arrOfGroups){
-        //         if(arrOfGroups.hasOwnProperty(index) && arrOfGroups[index].id == id){
-        //             return index;
-        //         }
-        //     }
-        // }
-
     }
 }
 </script>

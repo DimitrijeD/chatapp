@@ -9,6 +9,8 @@ class ChatMessage extends Model
 {
     use HasFactory;
 
+    const INIT_NUM_MESSAGES = 10;
+
     protected $fillable = [
         'group_id', 'user_id', 'text', 'updated_at'
     ];
