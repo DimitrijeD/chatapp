@@ -46,17 +46,22 @@ class ChatGroupClusterSeeder extends Seeder
      */
     private function defaultSeederConfig()
     {
-        $this->numMessages = (new NumOfMessages())->get();
+        $numOfMessages = 80;
+        // $numOfMessages = null;
+        
+        $this->numMessages = (new NumOfMessages($numOfMessages))->get();
 
         $this->minTextLen = self::MIN_TEXT_LEN;
         $this->maxTextLen = self::MAX_TEXT_LEN;
 
-        $this->msgType = self::DISTRIBUTION_DEFAULT;
-        $this->timeType = self::DISTRIBUTION_DEFAULT;
-        $this->seenType = self::DISTRIBUTION_DEFAULT;
+        $this->msgType = self::DISTRIBUTION_MAX_ACTIVITY;
+        $this->timeType = self::DISTRIBUTION_MAX_ACTIVITY;
+        $this->seenType = self::DISTRIBUTION_MAX_ACTIVITY;
 
+        // $this->numUsers = 20;
+        $this->numUsers = null;
 
-        $this->users = (new BuildUsers([], null))
+        $this->users = (new BuildUsers([], $this->numUsers))
             ->resolve()
             ->build(); 
 
@@ -66,7 +71,7 @@ class ChatGroupClusterSeeder extends Seeder
 
         $this->chatGroup = (new ChatGroupBuilder([
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
-            'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
+            'model_type' => ChatGroup::TYPE_DEFAULT,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ]))->makeModel();
@@ -108,7 +113,8 @@ class ChatGroupClusterSeeder extends Seeder
             'group' => $this->chatGroup,
             'messages' => $this->createdMessages,
             'users' => $this->users,
-            'pivots' => $this->pivot->getAllGroupPivots()
+            'pivots' => $this->pivot->getAllGroupPivots(),
+            'creator_id' => $this->creator_id,
         ];
     }
 
@@ -137,10 +143,10 @@ class ChatGroupClusterSeeder extends Seeder
 
         $this->numUsers = isset($init['numUsers']) ? $init['numUsers'] : 0;
 
-        $this->users = (new BuildUsers(
-            isset($init['participants']) ? $init['participants'] : [], 
-            $this->numUsers
-        ))->resolve()->build(); 
+        $participantsWithRole = isset($init['participants']) ? $init['participants'] : [];
+        $this->users = (new BuildUsers( $participantsWithRole, $this->numUsers ))
+            ->resolve()
+            ->build(); 
 
         $this->creator_id = (new GroupCreatorId( 
             $this->users, 
@@ -153,12 +159,15 @@ class ChatGroupClusterSeeder extends Seeder
             isset($init['defaultTimeInterval']) ? $init['defaultTimeInterval'] : null
         ))->createTimeInterval();
 
+        $model_type = isset($init['model_type']) ? $init['model_type'] : ChatGroup::TYPE_DEFAULT;
+        
         $this->chatGroup = (new ChatGroupBuilder([
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
-            'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
+            'model_type' => $model_type,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ]))->makeModel();
+        
         $this->messages  =  new MessagesBuilder($this->chatGroup->id);
         $this->pivot     = (new GroupParticipantsPivot($this->users, $this->chatGroup, $this->creator_id))->build();
     }

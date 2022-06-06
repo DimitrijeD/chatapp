@@ -1,19 +1,24 @@
 <template>
-    <div class="w-full flex ">
+    <div class="flex m-2 gap-2 ">
         <textarea
-            class="flex-auto bg-blue-50 p-2 w-full resize-none text-base focus:bg-white focus:outline-none focus:ring-1 focus:border-primary ring-inset"
+            class="rounded-lg flex-grow p-2 resize-none text-base focus:outline-none shadow-inner"
             rows="3"
             @keyup.enter="whenMessageSent()"
             @keydown="userTyping"
             type="text"
             v-model="message"
-            placeholder="type..."
+            placeholder="Message ..."
         ></textarea>
+
         <button
             @click="whenMessageSent()"
-            class="button-send-msg text-base bg-blue-400 text-white hover:bg-blue-500"
+            class="text-base flex-none w-10 "
         >
-            Send
+            <font-awesome-icon 
+                icon="message" 
+                size="2xl" 
+                class="text-blue-400 hover:text-blue-500"
+            /> 
         </button>
     </div>
 </template>
@@ -25,27 +30,29 @@ export default {
     data(){
         return{
             message: '',
-            storeMessageEndpoint: '/api/chat/message/store'
-        }
-    },
+            config: {
+                channel: {
+                    name: "group." + this.group_id,
+                    events: {
+                        typing: {
+                            name: 'typing'
+                        },
 
-    components:{
+                        stopTyping: {
+                            name: 'stoped-typing'
+                        },
+                    }
+                },
+            },
+        }
     },
 
     props:[
         'group_id',
     ],
 
-    created() {
-
-    },
-
     computed: {
         ...mapGetters({ user: "StateUser" }),
-
-    },
-
-    mounted() {
 
     },
 
@@ -57,8 +64,9 @@ export default {
 
         sendMessage()
         {
-            if(this.message==='') return
-            this.$store.dispatch('groups/storeMessage', this.formatMessage()).then(()=> {
+            if(this.message === '') return
+
+            this.$store.dispatch('groups/storeMessage', this.getMessageFormat()).then(()=> {
                 this.message = ''
             }).catch(error => {
                 console.log('message input component')
@@ -68,39 +76,37 @@ export default {
 
         userTyping()
         {
-            Echo.private("group." + this.group_id)
-            .whisper('typing', {
-                'id': this.user.id,
-                'first_name': this.user.first_name,
-                'last_name': this.user.last_name,
-            });
+            Echo.private(this.config.channel.name)
+            .whisper(this.config.channel.events.typing.name, this.getWhisperData());
         },
 
         userStopedTyping()
         {
-            Echo.private("group." + this.group_id)
-            .whisper('stoped-typing', {
-                'id': this.user.id,
-                'first_name': this.user.first_name,
-                'last_name': this.user.last_name,
-            })
+            Echo.private(this.config.channel.name)
+            .whisper(this.config.channel.events.stopTyping.name, this.getWhisperData())
         },
 
-        formatMessage()
+        getMessageFormat()
         {
             return {
                 text: this.message,
                 group_id: this.group_id,
                 user_id: this.user.id
             };
-        }
+        },
+
+        getWhisperData()
+        {
+            return {
+                'id': this.user.id,
+                'first_name': this.user.first_name,
+                'last_name': this.user.last_name,
+            }
+        },
     }
 }
 </script>
 
 <style scoped>
-.button-send-msg{
-  aspect-ratio: 1 / 1;
-  height: 100%;
-}
+
 </style>

@@ -1,59 +1,20 @@
 import * as helpers from "../../../helpers/helpers_exporter.js"
+import * as h from './helper_functions.js' // h as helper functions
+import * as m from './modifiers.js' // m as modifiers
 
-import { 
-    getById, 
-    getBySearchString, 
-    getGroupIndexById, 
-    getLastOwnedMsgId, 
-    getParticipantIndexInGroupByGroupId, 
-    getNumOfUnseenGroups, 
-    getGroupsFrom_openedGroupsIds, 
-    getGroupsFrom_filteredGroupsIds,
-    getGroupIndexByIdIn_openedGroupsIds,
-    nowISO,
-} from './getters.js'
-
-import {
-    sort_filteredGroups_by_updated_at
-} from './sorters.js'
-
-import { 
-    attachUnseenStateBool, 
-    propInit,
-} from './modifiers.js'
-
-//----------------------------------------------------------------------------------------------------
-
-const state = {
-    groups: [], 
-    openedGroupsIds: [],
-    filteredGroupsIds: [],
-}
-
-const getters = {
-    allGroups: (state) => state.groups,
-
-    filterById: (state) => (id) => getById(state.groups, id),
-    
-    openedGroupsIds: (state) => state.openedGroupsIds,
-
-    numOfUnseenGroups:(state) => getNumOfUnseenGroups(state.groups),
-
-    getOpenedGroups: (state) => getGroupsFrom_openedGroupsIds(state.groups, state.openedGroupsIds),
-
-    filteredGroups: (state) => sort_filteredGroups_by_updated_at(getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds)),
-
-}
+import state from './state.js'
+import getters from './getters.js'
+import mutations from './mutations.js'
 
 const actions = 
 {
-    filterGroupsBySearchString: ({ commit, state }, str) => commit('setFilteredGroupsIds', getBySearchString(state.groups, str)),
+    filterGroupsBySearchString: ({ commit, state }, str) => commit('setFilteredGroupsIds', h.getBySearchString(state.groups, str)),
 
     getGroups(context)
     {
         axios.get('/api/chat/user/groups').then((res)=>{
-            var groups = attachUnseenStateBool(res.data, context.rootState.auth.user.id)
-            groups = propInit(groups)
+            var groups = m.attachUnseenStateBool(res.data, context.rootState.auth.user.id)
+            groups = m.propInit(groups)
 
             context.commit('addGroups', groups)
             context.dispatch('filterGroupsBySearchString', '')
@@ -65,8 +26,8 @@ const actions =
         axios.post('/api/chat/group/store', data)
         .then( res => {
             var groups = [res.data]
-            groups = propInit(groups)
-            groups = attachUnseenStateBool(groups, context.rootState.auth.user.id)
+            groups = m.propInit(groups)
+            groups = m.attachUnseenStateBool(groups, context.rootState.auth.user.id)
             const group = groups[0]
 
             context.commit('addGroup', group)
@@ -77,15 +38,16 @@ const actions =
 
     openGroup(context, id)
     {
-        const group = getById(state.groups, id)
+        const group = h.getById(state.groups, id)
 
         if(group){
-            if(!state.openedGroupsIds.includes(id)) context.commit('addToOpenedGroups', group.id)  
+            if(!state.openedGroupsIds.includes(id)) 
+                context.commit('addToOpenedGroups', group.id)  
         } else {
             axios.get('/api/chat/group/' + id).then((res)=>{
                 let groups = [res.data]
-                groups = propInit(groups)
-                groups = attachUnseenStateBool(groups, context.rootState.auth.user.id)
+                groups = m.propInit(groups)
+                groups = m.attachUnseenStateBool(groups, context.rootState.auth.user.id)
                 const group = groups[0]
 
                 context.commit('addGroup', group)
@@ -93,7 +55,8 @@ const actions =
                 context.commit('addToFilteredGroups', group.id)
             })
             .catch((error) => {
-                console.log('error trying to get group by id in (groups.js) which doesnt exist in store nor in database, openGroup action')
+                console.log('groups/openGroup')
+                console.log('Trying to get group by id which doesnt exist in store nor in database.')
                 console.log(error)
             })
         }
@@ -102,13 +65,13 @@ const actions =
 
     closeGroup({ commit, state }, id)
     {
-        const index = getGroupIndexByIdIn_openedGroupsIds(state.openedGroupsIds, id)
+        const index = h.getGroupIndexByIdIn_openedGroupsIds(state.openedGroupsIds, id)
         if(Number.isInteger(index)) commit('closeWindow', index)
     },
 
     setAllMessagesAcknowledged({ commit, state }, data)
     {
-        const grI = getGroupIndexById(state.groups, data.group_id)
+        const grI = h.getGroupIndexById(state.groups, data.group_id)
         
         if(grI == undefined){
             console.log('group with this index doesnt exist, also possible, group with this ID is not in store')
@@ -129,8 +92,8 @@ const actions =
 
     seenEvent({ commit, state }, e)
     {
-        const grI = getGroupIndexById(state.groups, e.group_id)
-        const prI = getParticipantIndexInGroupByGroupId(state.groups[grI].participants, e.user_id)
+        const grI = h.getGroupIndexById(state.groups, e.group_id)
+        const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, e.user_id)
 
         if(!prI) return 
 
@@ -146,8 +109,8 @@ const actions =
         return axios.post('/api/chat/message/store', message)
         .then(res => {
             const message = helpers.createHashMap_OneToOne([res.data], 'id')
-            const grI = getGroupIndexById(context.state.groups, res.data.group_id)
-            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[grI].participants, res.data.user_id)
+            const grI = h.getGroupIndexById(context.state.groups, res.data.group_id)
+            const prI = h.getParticipantIndexInGroupByGroupId(context.state.groups[grI].participants, res.data.user_id)
 
             const data = {
                 messages: message,
@@ -155,7 +118,7 @@ const actions =
                 prI: prI,
                 lastAcknowledgedMessageId: res.data.id,
                 last_msg_id: res.data.id,
-                now: nowISO()
+                now: h.nowISO()
             }
 
             context.commit('mergeMessagesInGroup', data)
@@ -171,8 +134,8 @@ const actions =
 
     getMessages(context, request)
     {
-        request.grI = getGroupIndexById(state.groups, request.group_id)
-        request.lastOwnedMsgId = getLastOwnedMsgId(state.groups[request.grI].messages)
+        request.grI = h.getGroupIndexById(state.groups, request.group_id)
+        request.lastOwnedMsgId = h.getLastOwnedMsgId(state.groups[request.grI].messages)
 
         if(isNaN(request.lastOwnedMsgId)) return
 
@@ -192,85 +155,156 @@ const actions =
             if(!res.data.length) return
 
             const messages = helpers.createHashMap_OneToOne(res.data, 'id')
-            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id)
+            const prI = h.getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id)
             // console.log('number of fetched messages', res.data.length)
 
             const data = {
                 messages: messages,
                 grI: request.grI,
                 prI: prI,
-                last_msg_id: getLastOwnedMsgId(res.data),
-                now: nowISO()
+                last_msg_id: h.getLastOwnedMsgId(res.data),
+                now: h.nowISO()
             }
 
             context.commit('mergeMessagesInGroup', data)
             context.commit('setLastMessageIdInGroup', data) 
+            context.dispatch('setEarliestMessageInGroup', data) 
         }).catch( error => {
-            console.log('groups/storeMessage')
+            console.log('groups/getInitMessages')
             console.log(error)
         })
     },
 
     getOnlyMissingMessages(context, request)
     {
+        if(!state.groups[request.grI].last_msg_id){
+            console.log(`Trying to get latest missing messages in \n group_id = ${request.group_id} \n which doesnt have 'last_msg_id' set to integer value \n which is required for successful response`)
+            return
+        }
         const endpoint = `/api/chat/group/${request.group_id}/from-msg/${state.groups[request.grI].last_msg_id}`
 
         return axios.get(endpoint).then(res => {
             if(!res.data.length) return
 
-            const messages = helpers.createHashMap_OneToOne(res.data, 'id')
-            const prI = getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id)
-
             const data = {
-                messages: messages,
+                messages: helpers.createHashMap_OneToOne(res.data, 'id'),
                 grI: request.grI,
-                prI: prI,
-                last_msg_id: getLastOwnedMsgId(res.data),
-                now: nowISO()
+                prI: h.getParticipantIndexInGroupByGroupId(context.state.groups[request.grI].participants, res.data.user_id),
+                last_msg_id: h.getLastOwnedMsgId(res.data),
+                now: h.nowISO()
             }
 
             context.commit('mergeMessagesInGroup', data)
             context.commit('setLastMessageIdInGroup', data) 
             context.commit('hasUnseenState', data) // after pulling new messages, user must have unseen messages, otherwise code is dog
+            context.dispatch('setEarliestMessageInGroup', data) 
         }).catch( error => {
-            console.log('groups/storeMessage')
+            console.log('groups/getOnlyMissingMessages')
             console.log(error)
         })
     },
 
-}
+    getEarliestMessages(context, request)
+    {
+        const grI = h.getGroupIndexById(state.groups, request.group_id) 
 
-const mutations = {
-    addGroups: (state, groups) => state.groups = groups,
+        if(state.groups[grI].reachedEarliestMsgId){
+            console.log('earliest message ID reached, cannot pull any more')
+            return
+        }
 
-    setFilteredGroupsIds: (state, ids) => state.filteredGroupsIds = ids,
+        const eariestMessageId = state.groups[grI].eariestMessageId
 
-    addGroup: (state, group) => state.groups.push(group),
+        if(!eariestMessageId){
+            console.log(`trying to get earliest messages in \n group_id = ${request.group_id} \n which doesnt have 'eariestMessageId' set to integer value \n which is required for successful response`)
+            return
+        }
 
-    addToOpenedGroups: (state, id) => state.openedGroupsIds.push(id),
+        const endpoint = `/api/chat/group/${request.group_id}/before-msg/${eariestMessageId}`
 
-    closeWindow: (state, index) => state.openedGroupsIds.splice(index, 1),
+        return axios.get(endpoint).then(res => {
+            if(!res.data.length) {
+                console.log('no messages returned')
+                context.commit('lockReachedEarliestMsgId', grI)
+                return
+            }
 
-    mergeMessagesInGroup: (state, data) => state.groups[data.grI].messages = { ...state.groups[data.grI].messages, ...data.messages},
+            const data = {
+                messages: helpers.createHashMap_OneToOne(res.data, 'id'),
+                grI: grI,
+            }
 
-    setAcknowledgedMessages: (state, data) => state.groups[data.grI].lastAcknowledgedMessageId = data.lastAcknowledgedMessageId,
-
-    setLastMessageIdInGroup: (state, data) => state.groups[data.grI].last_msg_id = data.last_msg_id,
-
-    doesntUnseenState: (state, data) => state.groups[data.grI].hasUnseenState = false,
-
-    hasUnseenState: (state, data) => state.groups[data.grI].hasUnseenState = true,
-
-    updateSeenPivot: (state, data) => state.groups[data.grI].participants[data.prI].pivot = data.pivot,
-
-    updateSeenPivotOnly_last_message_seen_id(state, data) {
-        state.groups[data.grI].participants[data.prI].pivot.last_message_seen_id = data.last_msg_id
-        state.groups[data.grI].participants[data.prI].pivot.updated_at = data.now
+            context.commit('mergeMessagesInGroup', data)
+            context.dispatch('setEarliestMessageInGroup', data) 
+        }).catch( error => {
+            console.log('groups/getEarliestMessages')
+            console.log(error)
+        })
     },
 
-    addToFilteredGroups: (state, id) => state.filteredGroupsIds.push(id),
+    addParticipants(context, data)
+    {
+        let request = m.prepareParticipantsForStoreRequest(data)
+        let endpoint = `/api/chat/group/${data.group_id}/add-users`
 
-    updateGroup_updated_at: (state, data) => state.groups[data.grI].updated_at = data.updated_at,
+        /**
+         * Request returns fresh group with particiapants, without messages
+         */
+        return axios.post(endpoint, request).then(res => {
+            if(!res.data.group){ 
+                console.log("added participants to group request but no fresh group was returned, 'groups/addParticipants' action")
+                return
+            }
+
+            let group = res.data.group
+
+            let data = {
+                group: group,
+                grI: h.getGroupIndexById(state.groups, group.id) 
+            }
+            context.commit('refreshGroup', data)
+
+        }).catch( error => {
+            console.log('groups/addParticipants')
+            console.log(error)
+        })
+    },
+
+    removeParticipantFromGroup(context, data)
+    {
+        if(!data.group_id || !data.user_id_to_remove) return
+
+        axios.get(`/api/chat/group/${data.group_id}/remove/${data.user_id_to_remove}`).then((res)=>{
+            const grI = h.getGroupIndexById(state.groups, data.group_id) 
+            const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_id_to_remove)
+
+            context.commit('removeParticipantFromGroup', {
+                grI: grI,
+                prI: prI
+            })
+        }).catch((error)=> {
+            console.log(`error while removing participant from group \n ${error}`)
+        })
+    },
+
+    leaveGroup(context, data)
+    {
+        axios.get(`/api/chat/group/${data.group_id}/leave`).then((res) => {
+            context.dispatch('closeGroup', data.group_id) 
+            context.commit('removeGroupFromStore', h.getGroupIndexById(state.groups, data.group_id) )
+            context.commit('removeFilteredGroupsId', data.group_id)
+            
+        }).catch(error => {
+            console.log(error)
+        })
+    },
+
+    setEarliestMessageInGroup(context, data)
+    {
+        data.eariestMessageId = h.getEarliestMsgId(state.groups[data.grI].messages)
+        context.commit('setEarliestMessageIdInGroup', data)
+    }
+
 }
 
 export default {

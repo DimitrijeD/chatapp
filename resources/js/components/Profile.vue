@@ -2,24 +2,47 @@
     <div v-if="user">
         <div class="bg-gray-50 shadow-xl py-3">
 
-            <div class="p-2">
-                <img class="mx-auto" :src="user.image" alt="no img">
-            </div>
 
-            <div class="p-2">
-                <h3 class="text-center text-xl text-gray-900  text-uppercase">UserID {{ user.id }} </h3>
-                <h3 class="text-center text-xl text-gray-900  text-uppercase">{{ user.first_name }} {{ user.last_name }} </h3>
+            <div class="p-2 text-center text-xl text-gray-900">
+                <img class="mx-auto w-20 h-20" :src="user.image" alt="no img">
 
-                <div class="text-center text-gray-400 text-xs font-semibold p-1 mb-2">
-                    <p>Description</p>
-                </div>
+                <p class="">UserID: <b>{{ user.id }}</b> </p>
+                <p class="">First and last name: <b>{{ user.first_name }} {{ user.last_name }}</b></p>
 
-                <table class="text-xs my-3">
-                    <tr>
-                        <td class="p-2 text-gray-500 font-semibold">Email</td>
-                        <td class="p-2">{{ user.email }}</td>
-                    </tr>
-                </table>
+                <p class="p-2 text-gray-500 font-semibold">Email <b>{{ user.email }}</b></p>
+
+                <br><br>
+
+                <p>ICONS TESTING</p>
+                <!-- <font-awesome-icon 
+                    icon="magnifying-glass" 
+                    size="2x" 
+                    class=""
+                />
+                <br>
+                <font-awesome-icon 
+                    icon="spinner" 
+                    size="1x" 
+                    class=""
+                    spin fixed-width
+                />   
+                <br>
+                <font-awesome-icon 
+                    icon="envelope" 
+                    size="2xs" 
+                    class=""
+                />   
+                <font-awesome-icon 
+                    icon="envelope" 
+ 
+                    class=""
+                />  
+                <font-awesome-icon 
+                    icon="envelope" 
+                    size="2xl" 
+                    class=""
+                />   -->
+
             </div>
         </div>
     </div>

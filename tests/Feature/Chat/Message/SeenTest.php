@@ -6,12 +6,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 
 use Database\Seeders\ChatGroupClusterSeeder;
 use App\Models\User;
 use App\Models\ChatGroup;
 use App\Models\ChatMessage;
 use App\Models\ParticipantPivot;
+use App\Models\ChatRole;
+use App\Events\MeSawMessage;
 
 class SeenTest extends TestCase
 {
@@ -58,7 +61,6 @@ class SeenTest extends TestCase
         ];
         
         $response = $this->post($this->seenEndpoint, $data);
-
         $response->assertStatus(200);
     }
 
@@ -85,7 +87,7 @@ class SeenTest extends TestCase
     /**
      * Assert request doesnt modify wrong data. 
      */
-    public function test_user_seen_doesnt_modify_others_seen()
+    public function test_user_seen_doesnt_modify_others_seen_pivot_state()
     {
         $data = [
             'group_id' => $this->group->id,
@@ -101,5 +103,66 @@ class SeenTest extends TestCase
             'participant_role' => $this->otherUserPivot->participant_role,
         ]);
     }
+
+    public function test_dispatches_seen_message_even()
+    {
+        Event::fake();
+
+        $data = [
+            'group_id' => $this->group->id,
+            'lastMessageId' => $this->lastMessage->id,
+        ];
+        
+        $this->post($this->seenEndpoint, $data);
+
+        Event::assertDispatched(MeSawMessage::class, function ($e) {
+            $evData = $e->seenData;
+
+            return $e->seenData->group_id == $this->group->id 
+                && $e->seenData->user_id == $this->user->id
+                && $e->seenData->last_message_seen_id == $this->lastMessage->id;
+        });
+    }
+
+
+    public function test_cannot_seen_event_on_group_user_doesnt_belong_to()
+    {
+        $this->chatGroupSeeder = (resolve(ChatGroupClusterSeeder::class));
+        $this->chatGroupSeeder->massSetter([
+            'model_type' => ChatGroup::TYPE_PRIVATE,
+            'participants' => [
+                [
+                    'first_name' => 'Some',
+                    'last_name' => 'CompletelyDifferentUsers',
+                    'email' => 'q123w321e@q321w123e',
+                    'participant_role' => ChatRole::CREATOR
+                ],
+
+                [
+                    'first_name' => 'Which',
+                    'last_name' => 'HaveNoConnectionToThisUser',
+                    'email' => 'q123w321e@q321w12sd3sde',
+                    'participant_role' => ChatRole::MODERATOR
+                ],
+            ]
+        ]);
+        $allChatData = $this->chatGroupSeeder->run();
+
+        $data = [
+            'group_id' => $allChatData['group']->id, // foreign group
+            'lastMessageId' => $allChatData['messages']->last()->id, // last message in foreign group
+        ];
+        
+        $response = $this->post($this->seenEndpoint, $data);
+
+        $response->assertJson([
+            'errors' => __("You have no access rights to this chat group.")
+        ]);
+        
+        Event::fake();
+        // Assert an event was not dispatched... Middleware prevented bad request so this assert is pointless, but why not..
+        Event::assertNotDispatched(MeSawMessage::class);
+    }
+
 
 }

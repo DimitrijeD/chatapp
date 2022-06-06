@@ -10,6 +10,7 @@ class ChatMessage extends Model
     use HasFactory;
 
     const INIT_NUM_MESSAGES = 10;
+    const EARLIEST_NUM_MESSAGES = 20;
 
     protected $fillable = [
         'group_id', 'user_id', 'text', 'updated_at'

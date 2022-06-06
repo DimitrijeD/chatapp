@@ -1,0 +1,17 @@
+{
+    "unique_id": "628f49c55e7a8",
+    "cv": {
+        "unique_id": "628f48a860a0f",
+        "filename": "628f48a85f917_mycv.docx",
+        "original_name": "my-cv.docx",
+        "extension": "docx",
+        "exist": true
+    },
+    "cover_letter": {
+        "unique_id": "628f48b84c960",
+        "filename": "628f48b84bc01_mycoverletter.docx",
+        "original_name": "my-cover-letter.docx",
+        "extension": "docx",
+        "exist": true
+    }
+}

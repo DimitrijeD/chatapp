@@ -39,7 +39,7 @@ class RegisterController extends Controller
         (new EmailVerification)->createOrUpdate($user->email, $user);
         
         return response()->json([
-            'success' => 'Your account has been created and verification email has been sent. Check your inbox.',
+            'success' => __('Your account has been created and verification email has been sent. Check your inbox.'),
             'user' => $user
         ], 201);
     }

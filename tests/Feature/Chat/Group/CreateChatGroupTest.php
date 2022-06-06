@@ -29,7 +29,7 @@ class CreateChatGroupTest extends TestCase
 
         $this->userFormData = [
             'name' => 'some',
-            'model_type' => ChatGroup::MODEL_TYPE_PUBLIC_OPEN,
+            'model_type' => ChatGroup::TYPE_PUBLIC_OPEN,
             'users' => [$this->user, $chatParticipant],
         ];
 
@@ -64,7 +64,7 @@ class CreateChatGroupTest extends TestCase
 
         $response->assertStatus(422)->assertJson([
             "errors" => [
-                "model_type" => [__("Model type is not available.")]
+                "model_type" => [__("Group type is not available.")]
             ],
         ]);
     }

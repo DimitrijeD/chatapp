@@ -9,16 +9,16 @@ class ParticipantPivot extends Model
 {
     use HasFactory;
 
-    const ROLE_CREATOR = 'CREATOR';         // Can do anything in protected and public groups
-    const ROLE_MODERATOR = 'MODERATOR';     // can do anything except delete group
-    const ROLE_PARTICIPANT = 'PARTICIPANT'; // can send messages and reactions to messages
-    const ROLE_LISTENER = 'LISTENER';       // can only see and react to messages (likes emojies stuff like that)
+    const CREATOR = 'CREATOR';
+    const MODERATOR = 'MODERATOR';
+    const PARTICIPANT = 'PARTICIPANT';
+    const LISTENER = 'LISTENER';
 
     const ROLES = [
-        self::ROLE_CREATOR, 
-        self::ROLE_MODERATOR,
-        self::ROLE_PARTICIPANT,
-        self::ROLE_LISTENER,
+        self::CREATOR, 
+        self::MODERATOR,
+        self::PARTICIPANT,
+        self::LISTENER,
     ];
 
     protected $fillable = [
@@ -31,6 +31,5 @@ class ParticipantPivot extends Model
     ];
 
     protected $table = 'group_participants';
-
 
 }

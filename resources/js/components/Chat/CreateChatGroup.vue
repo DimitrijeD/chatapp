@@ -3,20 +3,24 @@
         <button
             @click="showDropdown()"
             class="width-300 height-44 py-2 pr-2 text-xl text-blue-50 font-medium"
-            v-bind:class="{
+            :class="{
                 'bg-blue-800 hover:bg-blue-600': showCreateDropdown,
                 'hover:bg-blue-800': !showCreateDropdown,
             }"
         >
-            Create new chat group
+            New chat
+            <font-awesome-icon 
+                icon="people-line" 
+                size="lg" 
+                class="ml-1"
+            /> 
         </button>
 
         <transition name="slide-fade-nav-dropdowns">
             <div
                 v-if="showCreateDropdown"
                 class="width-300 z-50 absolute bg-gray-100 mt-1 shadow-2xl"
-            >
-
+            >        
                 <div class="m-2">
                     <input
                         class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
@@ -38,37 +42,39 @@
                 <div class="m-2">
                     <input
                         class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Find people to chat"
+                        placeholder="Search for users"
                         type="text"
                         @keyup="searchInput"
                         v-model="userSearchStr"
                     >
                 </div>
 
-                <div class="overflow-y-auto user-list-height select-none pt-1">
-                    <div 
-                        v-for="user in this.allUsers" 
-                        class="flex flex-col m-2 cursor-pointer " 
-                        @click="selectedUserForChat(user)"
-                        :key="user.id"
-                    >
+                <div class=" user-list-height select-none pt-1">
+                    <vue-scroll>
                         <div 
-                            v-bind:class="{
-                                'text-blue-500 bg-white hover:bg-red-50': !user.selectionStatus,
-                                'text-white bg-blue-400 font-semibold': user.selectionStatus,
-                            }">
-                            
-                            <img
-                                :src="user.thumbnail"
-                                alt="no img :/"
-                                class="w-16 h-16 inline-block m-2 object-cover border border-gray-100 rounded-full"
-                            >
+                            v-for="user in this.allUsers" 
+                            class="flex flex-col m-2 cursor-pointer " 
+                            @click="selectedUserForChat(user)"
+                            :key="user.id"
+                        >
+                            <div 
+                                :class="{
+                                    'text-blue-500 bg-white hover:bg-red-50': !user.selectionStatus,
+                                    'text-white bg-blue-400 font-semibold': user.selectionStatus,
+                                }">
+                                
+                                <img
+                                    :src="user.thumbnail"
+                                    alt="no img :/"
+                                    class="w-16 h-16 inline-block m-2 object-cover border border-gray-100 rounded-full"
+                                >
 
-                            <p class="ml-2 inline-block">
-                                {{ user.first_name }} {{ user.last_name }}
-                            </p>
+                                <p class="ml-2 inline-block">
+                                    {{ user.first_name }} {{ user.last_name }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </vue-scroll>
                 </div>
 
                 <div v-for="(error, index) in errors" class="text-danger" :key="index">
@@ -111,7 +117,7 @@ export default {
                 { text: 'Private chat', value: 'PRIVATE' },
                 { text: 'Protected chat', value: 'PROTECTED' },
                 { text: 'Public chat', value: 'PUBLIC_OPEN' }
-            ]
+            ],
         }
     },
 
@@ -311,6 +317,6 @@ export default {
 }
 
 .a-input {
-    @apply w-full p-2 text-base bg-white ;
+    @apply w-full p-3 text-base bg-white font-light text-gray-700;
 }
 </style>

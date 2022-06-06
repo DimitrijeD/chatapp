@@ -16,7 +16,7 @@ class GetUserVerifiedAndLoggedInTest extends TestCase
     {
         parent::setUp();
         $this->withHeaders([ 'Accept' => 'application/json', ]);        
-        $this->getAuthUserEndpoint = "/api/authenticated";
+        $this->getAuthUserEndpoint = "/api/get-user";
     }
 
     /**

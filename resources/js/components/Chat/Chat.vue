@@ -4,9 +4,9 @@
         <div class="small-container fixed bottom-0 inset-x-0">
             <div class="flex justify-start">
                 <chat-window
-                    v-for="group in openedChatWindows"
-                    :key="group.id"
-                    :group="group"
+                    v-for="group_id in openedGroupsIds"
+                    :key="group_id"
+                    :group_id="group_id"
                 >
                 </chat-window>
             </div>
@@ -33,7 +33,7 @@ export default {
     computed: {
         ...mapGetters({ 
             user: "StateUser",
-            openedChatWindows: "groups/getOpenedGroups",
+            openedGroupsIds: "groups/openedGroupsIds",
             allGroups: "groups/allGroups"
         }),
     },
