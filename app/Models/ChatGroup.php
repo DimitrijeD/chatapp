@@ -9,19 +9,19 @@ class ChatGroup extends Model
 {
     use HasFactory;
     
-    const MODEL_TYPE_PRIVATE = 'PRIVATE';             // nobody else can be added
-    const MODEL_TYPE_PROTECTED = 'PROTECTED';         // many users, only group_admins can invite users
-    const MODEL_TYPE_PUBLIC_OPEN = 'PUBLIC_OPEN';     // everybody can join and submit messages
-    const MODEL_TYPE_PUBLIC_CLOSED = 'PUBLIC_CLOSED'; // everybody can join but only creator and moderator can send messages while others can only listen
+    const TYPE_PRIVATE = 'PRIVATE';             // nobody else can be added, DM-s
+    const TYPE_PROTECTED = 'PROTECTED';         // invitation only, few users, everybody can chat
+    const TYPE_PUBLIC_OPEN = 'PUBLIC_OPEN';     // everybody can join and submit messages
+    const TYPE_PUBLIC_CLOSED = 'PUBLIC_CLOSED'; // invitation only, only creator and moderator can send messages while others can only listen
 
-    const MODEL_TYPES = [
-        self::MODEL_TYPE_PRIVATE,
-        self::MODEL_TYPE_PROTECTED,
-        self::MODEL_TYPE_PUBLIC_OPEN,
-        self::MODEL_TYPE_PUBLIC_CLOSED,
+    const TYPES = [
+        self::TYPE_PRIVATE,
+        self::TYPE_PROTECTED,
+        self::TYPE_PUBLIC_OPEN,
+        self::TYPE_PUBLIC_CLOSED,
     ];
 
-    const MODEL_TYPE_DEFAULT = 'PUBLIC_OPEN';
+    const TYPE_DEFAULT = 'PUBLIC_OPEN';
 
     protected $fillable = [
         'name', 'model_type', 'updated_at'
@@ -41,8 +41,13 @@ class ChatGroup extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'group_participants', 'group_id', 'user_id')
+        return $this->belongsToMany(User::class, ParticipantPivot::class, 'group_id', 'user_id')
             ->withPivot(['last_message_seen_id', 'user_id', 'participant_role', 'updated_at']);
+    }
+
+    public function pivots()
+    {
+        return $this->hasMany(ParticipantPivot::class, 'group_id', 'id');
     }
 
 }

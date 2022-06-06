@@ -33,4 +33,16 @@ class ChatMessageEloquentRepo implements ChatMessageRepo
             ->take(ChatMessage::INIT_NUM_MESSAGES)
             ->get();
     }
+
+    public function getBeforeMessage($group_id, $earliest_msg_id)
+    {
+        return ChatMessage::
+              where('group_id', $group_id)
+            ->where('id', '<', $earliest_msg_id)
+            ->with('user')
+            ->take(ChatMessage::EARLIEST_NUM_MESSAGES)
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
 }

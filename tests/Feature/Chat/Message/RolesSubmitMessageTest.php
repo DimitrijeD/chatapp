@@ -9,6 +9,7 @@ use App\Models\ChatGroup;
 use App\Models\ChatMessage;
 use App\Models\User;
 use App\Models\ParticipantPivot;
+use App\Models\ChatRole;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -43,7 +44,7 @@ class RolesSubmitMessageTest extends TestCase
         $this->participantPivot = ParticipantPivot::factory()->create([
             'user_id' => $this->participant->id, 
             'group_id' => $this->group->id, 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
             'last_message_seen_id' => (ChatMessage::factory()->create([
                 'group_id' => $this->group->id,
                 'user_id' => $this->participant->id,
@@ -65,7 +66,7 @@ class RolesSubmitMessageTest extends TestCase
 
     public function test_participant_can_submit_message()
     {
-        $this->dataSetup(ParticipantPivot::ROLE_PARTICIPANT);
+        $this->dataSetup(ChatRole::PARTICIPANT);
 
         $response = $this->post($this->storeMessageEndpoint, $this->userFormData);
 
@@ -76,7 +77,7 @@ class RolesSubmitMessageTest extends TestCase
 
     public function test_moderator_can_submit_message()
     {
-        $this->dataSetup(ParticipantPivot::ROLE_MODERATOR);
+        $this->dataSetup(ChatRole::MODERATOR);
 
         $response = $this->post($this->storeMessageEndpoint, $this->userFormData);
 
@@ -87,7 +88,7 @@ class RolesSubmitMessageTest extends TestCase
 
     public function test_creator_can_submit_message()
     {
-        $this->dataSetup(ParticipantPivot::ROLE_CREATOR);
+        $this->dataSetup(ChatRole::CREATOR);
 
         $response = $this->post($this->storeMessageEndpoint, $this->userFormData);
 
@@ -98,7 +99,7 @@ class RolesSubmitMessageTest extends TestCase
 
     public function test_listener_cannot_submit_message()
     {
-        $this->dataSetup(ParticipantPivot::ROLE_LISTENER);
+        $this->dataSetup(ChatRole::LISTENER);
 
         $response = $this->post($this->storeMessageEndpoint, $this->userFormData);
 

@@ -1,49 +1,58 @@
 <template>
     <div 
         v-if="showConfig"
-        class="z-40 fixed bg-gray-100 c-size border-b-2 border-blue-200"
+        class="z-40 fixed bg-gray-50 border border-gray-300 box-border"
     >
-        <ul class="grid grid-cols-3 text-lg font-light text-gray-800 border-b-2 border-blue-200 mb-1">
+        <ul class="grid text-lg font-light text-gray-600 border-b border-gray-300 mb-3"
+            :class="'grid-cols-' + Object.keys(settings).length"
+        >
             <li 
                 v-for="(setting, key) in settings"
                 v-bind:key="key"
                 @click="openSetting(key)"
-                class="py-2 text-center cursor-pointer select-none"
+                class="text-center cursor-pointer select-none p-1.5"
                 v-bind:class="{
-                    'bg-blue-200 border-b border-blue-300': setting.opened,
+                    'bg-blue-100 border-b border-blue-400': setting.opened,
                     'bg-gray-100 hover:bg-blue-100': !setting.opened,
                 }"
             >
                 {{ setting.name }}
             </li>
         </ul>
+        
+        <div class="text-base font-light m-2 flex-1">
+            <add-users 
+                v-if="settings.add_users.opened" 
+                :group="group"  
+                :role="role"  
+            />
 
-        <div class="overflow-y-auto sub-size text-base font-light">
-            <div v-if="settings.info.opened">
-                <info 
-                    :group="group"
-                />
-            </div>
+            <info 
+                v-if="settings.info.opened" 
+                :group="group" 
+                :role="role"
+            />
 
-            <div v-if="settings.participants.opened">
-                <participants 
-                    :group="group"
-                />
-            </div>
+            <participants 
+                v-if="settings.participants.opened" 
+                :group="group" 
+                :role="role"
+            />
 
-            <div v-if="settings.options.opened">
-                <options 
-                    :group="group"
-                />
-            </div>
+            <options 
+                v-if="settings.options.opened"
+                :group="group" 
+                :role="role"
+            />
         </div>       
     </div>    
 </template>
 
 <script>
-import Info from './Config/Info.vue';
-import Participants from './Config/Participants.vue';
-import Options from './Config/Options.vue';
+import Info         from './Config/Info.vue'
+import Participants from './Config/Participants.vue'
+import Options      from './Config/Options.vue'
+import AddUsers     from './Config/AddUsers.vue'
 
 export default {
     props: [
@@ -51,18 +60,25 @@ export default {
     ],
 
     components: {
-        'info': Info,
+        'add-users': AddUsers,
         'participants': Participants,
+        'info': Info,
         'options': Options,
-
     },
 
     data(){
         return {
+            user: this.$store.state.auth.user,
+
             settings: {
+                add_users: {
+                    name: 'Add Users',
+                    opened: true, 
+                },
+
                 info: {
                     name: 'Info',
-                    opened: true,
+                    opened: false,
                 },
 
                 participants: {
@@ -73,27 +89,35 @@ export default {
                 options: {
                     name: 'Options',
                     opened: false, 
-                }
+                },
             },
+
         }
     },
 
-    created(){
+    computed: {
+        role(){
+            return this.$store.getters['groups/getUserRole']({ group_id: this.group.id, user_id: this.user.id })
+        },
+    },
 
+    created(){
+        console.log() 
     },
 
     mounted(){
-
+  
     },
 
-    methods: {
+    methods: 
+    {
         openSetting(key)
         {
             for(let type in this.settings){
-                this.settings[type].opened = false;
+                this.settings[type].opened = false
             }
 
-            this.settings[ key ].opened = true;
+            this.settings[ key ].opened = true
         },
 
     },
@@ -102,13 +126,5 @@ export default {
 </script>
 
 <style scoped>
-    .c-size{
-        width: 461px;
-        height: 583px;
-    }
 
-    .sub-size{
-        width: 461px;
-        height: 540px;
-    }
 </style>

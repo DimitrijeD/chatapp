@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class UserFactory extends Factory
 {
@@ -24,6 +25,7 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $pic = $this->getRandomPicRelPath();
         return [
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
@@ -31,8 +33,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => self::PASSWORD,
             'remember_token' => NULL,
-            'image' => '/basic-images/basic-avatar.jpg',
-            'thumbnail' => '/basic-images/basic-avatar.jpg',
+            'image' => $pic,
+            'thumbnail' => $pic,
         ];
     }
 
@@ -48,5 +50,13 @@ class UserFactory extends Factory
                 'email_verified_at' => null,
             ];
         });
+    }
+
+    private function getRandomPicRelPath()
+    {
+        $files = File::allFiles('public/basic-images');
+        $randomFile = $files[rand(0, count($files) - 1)];
+
+        return "/basic-images/" . $randomFile->getRelativePathName();
     }
 }

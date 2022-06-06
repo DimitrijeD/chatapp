@@ -1,65 +1,58 @@
 <template>
     <div class="">
-        <div class="mb-10 border-b-2 border-gray-200" v-if="hasRoles(['CREATOR', 'MODERATOR'])">
+        <div class="mb-2 border-b-2 border-gray-200" v-if="hasRoles(['CREATOR'])">
             <div>
                 <input 
                 class="w-full p-3 text-base focus:bg-white focus:outline-none focus:ring-2 focus:border-primary ring-inset"
                 type="text" 
-                placeholder="input for filtering these users"
+                placeholder="todo input for filtering these users"
                 > 
             </div>
         </div>
 
-        <div 
-            class="grid grid-cols-7 gap-2 m-3 cursor-pointer items-center"
-            v-for="participant in group.participants"
-            :key="participant.id"
-        >
-                <img
-                    :src="participant.thumbnail"
-                    alt="no img :/"
-                    class="w-20 h-20 object-cover relative border border-gray-100 shadow-sm h-full"
+        <div class="participants-h">
+            <vue-scroll>
+                <div 
+                    class="grid grid-cols-12 m-2 items-center"
+                    v-for="participant in group.participants"
+                    :key="participant.id"
                 >
-
-                <span class="col-span-2 text-sm hover:text-base">
-                    {{ participant.first_name }} {{ participant.last_name }}
-                </span>
-
-                <span class="text-sm">
-                    {{ participant.pivot.participant_role.toLowerCase() }}
-                </span>
-
-                <div
-                    class="col-span-3 grid grid-cols-5 gap-1 items-center mx-auto" 
-                    v-if="hasRole('CREATOR') && participant.id != user.id"
-                >   
-                    <div class="col-span-4">
-                        <button class="p-1.5 text-gray-50 bg-green-400 hover:text-white hover:bg-green-500 font-sm rounded-lg">
-                            Set moderator
-                        </button>
+                    <div class="col-span-5 cursor-pointer">
+                        <small-user :user="participant" /> 
                     </div>
-                    <div class="">
-                        <span 
-                            @click="removeParticipant(participant.id)"
-                            class="text-center bg-red-500 w-6 h-6 rounded-full text-gray-50 hover:text-white hover:bg-red-600 float-right"
-                        >X
-                        </span>
-                    </div>
+
+                    <span class="col-span-2 text-sm select-none "> 
+                        {{ participant.pivot.participant_role.toLowerCase() }}
+                    </span>
+
+                    <button 
+                        class="col-span-4 p-1.5 text-gray-50 bg-green-400 hover:text-white hover:bg-green-500 font-sm rounded-lg cursor-pointer"
+                        v-if="hasRole('CREATOR') && participant.id != user.id"
+                    >Set moderator</button>
+
+                    <font-awesome-icon 
+                        icon="xmark" 
+                        @click="removeParticipant(participant.id)"
+                        v-if="hasRole('CREATOR') && participant.id != user.id"
+                        class="text-center bg-red-400 w-6 h-6 rounded-full text-gray-50 hover:text-white hover:bg-red-500 ml-auto cursor-pointer"
+                    />  
                 </div>
-
-                <div v-else>
-
-                </div>
-
+            </vue-scroll>
         </div>
     </div>
 </template>
 
 <script>
+import SmallUser from '../../../reuseables/SmallUser.vue'
+
 export default {
     props: [
-        'group'
+        'group', 'role'
     ],
+
+    components: {
+        'small-user': SmallUser,
+    },
 
     data() {
         return {
@@ -104,12 +97,19 @@ export default {
 
         removeParticipant(id)
         {
-            console.log(id)
+            this.$store.dispatch('groups/removeParticipantFromGroup', {
+                group_id: this.group.id,
+                user_id_to_remove: id    
+            }).then(()=>{
+                // show success message that user was successfully added to group
+            })
         }
     }
 }
 </script>
 
 <style scoped>
-
+.participants-h{
+    height: 450px;
+}
 </style>

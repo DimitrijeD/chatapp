@@ -5,13 +5,15 @@ namespace Tests\Feature\Chat\Message;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Models\ChatGroup;
-use App\Models\ChatMessage;
-use App\Models\User;
-use App\Models\ParticipantPivot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
+
+use App\Models\ChatGroup;
+use App\Models\ChatMessage;
+use App\Models\User;
+use App\Models\ChatRole;
+use App\Models\ParticipantPivot;
 
 class ValidationSubmitMessageTest extends TestCase
 {
@@ -28,7 +30,7 @@ class ValidationSubmitMessageTest extends TestCase
         $this->userPivot = ParticipantPivot::factory()->create([
             'user_id' => $this->user->id, 
             'group_id' => $this->group->id, 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
             'last_message_seen_id' => (ChatMessage::factory()->create([
                 'group_id' => $this->group->id,
                 'user_id' => $this->user->id,
@@ -38,7 +40,7 @@ class ValidationSubmitMessageTest extends TestCase
         $this->participantPivot = ParticipantPivot::factory()->create([
             'user_id' => $this->participant->id, 
             'group_id' => $this->group->id, 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
             'last_message_seen_id' => (ChatMessage::factory()->create([
                 'group_id' => $this->group->id,
                 'user_id' => $this->participant->id,
@@ -167,7 +169,7 @@ class ValidationSubmitMessageTest extends TestCase
         ParticipantPivot::factory()->create([
             'user_id' => $user1->id, 
             'group_id' => $diffGroup->id, 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
             'last_message_seen_id' => (ChatMessage::factory()->create([
                 'group_id' => $diffGroup->id,
                 'user_id' => $user1->id,
@@ -177,7 +179,7 @@ class ValidationSubmitMessageTest extends TestCase
         ParticipantPivot::factory()->create([
             'user_id' => $user2->id, 
             'group_id' => $diffGroup->id, 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
             'last_message_seen_id' => (ChatMessage::factory()->create([
                 'group_id' => $diffGroup->id,
                 'user_id' => $user2->id,

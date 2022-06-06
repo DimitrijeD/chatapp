@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
 use App\Models\ParticipantPivot;
+use App\Models\ChatRole;
 
 class CanSubmitMessage
 {
@@ -40,7 +41,7 @@ class CanSubmitMessage
 
         foreach($group->participants as $participant){
             if($participant->id == $user->id){
-                if($participant->pivot->participant_role == ParticipantPivot::ROLE_LISTENER)
+                if($participant->pivot->participant_role == ChatRole::LISTENER)
                     return response()->json(['error' => __("You cannot chat in this chat group, but you can still see messages")]);
             }
         }

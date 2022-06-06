@@ -55,7 +55,7 @@ Copy .env.example into .env and edit it to match your config (most keys are set)
 - cp .env.example .env
 - php artisan key:generate
 
-// what about public.js file i removed earlyer?
+// what about public.js file i removed earlier?
 
 - php artisan config:cache
 - php artisan migrate
@@ -65,15 +65,15 @@ Install NPM packages:
 - npm install
 - npm run dev
 
-If you plan to edit frontend, run following command to compile your changes automatically:
+If you plan to edit frontend, run following command in separate console to compile your changes automatically:
 
 - npm run watch-poll 
 
-In separate console, run following command for websockets(make sure you are using correct host ip):
-
+In separate console, run following command for websockets. Mmake sure you are using correct host ip, or it might work without host parameter. Laravel Websockets require php 8+ .
+- php artisan websockets:serve
 - php artisan websockets:serve --host=192.168.56.56
 
-To create user and chat group with messages in it, run:
+To create users for one chat group with messages in it, run following seeder. Also you can run it as many times as you like, each time will create chat with user defined below and at least one more user. 
 
 - php artisan db:seed --class=ChatGroupClusterSeeder
 
@@ -83,7 +83,7 @@ Login with user:
 - email:    qwe@qwe
 - password: qweqweqweQ1
 
-For registration feature (otherwise not required) you must setup mail data in .env and run command in separate console for queueing emails:
+For registration feature (otherwise not required) you must setup mail config in .env and run command in separate console for queueing emails:
 
 - php artisan queue:work
 

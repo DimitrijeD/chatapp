@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\ParticipantPivot;
+use App\Models\ChatRole;
 use App\Models\User;
 use App\Models\ChatGroup;
 use App\Models\ChatMessage;
@@ -21,7 +21,7 @@ class ParticipantPivotFactory extends Factory
             'user_id' => User::factory(), 
             'group_id' => ChatGroup::factory(), 
             'last_message_seen_id' => ChatMessage::factory(), 
-            'participant_role' => ParticipantPivot::ROLE_PARTICIPANT,
+            'participant_role' => ChatRole::PARTICIPANT,
         ];
     }
 }

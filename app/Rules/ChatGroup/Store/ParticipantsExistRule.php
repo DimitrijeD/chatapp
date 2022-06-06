@@ -7,26 +7,23 @@ use App\ChatApp\Repos\User\UserEloquentRepo;
 
 class ParticipantsExistRule implements Rule
 {
-    protected $users;
+    protected $arrayOfUserIds;
 
-    public function __construct($users)
+    public function __construct($arrayOfUserIds)
     {
-        $this->users = $users; 
+        $this->arrayOfUserIds = $arrayOfUserIds; 
         $this->userRepo = new UserEloquentRepo;
     }
 
     public function passes($attribute, $value)
     {
-        $arrayOfUsersIds = [];
-        foreach($this->users as $user){
-            $arrayOfUsersIds[] = $user['id'];
-        }
+        if(!$users = $this->userRepo->getMany(['id' => $this->arrayOfUserIds])) return false;
 
-        return $this->userRepo->getMany(['id' => $arrayOfUsersIds])->count() == count($arrayOfUsersIds) ? true : false;
+        return count($users) == count($this->arrayOfUserIds) ? true : false;
     }
 
     public function message()
     {
-        return __("Cannot create chat group with users which don't exist");
+        return __("Cannot add participants which don't exist. Incorrect id.");
     }
 }

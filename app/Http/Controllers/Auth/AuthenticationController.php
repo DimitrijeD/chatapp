@@ -44,14 +44,6 @@ class AuthenticationController extends Controller
         return response()->json(false, 401);
     }
 
-    public function isLoggedIn()
-    {
-        if(auth()->user()){
-            return true;
-        }
-        return false;
-    }
-
     public function emailVerificationAttempt(Request $request, UserEloquentRepo $userRepo, AccountVerificationEloquentRepo $accountVerificationRepo)
     {
         $validator = Validator::make($request->route()->parameters(), [

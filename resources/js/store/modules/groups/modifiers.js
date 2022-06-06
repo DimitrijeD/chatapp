@@ -23,6 +23,8 @@ export function propInit(groups)
         groups[grI].lastAcknowledgedMessageId = null
         groups[grI].hasUnseenState
         groups[grI].messages = {} 
+        groups[grI].eariestMessageId = null
+        groups[grI].reachedEarliestMsgId = false
     }
 
     return groups
@@ -42,3 +44,21 @@ export function prepareOneGroup(groups, mapIdentifier, user_id)
     groups = attachUnseenStateBool(groups, user_id)
     return groups[Object.keys(groups)[0]]
 }
+
+export function prepareParticipantsForStoreRequest(data)
+{
+    let request = {
+        group_id: data.group_id,
+        usersToAdd: []
+    }
+
+    for(let i in data.addedUsersIds){
+        request.usersToAdd.push({
+            user_id: data.addedUsersIds[i],
+            target_role: data.massAssignRolesTo
+        })
+    }
+
+    return request
+}
+

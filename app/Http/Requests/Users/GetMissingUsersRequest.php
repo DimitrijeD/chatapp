@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\ChatGroup;
+namespace App\Http\Requests\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\General\IfArrayHasValueThenMustBeIntsRule;
 
-class GetGroupRequest extends FormRequest
+class GetMissingUsersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,8 @@ class GetGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'group_id' => ['required', 'integer']
+            'search_str' => ['required', 'min:3', 'max:255'],
+            'i_have_ids' => [new IfArrayHasValueThenMustBeIntsRule($this->i_have_ids)]
         ];
     }
 }

@@ -24,7 +24,7 @@ export default {
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser) return next()
 
-                axios.get('/api/authenticated').then((res) => {
+                axios.get('/api/get-user').then((res) => {
                     store.commit('setUser', res.data.user)
                     return next()
                 }).catch(()=>{
@@ -40,7 +40,7 @@ export default {
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser) return next()
 
-                axios.get('/api/authenticated').then((res) => {
+                axios.get('/api/get-user').then((res) => {
                     store.commit('setUser', res.data.user)
                     return next()
                 }).catch(()=>{
@@ -54,18 +54,16 @@ export default {
             component: Login,
             name: 'Login',
             beforeEnter: (to, from, next) => {
-                axios.get('/api/authenticated').then((res) => {
+                if(store.getters.StateUser) return next({ path: '/profile' })
+                
+                axios.get('/api/get-user').then((res) => {
                     store.commit('setUser', res.data.user)
-                    return next()
+                    return next({ path: '/profile' })
                 })
                 .catch((error) => {
-                    if (error.response.status == 403 ) {
-                        return next({ path: '/email-verification/init' })
-                    }
+                    if (error.response.status == 403) return next({ path: '/email-verification/init' })
 
-                    if (error.response.status == 401 ) {
-                        return next()
-                    }
+                    if (error.response.status == 401 ) return next()
                 });
             },
         },
@@ -75,18 +73,16 @@ export default {
             component: Register,
             name: "Register",
             beforeEnter: (to, from, next) => {
-                axios.get('/api/authenticated').then((res) => {
+                if(store.getters.StateUser) return next({ path: '/profile' })
+                
+                axios.get('/api/get-user').then((res) => {
                     store.commit('setUser', res.data.user)
-                    return next()
+                    return next({ path: '/profile' })
                 })
                 .catch((error) => {
-                    if (error.response.status == 403 ) {
-                        return next({ path: '/email-verification/init' })
-                    }
+                    if (error.response.status == 403) return next({ path: '/email-verification/init' })
 
-                    if (error.response.status == 401 ) {
-                        return next()
-                    }
+                    if (error.response.status == 401 ) return next()
                 });
             },
         },
@@ -97,7 +93,7 @@ export default {
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser) return next()
 
-                axios.get('/api/authenticated').then((res) => {
+                axios.get('/api/get-user').then((res) => {
                     store.commit('setUser', res.data.user)
                     return next()
                 }).catch(()=>{
@@ -110,13 +106,16 @@ export default {
             name: "email-verification",
             path: '/email-verification/init',
             component: EmailVerification,
+            beforeEnter: (to, from, next) => {
+                if(!store.getters.StateUser) return next()
+                return next({ path: '/profile' })
+            },
         },
 
         {
             path: '/email-verification/uid/:user_id/c/:code',
             component: EmailVerificationAttempt,
             beforeEnter: (to, from, next) => {
-                // if user is not in store
                 if(!store.getters.StateUser) return next()
                 return next({ path: '/profile' })
             },

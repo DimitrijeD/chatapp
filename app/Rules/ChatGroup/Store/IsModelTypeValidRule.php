@@ -14,11 +14,11 @@ class IsModelTypeValidRule implements Rule
 
     public function passes($attribute, $value)
     {
-        return in_array($this->model_type, ChatGroup::MODEL_TYPES);
+        return in_array($this->model_type, ChatGroup::TYPES);
     }
 
     public function message()
     {
-        return "Model type is not available.";
+        return __("Group type is not available.");
     }
 }

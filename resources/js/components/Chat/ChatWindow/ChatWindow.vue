@@ -1,16 +1,17 @@
 <template>
     <transition name="slide-fade-chat-window">
-        <div class="window-w mr-3 flex flex-col"
-            :class="{ 'flex-col-reverse': isMinimized }"
+        <div class="window-x flex-none mr-3 box-border"
+            :class="{ 'flex flex-col-reverse': isMinimized }"
         >
             <!-- Chat Window Header -->
-            <div class="flex flex-nowrap window-w h-16 bg-blue-500">
+            <div class="flex flex-nowrap gap-2 h-16 bg-blue-500">
                 <chat-participants
-                    :participants="group.participants"
+                    :group="group"
                 />
                 <window-management
                     :group_id="group.id"
                     :showConfig="showConfig"
+                    :isMinimized="isMinimized"
                     @minimizeWindow="minimizeWindow()"
                     @openConfig="openConfig()"
                 />
@@ -20,18 +21,18 @@
 
             <!-- wrapper for dynamic window minimization -->
             <div
-                class="static border-l-2 border-r-2 border-blue-200 flex flex-col bg-white bg-gradient-to-r from-blue-50 via-white to-gray-100"
+                class="static flex not-header-y flex-col border-l-2 border-r-2 border-b-2 border-blue-400"
                 :class="{ 'hidden': isMinimized }"
                 @click="selfAcknowledged();"
             >
-                <!-- <background /> -->
                 <config 
                     :showConfig="showConfig"
                     :group="group"
+                    class="window-x h-full"
                 />
 
                 <!-- Chat Window Body -->
-                <div class="window-h">
+                <div class="body-y">
                     <messages-block
                         :group="group"
                     />
@@ -40,9 +41,11 @@
 
 
                 <!-- Chat Window Footer -->
-                <message-input
-                    :group_id="group.id"
-                />
+                <div class="border-t-4 border-gray-200 bg-gray-100">
+                    <message-input
+                        :group_id="group.id"
+                    />
+                </div>
                 <!-- -------------------- -->
             </div>
         </div>
@@ -51,7 +54,7 @@
 
 <script>
 import WindowManagement from "./Header/WindowManagement.vue";
-import ChatParticipants from "./Body/ChatParticipants.vue";
+import ChatParticipants from "./Header/ChatParticipants.vue";
 import MessagesBlock    from "./Body/MessagesBlock";
 import Config           from "./Body/Config.vue";
 import MessageInput     from "./Footer/MessageInput.vue";
@@ -60,7 +63,7 @@ import { mapGetters } from 'vuex';
 
 export default {
     props:[
-        'group',
+        'group_id',
     ],
 
     data(){
@@ -76,6 +79,11 @@ export default {
         ...mapGetters({ 
             user: "StateUser",
         }),
+
+        group(){ 
+            return this.$store.getters['groups/filterById'](this.group_id)
+        },
+
     },
 
     components: {
@@ -115,8 +123,8 @@ export default {
             // this user is not listening to his own new message event
             Echo.private("group." + this.group.id)
             .listen('.message.new', e => {
-                this.getMessages();
-            });
+                this.getMessages()
+            })
         },
 
         // Event when user clicks his own window (he saw/red all messages)
@@ -126,12 +134,20 @@ export default {
             // this was called only once (when there accualy are no messages)
             if(!Object.keys(this.group.messages).length) return 
 
+            if(this.group?.hasUnseenState)
+                this.messageSeen()
+
             // Preventing user from acknowledging his own message.
-            if(this.isUserOwnerOfLastMessage(this.group.messages[this.findLatestMessageId(this.group.messages)], this.user.id)) return false
+            if(this.isUserOwnerOfLastMessage(this.group.messages[this.findLatestMessageId(this.group.messages)], this.user.id)) return
 
             // or if user already acknowledged all messages.
             if(this.group.last_msg_id == this.lastAcknowledgedMessageId) return
             
+            this.messageSeen()
+        },
+
+        messageSeen()
+        {
             this.lastAcknowledgedMessageId = this.group.last_msg_id
 
             this.$store.dispatch('groups/setAllMessagesAcknowledged', {
@@ -154,13 +170,20 @@ export default {
 </script>
 
 <style>
-.window-h{
-    height: 31rem;
+.window-x{
+    width: 464px;
 }
 
-.window-w{
-    width: 29rem;
+.window-y{
+    height: 588.5px;
 }
 
+.not-header-y{
+    height: 588.5px;
+}
+
+.body-y {
+    height: 496px;
+}
 
 </style>

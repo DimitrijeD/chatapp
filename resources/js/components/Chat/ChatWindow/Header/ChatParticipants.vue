@@ -1,12 +1,12 @@
 <template>
-    <div class="w-full m-auto z-50">
+    <div class="w-full m-auto z-50 truncate">
         <!-- Make overflow when there are many users in this chat -->
         <!-- make status dynamic -->
 
         <div class="flex justify-start ml-2" >
             <!-- Do not show self in chat window heading because this.participants contains all users that belong to this chat-->
             <div
-                v-for="participant in participants"
+                v-for="participant in group.participants"
                 :key="participant.id"
             >            
                 <div v-if="participant.id != user.id" 
@@ -32,7 +32,7 @@ import { mapGetters } from "vuex";
 
 export default {
     props:[
-        'participants',
+        'group',
     ],
 
     data(){
@@ -51,7 +51,6 @@ export default {
 
     computed: {
         ...mapGetters({ user: "StateUser" }),
-
     },
 
     methods:{

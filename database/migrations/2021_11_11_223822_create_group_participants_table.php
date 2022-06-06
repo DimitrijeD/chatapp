@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\ParticipantPivot;
+use App\Models\ChatRole;
 
 class CreateGroupParticipantsTable extends Migration
 {
@@ -19,7 +19,7 @@ class CreateGroupParticipantsTable extends Migration
             $table->integer('user_id');
             $table->integer('group_id');
             $table->integer('last_message_seen_id')->nullable();
-            $table->string('participant_role')->default(ParticipantPivot::ROLE_PARTICIPANT);
+            $table->string('participant_role')->default(ChatRole::PARTICIPANT);
             $table->timestamps();
         });
     }

@@ -57,7 +57,7 @@ export default {
     methods: {
         getUnAuthUser()
         {
-            axios.get('/api/authenticated').then((res) => {
+            axios.get('/api/get-user').then((res) => {
                 this.$router.push({ path: '/profile' })
             }).catch((error) => {
                 if(error.response.data?.email){

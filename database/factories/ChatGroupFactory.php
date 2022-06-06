@@ -16,7 +16,7 @@ class ChatGroupFactory extends Factory
     {
         return [
             'name' => 'Default group name',
-            'model_type' => ChatGroup::MODEL_TYPE_DEFAULT,
+            'model_type' => ChatGroup::TYPE_DEFAULT,
         ];
     }
 }

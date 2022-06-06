@@ -124,4 +124,27 @@ trait CRUDTrait
         return $query->latest()->first();
     }
 
+    public function getManyUnique(array $data, array $with = [])
+    {
+        $query = $this->getModel()::query();
+
+        if($data) {
+            foreach($data as $modelProps) {
+                if(!is_array($modelProps)) return false;
+
+                foreach($modelProps as $prop => $value){
+                    $query->where($prop, '=', $value);
+                }
+            }
+        }
+
+        if($with) {
+            $query->with($with);
+        }
+
+        $result = $query->get();
+
+        return $result->count() ? $result : false;
+    }
+    
 }

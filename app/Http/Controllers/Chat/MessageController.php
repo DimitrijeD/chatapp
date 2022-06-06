@@ -115,4 +115,8 @@ class MessageController extends Controller
         return $this->chatMessageRepo->getLatestMessages($request->group_id);
     }
 
+    public function getBeforeMessage($group_id, $earliest_msg_id)
+    {
+        return $this->chatMessageRepo->getBeforeMessage($group_id, $earliest_msg_id);
+    }
 }

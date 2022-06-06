@@ -44,7 +44,7 @@ export default {
     mounted() {
         Echo.private("group." + this.group_id)
         .listenForWhisper('typing', user => {
-            this.addOrUpdateTyper(user);
+            this.addOrUpdateTyper(user)
         })
 
         Echo.private("group." + this.group_id)
@@ -53,33 +53,31 @@ export default {
         })
     },
 
-    watch: {
-
-    },
-
     methods:{
         addOrUpdateTyper(user)
         {
-            let temp = {};
-            temp[user.id] = user;
+            this.$emit('typing')
 
-            this.usersTyping = Object.assign({}, this.usersTyping, temp);
-            this.addOrResetTimer(user.id);
+            let temp = {}
+            temp[user.id] = user
+
+            this.usersTyping = Object.assign({}, this.usersTyping, temp)
+            this.addOrResetTimer(user.id)
         },
 
         removeTyper(id)
         {
-            this.$delete(this.usersTyping, id);
+            this.$delete(this.usersTyping, id)
         },
 
         addOrResetTimer(id)
         {
             if(this.usersTimeouts[id]){
-                clearTimeout(this.usersTimeouts[id]);
+                clearTimeout(this.usersTimeouts[id])
             }
             this.usersTimeouts[id] = setTimeout(() => {
-                this.removeTyper(id);
-            }, this.config.removeTyperAfterMS);
+                this.removeTyper(id)
+            }, this.config.removeTyperAfterMS)
         },
 
     },

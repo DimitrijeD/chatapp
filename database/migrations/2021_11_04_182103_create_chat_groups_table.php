@@ -17,7 +17,7 @@ class CreateChatGroupsTable extends Migration
         Schema::create('chat_groups', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->string('model_type')->default(ChatGroup::MODEL_TYPE_DEFAULT); 
+            $table->string('model_type')->default(ChatGroup::TYPE_DEFAULT); 
             $table->integer('last_msg_id')->nullable();
             $table->timestamps();
         });

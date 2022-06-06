@@ -17,9 +17,6 @@ class GetMissingMessagesTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * TEST DEPENDS THAT ChatGroupClusterSeeder condig creates at least 2 messages otherwise '$latest_msg_id' will throw exception
-     */
     protected function setUp(): void
     {
         parent::setUp();

@@ -6,6 +6,7 @@ use Database\Seeders\clusters\Contracts\Cluster;
 use App\Models\ChatGroup;
 use App\Models\ParticipantPivot;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
+use App\Models\ChatRole;
 
 class GroupParticipantsPivot implements Cluster
 {
@@ -16,10 +17,11 @@ class GroupParticipantsPivot implements Cluster
         $this->creator_id = $creator_id;
         $this->participantPivotRepo = resolve(ParticipantPivotEloquentRepo::class);
     }
+
     /**
      * Each user has one 'seen state' in pivot table 'group_participants'
      * 
-     * @param array $users
+     * 'participant_role' => $this->participantPivotRepo->roleResolver($user->id, $this->creator_id, $this->group->model_type),
      */
     public function build()
     {
@@ -31,7 +33,7 @@ class GroupParticipantsPivot implements Cluster
                     'user_id'              => $user->id,
                     'group_id'             => $this->group->id,
                     'last_message_seen_id' => null,
-                    'participant_role'     => $this->participantPivotRepo->roleResolver($user->id, $this->creator_id, $this->group->model_type),
+                    'participant_role'     => isset($user->participant_role) ? $user->participant_role : ChatRole::PARTICIPANT,
                     'updated_at'           => $this->group->created_at, 
                     'created_at'           => $this->group->created_at
                 ]
