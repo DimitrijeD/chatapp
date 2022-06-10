@@ -3,6 +3,7 @@
         v-if="showConfig"
         class="z-40 fixed bg-gray-50 border border-gray-300 box-border"
     >
+        <!-- Create Nav bar for config -->
         <ul class="grid text-lg font-light text-gray-600 border-b border-gray-300 mb-3"
             :class="'grid-cols-' + Object.keys(settings).length"
         >
@@ -19,7 +20,9 @@
                 {{ setting.name }}
             </li>
         </ul>
-        
+        <!-- End Nav Bar -->
+
+        <!-- Create Config component if opened, close otherwise -->
         <div class="text-base font-light m-2 flex-1">
             <add-users 
                 v-if="settings.add_users.opened" 
@@ -44,7 +47,8 @@
                 :group="group" 
                 :role="role"
             />
-        </div>       
+        </div>
+        <!-- End Create Config component -->
     </div>    
 </template>
 

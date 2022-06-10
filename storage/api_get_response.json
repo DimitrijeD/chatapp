@@ -1,17 +1,376 @@
 {
-    "unique_id": "628f49c55e7a8",
-    "cv": {
-        "unique_id": "628f48a860a0f",
-        "filename": "628f48a85f917_mycv.docx",
-        "original_name": "my-cv.docx",
-        "extension": "docx",
-        "exist": true
-    },
-    "cover_letter": {
-        "unique_id": "628f48b84c960",
-        "filename": "628f48b84bc01_mycoverletter.docx",
-        "original_name": "my-cover-letter.docx",
-        "extension": "docx",
-        "exist": true
-    }
+    "industry": [
+        {
+            "id": 1,
+            "value": "umetnost",
+            "label": "Umetnost"
+        },
+        {
+            "id": 2,
+            "value": "zabava-i-rekreacija",
+            "label": "Zabava i Rekreacija"
+        },
+        {
+            "id": 3,
+            "value": "zdravstvena-i-socijalna-zastita",
+            "label": "Zdravstvena i socijalna zaštita"
+        },
+        {
+            "id": 4,
+            "value": "obrazovanje",
+            "label": "Obrazovanje"
+        },
+        {
+            "id": 5,
+            "value": "naucne-inovacione-i-tehnicke-delatnosti",
+            "label": "Naučne, inovacione i tehničke delatnosti"
+        },
+        {
+            "id": 6,
+            "value": "nekretnine",
+            "label": "Nekretnine"
+        },
+        {
+            "id": 7,
+            "value": "finansije-i-osiguranje",
+            "label": "Finansije i osiguranje"
+        },
+        {
+            "id": 8,
+            "value": "trgovina",
+            "label": "Trgovina"
+        },
+        {
+            "id": 9,
+            "value": "popravka-i-montaza-masina-i-opreme",
+            "label": "Popravka i montaža mašina i opreme"
+        },
+        {
+            "id": 10,
+            "value": "snabdevanje-elektricnom-energijom-i-gasom",
+            "label": "Snabdevanje električnom energijom i gasom"
+        },
+        {
+            "id": 11,
+            "value": "informisanje-i-komunikacije",
+            "label": "Informisanje i komunikacije (IT)"
+        },
+        {
+            "id": 12,
+            "value": "usluge-smestaja-i-ishrane",
+            "label": "Usluge smeštaja i ishrane"
+        },
+        {
+            "id": 13,
+            "value": "saobracaj-i-skladistenje",
+            "label": "Saobraćaj i skladištenje"
+        },
+        {
+            "id": 14,
+            "value": "rudarstvo",
+            "label": "Rudarstvo"
+        },
+        {
+            "id": 15,
+            "value": "poljoprivreda-sumarstvo-i-ribarstvo",
+            "label": "Poljoprivreda, šumarstvo i ribarstvo"
+        },
+        {
+            "id": 16,
+            "value": "proizvodnja-prehrambenih-proizvoda",
+            "label": "Proizvodnja prehrambenih proizvoda"
+        },
+        {
+            "id": 17,
+            "value": "proizvodnja-pica",
+            "label": "Proizvodnja pića"
+        },
+        {
+            "id": 18,
+            "value": "proizvodnja-duvanskih-proizvoda",
+            "label": "Proizvodnja duvanskih proizvoda"
+        },
+        {
+            "id": 19,
+            "value": "proizvodnja-tekstila",
+            "label": "Proizvodnja tekstila"
+        },
+        {
+            "id": 20,
+            "value": "proizvodnja-odevnih-predmeta",
+            "label": "Proizvodnja odevnih predmeta"
+        },
+        {
+            "id": 21,
+            "value": "proizvodnja-koze",
+            "label": "Proizvodnja kože"
+        },
+        {
+            "id": 22,
+            "value": "proizvodnja-papira",
+            "label": "Proizvodnja papira"
+        },
+        {
+            "id": 23,
+            "value": "proizvodnja-koksa-i-derivata-nafte",
+            "label": "Proizvodnja koksa i derivata nafte"
+        },
+        {
+            "id": 24,
+            "value": "proizvodnja-hemijskih-proizvoda",
+            "label": "Proizvodnja hemijskih proizvoda"
+        },
+        {
+            "id": 25,
+            "value": "proizvodnja-farmaceutskih-proizvoda",
+            "label": "Proizvodnja farmaceutskih proizvoda"
+        },
+        {
+            "id": 26,
+            "value": "proizvodnja-gume-i-plastike",
+            "label": "Proizvodnja gume i plastike"
+        },
+        {
+            "id": 27,
+            "value": "proizvodnja-osnovih-metala",
+            "label": "Proizvodnja osnovih metala"
+        },
+        {
+            "id": 28,
+            "value": "proizvodnja-metalnih-proizvoda",
+            "label": "Proizvodnja metalnih proizvoda"
+        },
+        {
+            "id": 29,
+            "value": "proizvodnja-elektronskih-proizvoda",
+            "label": "Proizvodnja elektronskih proizvoda"
+        },
+        {
+            "id": 30,
+            "value": "proizvodnja-elektricne-opreme",
+            "label": "Proizvodnja električne opreme"
+        },
+        {
+            "id": 31,
+            "value": "proizvodnja-motornih-vozila",
+            "label": "Proizvodnja motornih vozila"
+        },
+        {
+            "id": 32,
+            "value": "proizvodnja-namestaja",
+            "label": "Proizvodnja nameštaja"
+        },
+        {
+            "id": 33,
+            "value": "ostalo",
+            "label": "Ostalo"
+        },
+        {
+            "id": 120,
+            "value": "marketing",
+            "label": "Marketing"
+        }
+    ],
+    "area_of_work": [
+        {
+            "id": 34,
+            "value": "prodaja",
+            "label": "Prodaja"
+        },
+        {
+            "id": 35,
+            "value": "administracija",
+            "label": "Administracija"
+        },
+        {
+            "id": 36,
+            "value": "pravo",
+            "label": "Pravo"
+        },
+        {
+            "id": 37,
+            "value": "finansije",
+            "label": "Finansije"
+        },
+        {
+            "id": 38,
+            "value": "racunovodstvo",
+            "label": "Računovodstvo"
+        },
+        {
+            "id": 39,
+            "value": "logistika",
+            "label": "Logistika"
+        },
+        {
+            "id": 40,
+            "value": "proizvodnja",
+            "label": "Proizvodnja"
+        },
+        {
+            "id": 41,
+            "value": "it",
+            "label": "IT"
+        },
+        {
+            "id": 42,
+            "value": "korisnicka-podrska",
+            "label": "Korisnička podrška"
+        },
+        {
+            "id": 43,
+            "value": "marketing",
+            "label": "Marketing"
+        },
+        {
+            "id": 44,
+            "value": "istrazivanje",
+            "label": "Istraživanje"
+        },
+        {
+            "id": 45,
+            "value": "analitika",
+            "label": "Analitika"
+        },
+        {
+            "id": 46,
+            "value": "kvalitet",
+            "label": "Kvalitet"
+        },
+        {
+            "id": 47,
+            "value": "odrzavanje",
+            "label": "Održavanje"
+        },
+        {
+            "id": 48,
+            "value": "magacin",
+            "label": "Magacin"
+        },
+        {
+            "id": 49,
+            "value": "odnosi-sa-javnoscu",
+            "label": "Odnosi sa javnošću/PR"
+        },
+        {
+            "id": 50,
+            "value": "projektovanje",
+            "label": "Projektovanje/Razvoj"
+        },
+        {
+            "id": 51,
+            "value": "hr",
+            "label": "HR"
+        },
+        {
+            "id": 52,
+            "value": "data-science",
+            "label": "Data Science"
+        },
+        {
+            "id": 53,
+            "value": "maloprodaja-veleprodaja",
+            "label": "Maloprodaja/Veleprodaja"
+        },
+        {
+            "id": 54,
+            "value": "nabavka",
+            "label": "Nabavka"
+        },
+        {
+            "id": 55,
+            "value": "lepota",
+            "label": "Lepota"
+        },
+        {
+            "id": 56,
+            "value": "dizajn",
+            "label": "Dizajn"
+        },
+        {
+            "id": 57,
+            "value": "obezbedjenje",
+            "label": "Obezbeđenje"
+        },
+        {
+            "id": 58,
+            "value": "priprema-hrane",
+            "label": "Priprema hrane"
+        },
+        {
+            "id": 59,
+            "value": "zastita-na-radu",
+            "label": "Zaštita na radu"
+        },
+        {
+            "id": 60,
+            "value": "jezici-knjizevnost",
+            "label": "Jezici, književnost"
+        },
+        {
+            "id": 61,
+            "value": "briga-o-deci",
+            "label": "Briga o deci"
+        },
+        {
+            "id": 62,
+            "value": "sport",
+            "label": "Sport"
+        },
+        {
+            "id": 63,
+            "value": "osiguranje",
+            "label": "Osiguranje"
+        },
+        {
+            "id": 64,
+            "value": "farmacija",
+            "label": "Farmacija"
+        },
+        {
+            "id": 65,
+            "value": "fizicki-rad",
+            "label": "Fizički rad"
+        },
+        {
+            "id": 66,
+            "value": "zanati",
+            "label": "Zanati"
+        },
+        {
+            "id": 67,
+            "value": "transport",
+            "label": "Transport"
+        },
+        {
+            "id": 68,
+            "value": "bankarstvo",
+            "label": "Bankarstvo"
+        },
+        {
+            "id": 69,
+            "value": "turizam",
+            "label": "Turizam"
+        },
+        {
+            "id": 70,
+            "value": "ostalo",
+            "label": "Ostalo"
+        },
+        {
+            "id": 117,
+            "value": "radionica",
+            "label": "Radionica"
+        },
+        {
+            "id": 118,
+            "value": "predavanje",
+            "label": "Predavanje"
+        },
+        {
+            "id": 119,
+            "value": "pravo",
+            "label": "Pravo"
+        }
+    ]
 }

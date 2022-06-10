@@ -28,7 +28,7 @@
                 <config 
                     :showConfig="showConfig"
                     :group="group"
-                    class="window-x h-full"
+                    class="window-x-minus-border h-full"
                 />
 
                 <!-- Chat Window Body -->
@@ -172,6 +172,10 @@ export default {
 <style>
 .window-x{
     width: 464px;
+}
+
+.window-x-minus-border{
+    width: 461px;
 }
 
 .window-y{

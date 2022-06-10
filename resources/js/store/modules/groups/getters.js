@@ -4,8 +4,6 @@ import {
     sort_filteredGroups_by_updated_at
 } from './sorters.js'
 
-
-
 const getters = {
     allGroups: (state) => state.groups,
 
@@ -13,9 +11,11 @@ const getters = {
     
     openedGroupsIds: (state) => state.openedGroupsIds,
 
-    numOfUnseenGroups:(state) => helpers.getNumOfUnseenGroups(state.groups),
+    numOfUnseenGroups: (state) => helpers.getNumOfUnseenGroups(state.groups),
 
-    filteredGroups: (state) => sort_filteredGroups_by_updated_at(helpers.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds)),
+    filteredGroups: (state) => { 
+        return sort_filteredGroups_by_updated_at(helpers.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds))
+    },
 
     getUserRole: (state) => (data) =>
     {
