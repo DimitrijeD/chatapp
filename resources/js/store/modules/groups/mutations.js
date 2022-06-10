@@ -38,7 +38,7 @@ const mutations = {
 
     addToFilteredGroups: (state, id) => state.filteredGroupsIds.push(id),
 
-    updateGroup_updated_at: (state, data) => state.groups[data.grI].updated_at = data.updated_at,
+    updateGroup_updated_at: (state, data) => state.groups[data.grI].updated_at = data.now,
 
     removeGroupFromStore: (state, index) => state.groups.splice(index, 1),
 
@@ -47,7 +47,8 @@ const mutations = {
         state.groups[data.grI].participants.splice(data.prI, 1)
     },
 
-    lockReachedEarliestMsgId:(state, grI) => state.groups[grI].reachedEarliestMsgId = true, // once this is set, earliest messages request can no longer be trigged
+    // once this is set, earliest messages request can no longer be trigged (up to 'first' message in group is pulled)
+    lockReachedEarliestMsgId:(state, grI) => state.groups[grI].reachedEarliestMsgId = true, 
 }
 
 export default mutations 

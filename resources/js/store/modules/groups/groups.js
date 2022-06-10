@@ -1,6 +1,7 @@
 import * as helpers from "../../../helpers/helpers_exporter.js"
 import * as h from './helper_functions.js' // h as helper functions
-import * as m from './modifiers.js' // m as modifiers
+import * as m from './modifiers.js'        // m as modifiers
+import * as s from './sorters.js'          // s as sorters
 
 import state from './state.js'
 import getters from './getters.js'
@@ -197,7 +198,9 @@ const actions =
             context.commit('mergeMessagesInGroup', data)
             context.commit('setLastMessageIdInGroup', data) 
             context.commit('hasUnseenState', data) // after pulling new messages, user must have unseen messages, otherwise code is dog
-            context.dispatch('setEarliestMessageInGroup', data) 
+            context.commit('updateGroup_updated_at', data)
+            // context.dispatch('setEarliestMessageInGroup', data) 
+            context.dispatch('updateOrderOfRecentGroups') 
         }).catch( error => {
             console.log('groups/getOnlyMissingMessages')
             console.log(error)
@@ -303,6 +306,12 @@ const actions =
     {
         data.eariestMessageId = h.getEarliestMsgId(state.groups[data.grI].messages)
         context.commit('setEarliestMessageIdInGroup', data)
+    },
+
+    updateOrderOfRecentGroups(context)
+    {
+        // if first group in list is one triggering this method, there is no need to update 
+        console.log(h.getAllIds(s.sort_filteredGroups_by_updated_at(h.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds))))
     }
 
 }

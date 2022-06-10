@@ -156,8 +156,20 @@ export function nowISO()
     return (new Date(Date.now())).toISOString();  
 }
 
-export function getEarliestMsgId(x){
+export function getEarliestMsgId(x)
+{
     x = Object.keys(x)
     return Math.min(...x.filter(x => typeof x === 'string'))
+}
+
+export function getAllIds(collection)
+{
+    var ids = []
+
+    collection.forEach(model => {
+        ids.push(model.id)
+    })
+
+    return ids
 }
   

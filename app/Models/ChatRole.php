@@ -238,4 +238,30 @@ class ChatRole
         return in_array($levels[3], $nested);
     }
 
+
+    // --------------------------------------------------------------------------------------------------------------------
+    //                                             What are getMap_ methods?                                             //
+    // --------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Extract entire logic from rules arrays go get table of what can role do in group
+     * 
+     * eg. $mapCanAdd = [
+     *      'CREATOR' => [
+     *          'can_add_role' => [
+     *               MODERATOR
+     *          ]
+     *          
+     *      ]
+     * ] 
+     */
+    public static function getMap_CanAddRole()
+    {
+        $map = [];
+
+        foreach(self::ROLE_CAN_ADD_ROLE_IN as $role){
+
+        }
+    }
+
 }
