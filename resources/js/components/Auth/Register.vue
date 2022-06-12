@@ -85,11 +85,12 @@
                             <br>
                         </span>
                     </div>
+
                     <input
                         type="file"
                         @change="onProfilePictureSelected"
                         name="profilePictureName"
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg text-gray-500 pl-3 py-3"
                         required
                     >
                 </div>

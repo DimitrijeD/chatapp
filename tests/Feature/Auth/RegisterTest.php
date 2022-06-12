@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use \Illuminate\Routing\Middleware\ThrottleRequests;
 
 class RegisterTest extends TestCase
 {
@@ -35,6 +36,10 @@ class RegisterTest extends TestCase
         $this->withHeaders([ 'Accept' => 'application/json', ]);
         
         $this->registerEndpoint = '/api/register';
+
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
     }
 
     public function test_user_stored()
@@ -49,7 +54,7 @@ class RegisterTest extends TestCase
     public function test_user_can_register()
     {
         $response = $this->post($this->registerEndpoint, $this->userFormData);
-
+        
         $response->assertJson(['success' => 'Your account has been created and verification email has been sent. Check your inbox.']);
     }
 
@@ -58,7 +63,7 @@ class RegisterTest extends TestCase
         $this->userFormData['first_name'] = '';
 
         $response = $this->post($this->registerEndpoint, $this->userFormData);
-
+        
         $response->assertJson([ 'errors' => ['first_name' => [__('The first name field is required.')]]]);
     }
 

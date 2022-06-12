@@ -55,7 +55,7 @@ Copy .env.example into .env and edit it to match your config (most keys are set)
 - cp .env.example .env
 - php artisan key:generate
 
-// what about public.js file i removed earlier?
+Then:
 
 - php artisan config:cache
 - php artisan migrate
@@ -69,9 +69,24 @@ If you plan to edit frontend, run following command in separate console to compi
 
 - npm run watch-poll 
 
+After setting up project on new machine, 
+
+- npm install 
+- npm run dev
+
+didn't show anything on FE even tho it did compile successfully, but
+
+- npm run watch-poll 
+
+solved this issue.
+
 In separate console, run following command for websockets. Mmake sure you are using correct host ip, or it might work without host parameter. Laravel Websockets require php 8+ .
 - php artisan websockets:serve
 - php artisan websockets:serve --host=192.168.56.56
+
+To run all existing seeders:
+
+- php artisan db:seed
 
 To create users for one chat group with messages in it, run following seeder. Also you can run it as many times as you like, each time will create chat with user defined below and at least one more user. 
 

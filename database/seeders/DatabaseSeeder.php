@@ -9,10 +9,14 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
+     * Execute all of them by:
+     *      php artisan db:seed
+     * 
      * @return void
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        (new ChatGroupClusterSeeder)->run();
+        (new UserPopulusSeeder)     ->run();
     }
 }

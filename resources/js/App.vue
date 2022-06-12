@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import NavBar from './components/nav/NavBar.vue';
+import NavBar from './components/MainNav/NavBar.vue';
 import Footer from './components/footer/Footer.vue';
 import Chat from "./components/Chat/Chat.vue";
 import { mapGetters } from 'vuex';
