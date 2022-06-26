@@ -6,6 +6,7 @@ import * as s from './sorters.js'          // s as sorters
 import state from './state.js'
 import getters from './getters.js'
 import mutations from './mutations.js'
+import axios from "axios"
 
 const actions = 
 {
@@ -311,7 +312,27 @@ const actions =
     updateOrderOfRecentGroups(context)
     {
         // if first group in list is one triggering this method, there is no need to update 
-        console.log(h.getAllIds(s.sort_filteredGroups_by_updated_at(h.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds))))
+        h.getAllIds(s.sort_filteredGroups_by_updated_at(h.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds)))
+    },
+
+    changeParticipantRole(context, data)
+    {
+        axios.post("/api/chat/group/change-user-role", data)
+        .then(res => {
+            // console.log(res.data) success message here
+        })
+    },
+
+    patchParticipantRole(context, data)
+    {
+        const grI = h.getGroupIndexById(state.groups, data.group_id) 
+        const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.pivot.user_id)
+
+        context.commit('patchParticipantRole', {
+            grI: grI,
+            prI: prI,
+            participant_role: data.pivot.participant_role
+        })
     }
 
 }

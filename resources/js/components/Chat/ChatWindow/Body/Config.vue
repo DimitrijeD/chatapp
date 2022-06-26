@@ -6,7 +6,7 @@
         <!-- Create Nav bar for config -->
         <ul class="grid text-lg font-light text-gray-600 border-b border-gray-300 mb-3"
             :class="'grid-cols-' + Object.keys(settings).length"
-        >
+        > 
             <li 
                 v-for="(setting, key) in settings"
                 v-bind:key="key"
@@ -14,7 +14,7 @@
                 class="text-center cursor-pointer select-none p-1.5"
                 v-bind:class="{
                     'bg-blue-100 border-b border-blue-400': setting.opened,
-                    'bg-gray-100 hover:bg-blue-100': !setting.opened,
+                    'bg-gray-100 hover:bg-blue-100':       !setting.opened,
                 }"
             >
                 {{ setting.name }}
@@ -25,27 +25,31 @@
         <!-- Create Config component if opened, close otherwise -->
         <div class="text-base font-light m-2 flex-1">
             <add-users 
-                v-if="settings.add_users.opened" 
+                v-if="settings.hasOwnProperty('add_users') && settings.add_users.opened" 
                 :group="group"  
-                :role="role"  
+                :role="userRole"
+                :permissions="permissions"  
             />
 
             <info 
-                v-if="settings.info.opened" 
+                v-if="settings.hasOwnProperty('info') && settings.info.opened" 
                 :group="group" 
-                :role="role"
+                :role="userRole"
+                :permissions="permissions"
             />
 
             <participants 
-                v-if="settings.participants.opened" 
+                v-if="settings.hasOwnProperty('participants') && settings.participants.opened" 
                 :group="group" 
-                :role="role"
+                :role="userRole"
+                :permissions="permissions"
             />
 
             <options 
-                v-if="settings.options.opened"
+                v-if="settings.hasOwnProperty('options') && settings.options.opened"
                 :group="group" 
-                :role="role"
+                :role="userRole"
+                :permissions="permissions"
             />
         </div>
         <!-- End Create Config component -->
@@ -60,7 +64,7 @@ import AddUsers     from './Config/AddUsers.vue'
 
 export default {
     props: [
-        'showConfig', 'group'
+        'showConfig', 'group', 'permissions', 'userRole'
     ],
 
     components: {
@@ -77,7 +81,7 @@ export default {
             settings: {
                 add_users: {
                     name: 'Add Users',
-                    opened: true, 
+                    opened: false, 
                 },
 
                 info: {
@@ -95,18 +99,12 @@ export default {
                     opened: false, 
                 },
             },
-
         }
     },
 
-    computed: {
-        role(){
-            return this.$store.getters['groups/getUserRole']({ group_id: this.group.id, user_id: this.user.id })
-        },
-    },
-
     created(){
-        console.log() 
+        this.createPermissibleSettings()
+        this.setFirstOpenedConfig()
     },
 
     mounted(){
@@ -121,7 +119,37 @@ export default {
                 this.settings[type].opened = false
             }
 
-            this.settings[ key ].opened = true
+            this.settings[key].opened = true
+        },
+
+        /**
+         * Exclue settings from showing in Config nav if their role is not allowing certain action
+         */
+        createPermissibleSettings()
+        {
+            if(!this.permissions.add.length)
+                delete this.settings['add_users']
+
+            if(this.group.model_type == "PRIVATE" && this.group.participants.length < 3)
+                delete this.settings['participants']
+        },
+
+        setFirstOpenedConfig()
+        {
+            let oneWillBeOpened = false
+
+            for(let settingIndex in this.settings){
+                if(this.settings[settingIndex].opened){
+                    oneWillBeOpened = true
+                    break
+                }
+            }
+
+            // if no settings are opened, then select first one in object as default opened setting after user clicks config cog
+            if(!oneWillBeOpened){
+                let firstOpened = Object.keys(this.settings)[0]
+                this.settings[firstOpened].opened = true
+            }
         },
 
     },
@@ -129,6 +157,6 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
 
 </style>

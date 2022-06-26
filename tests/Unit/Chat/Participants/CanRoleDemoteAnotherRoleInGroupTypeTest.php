@@ -18,41 +18,41 @@ class CanRoleDemoteAnotherRoleInGroupTypeTest extends TestCase
         $this->action = "demote";
     }
 
-    private function assertLeavesInNodeExist($roleMakingRequest, $level)
-    {
-        $aserted = false;
+    // private function assertLeavesInNodeExist($roleMakingRequest, $level)
+    // {
+    //     $aserted = false;
 
-        foreach($level as $currentRole => $demoteRoles){
-            foreach($demoteRoles as $demoteRole => $groupTypes){
-                foreach($groupTypes as $groupType){
-                    $aserted = true;
-                    $this->assertTrue(
-                        ChatRole::can( [$roleMakingRequest, $currentRole, $demoteRole, $groupType] , $this->action)
-                    );      
-                }
-            }      
-        }
+    //     foreach($level as $currentRole => $demoteRoles){
+    //         foreach($demoteRoles as $demoteRole => $groupTypes){
+    //             foreach($groupTypes as $groupType){
+    //                 $aserted = true;
+    //                 $this->assertTrue(
+    //                     ChatRole::can( [$roleMakingRequest, $currentRole, $demoteRole, $groupType] , $this->action)
+    //                 );      
+    //             }
+    //         }      
+    //     }
 
-        return $aserted;
-    }
+    //     return $aserted;
+    // }
 
-    public function test_creator_demotes_role()
-    {
-        $this->doTest(ChatRole::CREATOR, $this->keyChecker($this->rules, ChatRole::CREATOR));
-    }
+    // public function test_creator_demotes_role()
+    // {
+    //     $this->doTest(ChatRole::CREATOR, $this->keyChecker($this->rules, ChatRole::CREATOR));
+    // }
 
-    public function test_moderator_demotes_role()
-    {
-        $this->doTest(ChatRole::MODERATOR, $this->keyChecker($this->rules, ChatRole::MODERATOR));
-    }
+    // public function test_moderator_demotes_role()
+    // {
+    //     $this->doTest(ChatRole::MODERATOR, $this->keyChecker($this->rules, ChatRole::MODERATOR));
+    // }
 
-    public function test_participant_demotes_role()
-    {
-        $this->doTest(ChatRole::PARTICIPANT, $this->keyChecker($this->rules, ChatRole::PARTICIPANT));
-    }
+    // public function test_participant_demotes_role()
+    // {
+    //     $this->doTest(ChatRole::PARTICIPANT, $this->keyChecker($this->rules, ChatRole::PARTICIPANT));
+    // }
 
-    public function test_listener_demotes_role()
-    {
-        $this->doTest(ChatRole::LISTENER, $this->keyChecker($this->rules, ChatRole::LISTENER));
-    }
+    // public function test_listener_demotes_role()
+    // {
+    //     $this->doTest(ChatRole::LISTENER, $this->keyChecker($this->rules, ChatRole::LISTENER));
+    // }
 }

@@ -25,6 +25,14 @@ const getters = {
     },
 
     getMyParticipants: (state) => (group_id) => state.groups[helpers.getGroupIndexById(state.groups, group_id)].participants,
+
+    getParticipant: (state) => (data) =>
+    {
+        const grI = helpers.getGroupIndexById(state.groups, data.group_id)
+        const prI = helpers.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_id)
+        
+        return state.groups[grI].participants[prI]
+    },
 }
 
 export default getters 

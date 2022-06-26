@@ -63,7 +63,7 @@ import SmallUser from '../../../reuseables/SmallUser.vue'
 
 export default {
     props: [
-        'group', 'role'
+        'group', 'role', 'permissions'
     ],
 
     components: {
@@ -93,7 +93,6 @@ export default {
                 }
             },
 
-            massAssignRolesTo: 'PARTICIPANT'
         }
     },
 
@@ -151,7 +150,7 @@ export default {
             this.$store.dispatch('groups/addParticipants', {
                 addedUsersIds: this.addedUsersIds,
                 group_id: this.group.id,
-                massAssignRolesTo: this.massAssignRolesTo
+                massAssignRolesTo: this.group.model_type == "PUBLIC_CLOSED" ? "LISTENER" : "PARTICIPANT"
             }).then(() =>{
                 this.addedUsersIds = []
             })

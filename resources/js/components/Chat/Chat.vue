@@ -1,15 +1,12 @@
 <template>
-    <div>
-        <!-- Wrapper for opened and minimized chat windows-->
-        <div class="small-container fixed bottom-0 inset-x-0">
-            <div class="flex justify-start">
-                <chat-window
-                    v-for="group_id in openedGroupsIds"
-                    :key="group_id"
-                    :group_id="group_id"
-                >
-                </chat-window>
-            </div>
+    <div class="small-container fixed bottom-0 inset-x-0"><!-- Wrapper for opened and minimized chat windows-->
+        <div class="flex justify-start">
+            <chat-window
+                v-for="group_id in openedGroupsIds"
+                :key="group_id"
+                :group_id="group_id"
+            >
+            </chat-window>
         </div>
     </div>
 </template>
@@ -34,13 +31,14 @@ export default {
         ...mapGetters({ 
             user: "StateUser",
             openedGroupsIds: "groups/openedGroupsIds",
-            allGroups: "groups/allGroups"
+            allGroups: "groups/allGroups",
         }),
     },
 
     created(){
         this.$store.dispatch('groups/getGroups')
-        this.connectToActiveChatting();
+        this.connectToActiveChatting()
+        this.fetchRulesTables()
     },
 
 
@@ -54,6 +52,12 @@ export default {
                 this.$store.dispatch('groups/openGroup', notif.group_id)
             });
         },
+
+        fetchRulesTables()
+        {
+            this.$store.dispatch('chat_rules/FetchRules')
+        },
+
 
     },
 }

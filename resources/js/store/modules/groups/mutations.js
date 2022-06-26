@@ -42,13 +42,12 @@ const mutations = {
 
     removeGroupFromStore: (state, index) => state.groups.splice(index, 1),
 
-    removeParticipantFromGroup(state, data){
-        console.log(data)
-        state.groups[data.grI].participants.splice(data.prI, 1)
-    },
+    removeParticipantFromGroup: (state, data) => state.groups[data.grI].participants.splice(data.prI, 1),
 
     // once this is set, earliest messages request can no longer be trigged (up to 'first' message in group is pulled)
-    lockReachedEarliestMsgId:(state, grI) => state.groups[grI].reachedEarliestMsgId = true, 
+    lockReachedEarliestMsgId: (state, grI) => state.groups[grI].reachedEarliestMsgId = true, 
+
+    patchParticipantRole: (state, data) => state.groups[data.grI].participants[data.prI].pivot.participant_role = data.participant_role
 }
 
 export default mutations 
