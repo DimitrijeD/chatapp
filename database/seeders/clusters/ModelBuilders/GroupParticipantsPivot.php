@@ -7,6 +7,7 @@ use App\Models\ChatGroup;
 use App\Models\ParticipantPivot;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 use App\Models\ChatRole;
+use App\Models\User;
 
 class GroupParticipantsPivot implements Cluster
 {
@@ -16,6 +17,9 @@ class GroupParticipantsPivot implements Cluster
         $this->group = $chatGroup;
         $this->creator_id = $creator_id;
         $this->participantPivotRepo = resolve(ParticipantPivotEloquentRepo::class);
+
+        $this->allPivots = null;
+        $this->groupCreator = null;
     }
 
     /**
@@ -64,6 +68,21 @@ class GroupParticipantsPivot implements Cluster
     // Returns dictionary where index is user_id.
     public function getAllGroupPivots()
     {
-        return ParticipantPivot::where(['group_id' => $this->group->id])->get()->keyBy('user_id');
+        if(!$this->allPivots){
+            $this->allPivots = ParticipantPivot::where(['group_id' => $this->group->id])->get()->keyBy('user_id');
+            return $this->allPivots;
+        }
+        
+        return $this->allPivots;
+    }
+
+    public function getGroupCreator()
+    {
+        if(!$this->groupCreator){
+            $this->groupCreator = User::where('id', $this->creator_id)->first();
+            return $this->groupCreator;
+        }
+        
+        return $this->groupCreator;
     }
 }

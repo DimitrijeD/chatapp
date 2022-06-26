@@ -28,6 +28,8 @@
                 <config 
                     :showConfig="showConfig"
                     :group="group"
+                    :permissions="permissions"
+                    :userRole="userRole"
                     class="window-x-minus-border h-full"
                 />
 
@@ -41,7 +43,10 @@
 
 
                 <!-- Chat Window Footer -->
-                <div class="border-t-4 border-gray-200 bg-gray-100">
+                <div 
+                    v-if="permissions.send_message" 
+                    class="border-t-4 border-gray-200 bg-gray-100"
+                >
                     <message-input
                         :group_id="group.id"
                     />
@@ -53,16 +58,16 @@
 </template>
 
 <script>
-import WindowManagement from "./Header/WindowManagement.vue";
-import ChatParticipants from "./Header/ChatParticipants.vue";
-import MessagesBlock    from "./Body/MessagesBlock";
-import Config           from "./Body/Config.vue";
-import MessageInput     from "./Footer/MessageInput.vue";
+import WindowManagement from "./Header/WindowManagement.vue"
+import ChatParticipants from "./Header/ChatParticipants.vue"
+import MessagesBlock    from "./Body/MessagesBlock"
+import Config           from "./Body/Config.vue"
+import MessageInput     from "./Footer/MessageInput.vue"
 
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 
 export default {
-    props:[
+    props: [
         'group_id',
     ],
 
@@ -72,18 +77,23 @@ export default {
             lastAcknowledgedMessageId: null,
             showConfig: false,
             // user: this.$store.state.auth.user,
+            permissions: {},
+            userRole: null
         }
     },
 
     computed: {
         ...mapGetters({ 
             user: "StateUser",
+            rules: "chat_rules/StateRules",
+            roles: "chat_rules/StateRoles",
+            actionKeys: "chat_rules/StateKeys",
         }),
 
-        group(){ 
+        group()
+        { 
             return this.$store.getters['groups/filterById'](this.group_id)
         },
-
     },
 
     components: {
@@ -95,8 +105,11 @@ export default {
     },
 
     created() {
+        this.setUserRole()
+        this.createPermissions()
         this.listenForNewMessages()
         this.listenForMessagesSeen()
+        this.listenForParticipantRoleChange()
     },
 
     methods: {   
@@ -163,6 +176,99 @@ export default {
                 this.$store.dispatch('groups/seenEvent', e.seenData)
             });
         },
+
+        listenForParticipantRoleChange()
+        {
+            Echo.private("group." + this.group.id)
+            .listen('.participant.role.change', e => {
+                this.$store.dispatch('groups/patchParticipantRole', e.data)
+            });
+        },
+
+        createPermissions()
+        {
+            this.permissions = this.createObjectFromArrayValues(this.actionKeys)
+
+            this.permission_canAdd()
+            this.permission_canRemove()
+            this.permission_canChangeRole()
+            this.permission_canSendMessage()
+        },
+
+        permission_canAdd()
+        {
+            let action = 'add'
+            this.ruleDepth3(this.rules[action][this.userRole], action)
+        },
+
+        permission_canRemove()
+        {
+            let action = 'remove'
+            this.ruleDepth3(this.rules[action][this.userRole], action)
+        },
+
+        permission_canChangeRole()
+        {
+            let action = 'change_role'
+            this.ruleDepth4(this.rules[action][this.userRole], action)
+        },
+
+
+        permission_canSendMessage()
+        {
+            let action = 'send_message'
+            this.ruleDepth2(this.rules[action][this.userRole], action)
+        },
+
+        ruleDepth2(level1, action)
+        {
+            this.permissions[action] = level1[this.group.model_type] ? true : false
+        },
+
+        ruleDepth3(level1, action)
+        {
+            for(let targetRole in level1){
+                if(level1[targetRole][this.group.model_type])
+                    this.permissions[action].push(targetRole)
+            }
+        },
+
+        ruleDepth4(level1, action)
+        {
+            this.permissions[action] = {}
+
+            for(let fromRole in level1){
+                for(let toRole in level1[fromRole]){
+                    if(level1[fromRole][toRole][this.group.model_type] ){
+                        
+                        if(!this.permissions[action][fromRole]){
+                            this.permissions[action][fromRole] = []
+                        }
+
+                        this.permissions[action][fromRole].push(toRole)
+                    }
+                }
+            }
+        },
+
+        createObjectFromArrayValues(array)
+        {
+            let object = {}
+
+            for(let i = 0; i < array.length; i++){
+                object[array[i]] = []
+            }
+
+            return object
+        },
+
+        setUserRole()
+        {
+            this.userRole = this.$store.getters['groups/getUserRole']({ 
+                group_id: this.group.id, 
+                user_id: this.user.id 
+            })
+        }
 
     }
 }

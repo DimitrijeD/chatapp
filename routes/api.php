@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\Auth\AccountVerificationController;
-
+use App\Http\Controllers\RoleRuleCachingController;
 use App\Http\Controllers\UsersController;
 
 //-----------------------------Auth-----------------------------//
@@ -36,21 +36,30 @@ Route::post('/chat/message/seen', [MessageController::class, 'messageIsSeen'])->
 
 
 //-----------------------------ChatGroup-----------------------------//
-Route::post('/chat/group/store', [GroupController::class, 'store'])->middleware(['auth']);
 Route::get('/chat/user/groups', [GroupController::class, 'getGroupsByUser'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}', [GroupController::class, 'getGroupById'])->middleware(['chat_group_access', 'auth']);
+
+Route::post('/chat/group/store', [GroupController::class, 'store'])->middleware(['auth']);
 //-------------------------------------------------------------------//
 
 
 //-----------------------------Participants-----------------------------// 
 Route::get('/chat/users/without-self', [ParticipantsController::class, 'getAllUsersExceptSelf'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}/users', [ParticipantsController::class, 'getUsersByGroup'])->middleware(['auth']);
-Route::post('/chat/group/{group_id}/add-users', [ParticipantsController::class, 'addUsersToGroup'])->middleware(['auth', 'chat_group_access']);
 Route::get('/chat/group/{group_id}/leave', [ParticipantsController::class, 'leaveGroup'])->middleware(['auth', 'chat_group_access']);
 Route::get('/chat/group/{group_id}/remove/{user_id_to_remove}', [ParticipantsController::class, 'removeUserFromGroup'])->middleware(['auth', 'chat_group_access']);
+
+Route::post('/chat/group/{group_id}/add-users', [ParticipantsController::class, 'addUsersToGroup'])->middleware(['auth', 'chat_group_access']);
+Route::post('/chat/group/change-user-role', [ParticipantsController::class, 'chageParticipantsRole'])->middleware(['auth', 'chat_group_access']);
 //----------------------------------------------------------------------//
 
 
 //--------------------------------Users---------------------------------// 
 Route::post('/users/search', [UsersController::class, 'getMissingUsers'])->middleware(['auth']);
 //----------------------------------------------------------------------//
+
+
+//--------------------------------Role Cache--------------------------------//
+Route::get('/chat/role-rules/set', [RoleRuleCachingController::class, 'setAllRules']); //->middleware(['auth']) Add admin user and role based middleware
+Route::get('/chat/role-rules/get', [RoleRuleCachingController::class, 'getAllRules']);
+//--------------------------------------------------------------------------//

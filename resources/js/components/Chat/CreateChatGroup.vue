@@ -32,9 +32,16 @@
 
                 <!-- Chose group type -->
                 <div class="m-2">
-                    <select class="text-gray-400 a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset" v-model="selected_model_type">
-                        <option v-for="(model_type, index) in model_types" v-bind:value="model_type.value" :key="index">
-                            {{ model_type.text }}
+                    <select 
+                        class="text-gray-400 a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset" 
+                        v-model="selected_model_type"
+                    >
+                        <option 
+                            v-for="(type, index) in getHumanReadableGroupTypes" 
+                            v-bind:value="type.value" 
+                            :key="index"
+                        >
+                            {{ type.text }}
                         </option>
                     </select>
                 </div>
@@ -87,8 +94,8 @@
                 >
                     Create chat group
                 </div>
-
             </div>
+
         </transition>
     </div>
 </template>
@@ -116,57 +123,83 @@ export default {
             model_types: [
                 { text: 'Private chat', value: 'PRIVATE' },
                 { text: 'Protected chat', value: 'PROTECTED' },
-                { text: 'Public chat', value: 'PUBLIC_OPEN' }
+                { text: 'Public chat', value: 'PUBLIC_OPEN' },
+                { text: 'Public closed chat', value: 'PUBLIC_CLOSED' }
             ],
+
+            defaultNewGroupType: 'PRIVATE',
         }
+    },
+
+    computed: {
+        ...mapGetters({ 
+            user: "StateUser",
+            groupTypes: "chat_rules/StateGroupTypes",
+        }),
+
+        getHumanReadableGroupTypes()
+        {
+            let groupTypes = []
+
+            for(let i in this.groupTypes){
+                groupTypes.push({
+                    text: this.capitalizeFirstLetter(this.groupTypes[i].replace("_", " ").toLowerCase()),
+                    value: this.groupTypes[i]
+                })
+            }
+
+            return groupTypes
+        }
+
     },
 
     created(){
         
     },
 
-    computed: {
-        ...mapGetters({ user: "StateUser" }),
-
-    },
-
     mounted()
     {
-        this.getAllUsersExceptSelf();
+        this.getAllUsersExceptSelf()
 
     },
 
     methods:
     {        
+        capitalizeFirstLetter(string) {
+           return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+
         showDropdown(){
             for(let userIndex in this.allUsers){
-                this.allUsers[userIndex].selectionStatus = false;
+                this.allUsers[userIndex].selectionStatus = false
             }
+
             this.newChatGroup = {
                 name: '',
                 users: [],
                 model_type: '',
-            };
-            this.errors = [];
+            }
 
-            this.showCreateDropdown = !this.showCreateDropdown;
+            this.errors = []
+
+            this.showCreateDropdown = !this.showCreateDropdown
         },
 
         getAllUsersExceptSelf()
         {
             axios.get('/api/chat/users/without-self')
             .then((res) => {
-                this.allUsersOriginal = this.addSelectedStatusToAllUsers(res.data);
-                this.allUsers = this.allUsersOriginal;
+                this.allUsersOriginal = this.addSelectedStatusToAllUsers(res.data)
+                this.allUsers = this.allUsersOriginal
             });
         },
 
         addSelectedStatusToAllUsers(users)
         {
             for(let i = 0; i < users.length; i++){
-                users[i].selectionStatus = false;
+                users[i].selectionStatus = false
             }
-            return users;
+            return users
         },
 
         // this user is chosen for new chat group, change color of user to blue and add it to newChatGroup
@@ -175,28 +208,28 @@ export default {
         {
             if( !this.checkIfUserAlreadySelected(user) )
             {
-                this.newChatGroup.users.push(user);
-                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = true;
+                this.newChatGroup.users.push(user)
+                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = true
             } else {
-                const index = this.getArrayIndexFromElement(this.newChatGroup.users, user);
+                const index = this.getArrayIndexFromElement(this.newChatGroup.users, user)
                 if (index > -1) {
-                    this.newChatGroup.users.splice(index, 1);
+                    this.newChatGroup.users.splice(index, 1)
                 }
-                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = false;
+                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = false
             }
         },
 
         createNewChatGroup()
         {
-            this.checkForErrors();
+            this.checkForErrors()
 
             if(this.errors.length > 0) return
 
-            this.resolveGroupParams();
+            this.resolveGroupParams()
 
             this.$store.dispatch('groups/storeGroup', this.newChatGroup)
 
-            this.resetComponentVars();
+            this.resetComponentVars()
         },
 
         // return true if user is already selected
@@ -204,21 +237,21 @@ export default {
         {
             for(let i = 0; i < this.newChatGroup.users.length; i++){
                 if( this.newChatGroup.users[i].id === user.id ){
-                    return true;
+                    return true
                 }
             }
-            return false;
+            return false
         },
 
         checkForErrors()
         {
             // reset errors before pushing new messages
-            this.errors = [];
+            this.errors = []
 
             if(this.newChatGroup.users.length === 0){
-                this.errors.push('Select at least one user');
+                this.errors.push('Select at least one user')
             }
-            return this.errors;
+            return this.errors
         },
 
         resetComponentVars()
@@ -227,71 +260,71 @@ export default {
                 name: '',
                 users: [],
                 model_type: '',
-            };
-
-            this.showCreateDropdown = false;
+            }
+            this.errors = []
+            this.showCreateDropdown = false
         },
 
         findArrIndexByUserId(users, id)
         {
             for(let i = 0; i < users.length; i++){
                 if(users[i].id == id){
-                    return i;
+                    return i
                 }
             }
             // user with that Id does not exist in this array of users
-            return false;
+            return false
         },
 
         getArrayIndexFromElement(array, element){
-            return array.indexOf(element);
+            return array.indexOf(element)
         },
 
         // this.groupsOriginal is constant and is used to filter chat groups multiple times (typing and erasing input)
         searchInput()
         {
-            this.nothingFound = '';
+            this.nothingFound = ''
             // @todo req exp bugs when there are certain characters in string such as '?, *'
-            this.allUsers = this.searchForUsers(this.userSearchStr, this.allUsersOriginal);
+            this.allUsers = this.searchForUsers(this.userSearchStr, this.allUsersOriginal)
 
             if(!this.allUsers.length){
-                this.nothingFound = 'Nothing found :/';
+                this.nothingFound = 'Nothing found :/'
             }
         },
 
         // find all users which match string strSearch
         searchForUsers(strSearch, users)
         {
-            let arrOfSearchMatchedUsers = [];
+            let arrOfSearchMatchedUsers = []
 
             for (let userInd in users){
-                let first_name = users[userInd].first_name;
-                let last_name = users[userInd].last_name;
+                let first_name = users[userInd].first_name
+                let last_name = users[userInd].last_name
 
-                let text = first_name + ' ' + last_name;
+                let text = first_name + ' ' + last_name
 
                 // If input match anything in this string, return as match
                 if(this.regExpressionMatch(strSearch, text)){
-                    arrOfSearchMatchedUsers.push( users[userInd] );
+                    arrOfSearchMatchedUsers.push( users[userInd] )
                 }
             }
-            return arrOfSearchMatchedUsers;
+            return arrOfSearchMatchedUsers
         },
 
         // Find string in text using case insensitive reg exp
         regExpressionMatch(find, text)
         {
-            let regex = new RegExp(find, 'i');
-            return text.match(regex);
+            let regex = new RegExp(find, 'i')
+            return text.match(regex)
         },
 
         resolveGroupParams()
         {
-            this.newChatGroup.users.push(this.user);
+            this.newChatGroup.users.push(this.user)
 
-            this.newChatGroup.model_type = this.newChatGroup.users.length == 2
-                ? "PRIVATE"
-                : this.selected_model_type;
+            this.newChatGroup.model_type = this.selected_model_type 
+                ? this.selected_model_type 
+                : this.defaultNewGroupType
 
         },
     }

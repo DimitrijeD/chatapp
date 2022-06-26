@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Cache\ChatRoleRulesCache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,5 +19,6 @@ class DatabaseSeeder extends Seeder
     {
         (new ChatGroupClusterSeeder)->run();
         (new UserPopulusSeeder)     ->run();
+        (new ChatRoleRulesCache)->storeAll();
     }
 }

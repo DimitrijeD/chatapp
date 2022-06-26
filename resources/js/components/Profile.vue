@@ -11,10 +11,9 @@
 
                 <p class="p-2 text-gray-500 font-semibold">Email <b>{{ user.email }}</b></p>
 
-                <br><br>
-
+                <!--
                 <p>ICONS TESTING</p>
-                <!-- <font-awesome-icon 
+                     <font-awesome-icon 
                     icon="magnifying-glass" 
                     size="2x" 
                     class=""

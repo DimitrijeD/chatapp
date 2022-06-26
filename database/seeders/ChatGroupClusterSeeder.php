@@ -71,7 +71,7 @@ class ChatGroupClusterSeeder extends Seeder
 
         $this->chatGroup = (new ChatGroupBuilder([
             'name' => "Cluster seeded | {$this->msgType} msg type | {$this->timeType} time type | {$this->seenType} seen type ",
-            'model_type' => ChatGroup::TYPE_DEFAULT,
+            'model_type' => ChatGroup::TYPE_PUBLIC_OPEN,
             'updated_at' => $this->timeInterval['minTime'],
             'created_at' => $this->timeInterval['minTime'],
         ]))->makeModel();
@@ -115,6 +115,7 @@ class ChatGroupClusterSeeder extends Seeder
             'users' => $this->users,
             'pivots' => $this->pivot->getAllGroupPivots(),
             'creator_id' => $this->creator_id,
+            'group_creator' => $this->pivot->getGroupCreator()
         ];
     }
 

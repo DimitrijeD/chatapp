@@ -15,6 +15,9 @@ use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 use App\Http\Requests\Participant\AddParticipantRequest;
+use App\Http\Requests\Participant\ChangeRoleRequest;
+
+use App\Events\UserRoleInGroupChangedEvent;
 
 class ParticipantsController extends Controller
 { 
@@ -74,11 +77,6 @@ class ParticipantsController extends Controller
         ]);
     }
 
-    // public function getUsersByGroup($group_id, ChatGroupEloquentRepo $chatGroupRepo)
-    // {
-    //     return ($chatGroupRepo->find($group_id))->participants;
-    // }
-
     /**
      * Expects midleware ChatGroupAccess to provide group with participants and user models othwerwise this code wont work
      * 
@@ -116,6 +114,36 @@ class ParticipantsController extends Controller
         return $this->pivotRepo->delete($targetForRemove->pivot) 
             ? response()->json(['success' => __("User has been removed from group.")])
             : response()->json(['error'   => __("An error occured while removing user from group.")], 500);
+    }
+
+    public function chageParticipantsRole(ChangeRoleRequest $request)
+    {
+        $data = $request->all();
+
+        $participantPivotToUpdate = null;
+
+        foreach($data['group']->participants as $participant){
+            if($participant->id == $data['target_user_id'])
+                $participantPivotToUpdate = $participant->pivot;
+        }
+
+        if(!$participantPivotToUpdate)
+            return response()->json(['error' => __("User you are trying to change role to, is not in this group.")]);
+
+        $updatedPivot = $this->pivotRepo->update($participantPivotToUpdate, [
+            'participant_role' => $data['to_role'],
+        ]);
+
+        if($updatedPivot->participant_role == $data['to_role']){
+            broadcast(new UserRoleInGroupChangedEvent([
+                'group_id' => $data['group']->id,
+                'pivot' => $updatedPivot
+            ]));
+
+            return response()->json(['success' => __("Role has been successfully changed.")]);
+        }
+
+        return response()->json(['error' => __("We are not able to change role at this time.")], 500);
     }
 
 }
