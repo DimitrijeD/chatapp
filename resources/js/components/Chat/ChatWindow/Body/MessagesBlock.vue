@@ -113,7 +113,8 @@ export default {
                 // set awaiting to true to prevent excessive api calls
                 this.config.awaitsEarlyMessages = true
 
-                this.$store.dispatch('groups/getEarliestMessages', {group_id: this.group.id}).then(()=>{
+                this.$store.dispatch('groups/getEarliestMessages', {group_id: this.group.id})
+                .then(()=>{
                     // Earliest messages received, allow this request to be executed if user scroll to top of window again
                     this.config.awaitsEarlyMessages = false
                 })
@@ -163,17 +164,8 @@ export default {
 
 }
 
-// this.$refs[this.refsNames.scroll].getScrollProcess().v > 0.5
-
 </script>
 
 <style>
-.inner-cw-shadow-seen {
-    box-shadow: 0px 0px 5px 2px rgb(0 134 255 / 34%) inset;
-}
-
-.inner-cw-shadow-unseen {
-    box-shadow: 0px 0px 5px 2px rgb(0 255 152 / 34%) inset;
-}
 
 </style>

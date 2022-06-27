@@ -130,7 +130,7 @@ export default {
             if(!this.permissions.add.length)
                 delete this.settings['add_users']
 
-            if(this.group.model_type == "PRIVATE" && this.group.participants.length < 3)
+            if(this.group.model_type == "PRIVATE")
                 delete this.settings['participants']
         },
 

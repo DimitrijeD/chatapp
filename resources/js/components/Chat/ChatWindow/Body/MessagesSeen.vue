@@ -1,14 +1,10 @@
 <template>
-    <div v-show="hasAnyPeopleSeen" class="flex justify-end mx-4 my-1 flex-wrap">
+    <div class="flex justify-end mx-4 my-1 flex-wrap">
         <div 
             v-for="participant in this.participants" 
             :key="participant.id" 
-            class=""
         >
-            <div 
-                v-if="isThisLastSeenMessage(participant) && !isOwnerOfThisMessage(participant)" 
-                class=""
-            >
+            <div v-if="showParticipantAsSeen(participant)">
                 <img
                     :src="participant.thumbnail"
                     alt="no img :/"
@@ -33,7 +29,7 @@ export default {
 
     data(){
         return{
-            hasAnyPeopleSeen: true,
+            
         }
     },
 
@@ -42,22 +38,47 @@ export default {
     },
 
     created(){
-
+        
     },
 
     methods: 
     {
+        showParticipantAsSeen(participant)
+        {
+
+            if(!this.isThisLastSeenMessage(participant)) return false
+
+            if(this.isOwnerOfThisMessage(participant)) return false
+
+            if(this.isParticipantOwnerOfLastMessage(participant)) return false
+
+            return true
+        },
+
         isThisLastSeenMessage(participant)
         {
-            if(participant.pivot.last_message_seen_id == this.message.id ){
-                return true
-            }
-            return false
+            return participant.pivot.last_message_seen_id == this.message.id 
+                ? true 
+                : false
         },
 
         isOwnerOfThisMessage(participant)
         {
-            return participant.id == this.message.user_id ? true : false
+            return participant.id == this.message.user_id 
+                ? true 
+                : false
+        },
+        
+        isParticipantOwnerOfLastMessage(participant)
+        {
+            const lastMsgOwnerId = this.$store.getters['groups/getOwnerIdOfLastMessage']({
+                group_id: this.group_id,
+                last_msg_id: this.last_msg_id
+            })
+
+            return lastMsgOwnerId == participant.id
+                ? true
+                : false
         },
 
     }
