@@ -33,6 +33,14 @@ const getters = {
         
         return state.groups[grI].participants[prI]
     },
+
+    getOwnerIdOfLastMessage: (state) => (data) => 
+    {
+        const grI = helpers.getGroupIndexById(state.groups, data.group_id)
+        const msg = state.groups[grI].messages[data.last_msg_id]
+
+        return msg.user_id
+    }
 }
 
 export default getters 

@@ -131,7 +131,7 @@ export default {
 
         listenForNewMessages()
         {
-            this.getMessages();
+            this.getMessages()
 
             // this user is not listening to his own new message event
             Echo.private("group." + this.group.id)
