@@ -12,7 +12,7 @@
                     <div class="w-3 h-3 rounded-full bg-green-400" />
                 </div>
 
-                <div class="text-base text-white font-semibold ml-2 hover:border-white border-b-2 border-blue-500 cursor-pointer nowrap">
+                <div class="header-text hover:border-white border-b-2 border-blue-500 cursor-pointer nowrap">
                     {{ participant.first_name }} {{ participant.last_name }}
                 </div>
             </div>

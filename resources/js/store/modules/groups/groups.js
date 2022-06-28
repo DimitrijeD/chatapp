@@ -255,18 +255,18 @@ const actions =
          * Request returns fresh group with particiapants, without messages
          */
         return axios.post(endpoint, request).then(res => {
-            if(!res.data.group){ 
-                console.log("added participants to group request but no fresh group was returned, 'groups/addParticipants' action")
-                return
-            }
+            // if(!res.data.group){ 
+            //     console.log("added participants to group request but no fresh group was returned, 'groups/addParticipants' action")
+            //     return
+            // }
 
-            let group = res.data.group
+            // let group = res.data.group
 
-            let data = {
-                group: group,
-                grI: h.getGroupIndexById(state.groups, group.id) 
-            }
-            context.commit('refreshGroup', data)
+            // let data = {
+            //     group: group,
+            //     grI: h.getGroupIndexById(state.groups, group.id) 
+            // }
+            // context.commit('refreshGroup', data)
 
         }).catch( error => {
             console.log('groups/addParticipants')
@@ -279,13 +279,7 @@ const actions =
         if(!data.group_id || !data.user_id_to_remove) return
 
         axios.get(`/api/chat/group/${data.group_id}/remove/${data.user_id_to_remove}`).then((res)=>{
-            const grI = h.getGroupIndexById(state.groups, data.group_id) 
-            const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_id_to_remove)
-
-            context.commit('removeParticipantFromGroup', {
-                grI: grI,
-                prI: prI
-            })
+            // display message from repsonse
         }).catch((error)=> {
             console.log(`error while removing participant from group \n ${error}`)
         })
@@ -333,7 +327,39 @@ const actions =
             prI: prI,
             participant_role: data.pivot.participant_role
         })
-    }
+    },
+
+    removedParticipantEvent(context, data)
+    {
+        const grI = h.getGroupIndexById(state.groups, data.group_id) 
+        const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.removed_user_id)
+
+        context.commit('removeParticipantFromGroup', {
+            grI: grI,
+            prI: prI,
+        })
+    },
+
+    addedParticipantEvent(context, data)
+    {
+        const grI = h.getGroupIndexById(state.groups, data.group_id) 
+
+        context.commit('refreshGroupParticipants', {
+            grI: grI,
+            participants: data.participants
+        })
+    },
+
+    participantLeftGroupEvent(context, data)
+    {
+        const grI = h.getGroupIndexById(state.groups, data.group_id) 
+        const prI = h.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_left_id)
+
+        context.commit('removeParticipantFromGroup', {
+            grI: grI,
+            prI: prI,
+        })
+    },
 
 }
 
