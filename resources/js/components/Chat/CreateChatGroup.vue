@@ -297,15 +297,15 @@ export default {
         {
             let arrOfSearchMatchedUsers = []
 
-            for (let userInd in users){
-                let first_name = users[userInd].first_name
-                let last_name = users[userInd].last_name
+            for (let i in users){
+                let first_name = users[i].first_name
+                let last_name = users[i].last_name
 
                 let text = first_name + ' ' + last_name
 
                 // If input match anything in this string, return as match
                 if(this.regExpressionMatch(strSearch, text)){
-                    arrOfSearchMatchedUsers.push( users[userInd] )
+                    arrOfSearchMatchedUsers.push( users[i] )
                 }
             }
             return arrOfSearchMatchedUsers
@@ -321,12 +321,21 @@ export default {
         resolveGroupParams()
         {
             this.newChatGroup.users.push(this.user)
+            this.resolveGroupType()
+        },
 
-            this.newChatGroup.model_type = this.selected_model_type 
+        resolveGroupType()
+        {
+            if(this.selected_model_type == "PRIVATE" && this.newChatGroup.users.length > 2){
+                this.newChatGroup.model_type = "PROTECTED" 
+                return
+            }
+
+            this.newChatGroup.model_type = this.selected_model_type         
                 ? this.selected_model_type 
                 : this.defaultNewGroupType
 
-        },
+        }
     }
 
 }
