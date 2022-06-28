@@ -1,48 +1,43 @@
 <template>
     <div class="w-full m-auto z-50 truncate">
-        <!-- Make overflow when there are many users in this chat -->
-        <!-- make status dynamic -->
-
-        <div class="flex justify-start ml-2" >
-            <!-- Do not show self in chat window heading because this.participants contains all users that belong to this chat-->
-            <div
-                v-for="participant in group.participants"
-                :key="participant.id"
-            >            
-                <div v-if="participant.id != user.id" 
-                    class="flex justify-start mr-2"
-                >
-                    <!-- Next div is just green circle as 'user is online' indicator; replace after this is done dynamically -->
-                    <div class="m-auto">
-                        <div class="w-3 h-3 rounded-full bg-green-400" />
-                    </div>
-
-                    <div class="text-base text-white font-semibold ml-2 hover:border-white border-b-2 border-blue-500 cursor-pointer nowrap">
-                        {{ participant.first_name }} {{ participant.last_name }}
-                    </div>
-                </div>
-            </div>
+        <div class=" ml-2">
+            <list-chat-participants 
+                v-if="showComponent == 'list-chat-participants'"
+                :group="group"
+            />
+            
+            <group-name 
+                v-if="showComponent == 'group-name'"
+                :group="group"
+            />
         </div>
-
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import ListChatParticipants from "./ChatParticipants/ListChatParticipants.vue";
+import GroupName from "./ChatParticipants/GroupName.vue";
 
 export default {
     props:[
         'group',
     ],
 
+    components: {
+        'list-chat-participants': ListChatParticipants,
+        'group-name': GroupName,
+    },
+
     data(){
         return{
-
+            showComponent: null,
+            
         }
     },
 
     created() {
-    
+        this.whatToShowInHeader()
     },
 
     mounted() {
@@ -54,7 +49,32 @@ export default {
     },
 
     methods:{
-        
+        /**
+         * Determine what content should be displayed in Chat Window Header
+         * 
+         * List of users or group name.
+         * Private group always shows other user in this group.
+         * 
+         */
+        whatToShowInHeader()
+        {
+            if(this.group.model_type == "PRIVATE"){
+                this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            if(this.group.participants.length <= 3){
+                this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            if(!this.group.name){
+                this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            this.showComponent = 'group-name' 
+        }
     },
 }
 </script>

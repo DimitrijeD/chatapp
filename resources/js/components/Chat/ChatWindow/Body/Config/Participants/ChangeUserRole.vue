@@ -18,7 +18,7 @@
         <div v-else>
             <select 
                 @change="roleUpdate($event)" 
-                class="text-gray-400 flex w-full text-base px-3 py-1.5 bg-white font-light text-gray-700 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                class="text-base font-light text-gray-700 flex w-full px-3 py-1.5 bg-gray-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
             >
                 <option class="block w-full bg-green-100" selected>{{ participant.pivot.participant_role.toLowerCase() }}</option>
                 <option 
