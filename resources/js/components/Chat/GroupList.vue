@@ -35,58 +35,60 @@
         <transition name="slide-fade-nav-dropdowns">
             <div
                 v-if="showExistingChats"
-                class="z-30 width-300 absolute bg-gray-100 h-96 mt-1 shadow-2xl "
+                class="z-30 width-300 absolute bg-gray-100 mt-1 shadow-2xl "
             >
                 <div class="m-2">
                     <input
                         class="w-full p-2 bg-white text-base hover:bg-blue-50 focus:bg-blue-100 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Find chats by user"
+                        placeholder="Find chats by user or chat name"
                         type="text"
                         v-model="searchStr"
                         @keyup="searchInput"
                     >
                 </div>
 
-                <vue-scroll>
-                    <div class="flex flex-col-reverse">
-                        <div v-for="group in groups" :key="group.id">
-                            <div
-                                class="p-2 m-2 rounded-xl cursor-pointer shadow-inner"
-                                @click="createChatWindow(group)"
-                                :class="{
-                                    'bg-blue-100 hover:bg-blue-200': !group.hasUnseenState,
-                                    'bg-green-200 hover:bg-green-300': group.hasUnseenState,
-                                }"
-                            >
-                                <!-- Group Name -->
-                                <div class="mb-1">
-                                    <p v-if="group.name" class="p-0.5 m-0.5 text-gray-700 overflow-ellipsis break-words ">
-                                        {{group.name}}
-                                    </p>
-
-                                    <p v-else class="p-0.5 m-0.5 text-gray-700">
-                                        No name
-                                    </p>
-                                </div>
-
-                                <!-- List of all participants in 'this' chat group -->
-                                <!-- @todo Need overflow when there are too many participants in list -->
-                                <span
-                                    v-for="participant in group.participants"
-                                    :key="participant.id"
+                <div class="h-96">
+                    <vue-scroll>
+                        <div class="flex flex-col-reverse">
+                            <div v-for="group in groups" :key="group.id">
+                                <div
+                                    class="p-2 m-2 rounded-xl cursor-pointer shadow-inner"
+                                    @click="createChatWindow(group)"
+                                    :class="{
+                                        'bg-blue-100 hover:bg-blue-200': !group.hasUnseenState,
+                                        'bg-green-200 hover:bg-green-300': group.hasUnseenState,
+                                    }"
                                 >
-                                    <span 
-                                        v-if="participant.id !== user.id"
-                                        class="bg-blue-400 text-white rounded p-1.5 m-1"
-                                    >
-                                        {{ participant.first_name }} {{ participant.last_name }}
-                                    </span>
-                                </span>
+                                    <!-- Group Name -->
+                                    <div class="mb-1">
+                                        <p v-if="group.name" class="p-0.5 m-0.5 text-gray-700 overflow-ellipsis break-words ">
+                                            {{group.name}}
+                                        </p>
 
+                                        <p v-else class="p-0.5 m-0.5 text-gray-700">
+                                            No name
+                                        </p>
+                                    </div>
+
+                                    <!-- List of all participants in 'this' chat group -->
+                                    <!-- @todo Need overflow when there are too many participants in list -->
+                                    <span
+                                        v-for="participant in group.participants"
+                                        :key="participant.id"
+                                    >
+                                        <span 
+                                            v-if="participant.id !== user.id"
+                                            class="bg-blue-400 text-white rounded p-1.5 m-1"
+                                        >
+                                            {{ participant.first_name }} {{ participant.last_name }}
+                                        </span>
+                                    </span>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </vue-scroll>
+                    </vue-scroll>
+                </div>
 
 
                 <div v-if="nothingFound" class="m-2 text-red-500">

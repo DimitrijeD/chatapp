@@ -56,9 +56,8 @@ trait CRUDTrait
             }
         }
 
-        if($with) {
+        if($with) 
             $query->with($with);
-        }
 
         $result = $query->get();
 

@@ -10,6 +10,8 @@
                 v-if="showComponent == 'group-name'"
                 :group="group"
             />
+
+            <div class="header-text" v-if="showComponent == 'default-show'">{{ defaultText }}</div>
         </div>
     </div>
 </template>
@@ -32,7 +34,7 @@ export default {
     data(){
         return{
             showComponent: null,
-            
+            defaultText: "A Quiet Place"
         }
     },
 
@@ -53,8 +55,6 @@ export default {
          * Determine what content should be displayed in Chat Window Header
          * 
          * List of users or group name.
-         * Private group always shows other user in this group.
-         * 
          */
         whatToShowInHeader()
         {
@@ -63,24 +63,32 @@ export default {
                 return
             }
 
-            if(this.group.participants.length <= 3){
+            if(!this.group.name && this.group.participants.length == 1){
+                this.showComponent = 'default-show'
+                return
+            }
+
+            if(!this.group.name && this.group.participants.length > 1){
                 this.showComponent = 'list-chat-participants'
                 return
             }
 
-            if(!this.group.name){
-                this.showComponent = 'list-chat-participants'
+            if(this.group.name){
+                this.showComponent = 'group-name'
                 return
-            }
+            } 
 
-            this.showComponent = 'group-name' 
         }
     },
 }
 </script>
 
-<style scoped>
+<style>
 .nowrap {
     white-space: nowrap ;
+}
+
+.header-text {
+    @apply text-base text-white font-semibold ml-2;
 }
 </style>

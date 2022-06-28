@@ -107,9 +107,13 @@ export default {
     created() {
         this.setUserRole()
         this.createPermissions()
+
         this.listenForNewMessages()
         this.listenForMessagesSeen()
         this.listenForParticipantRoleChange()
+        this.listenForUserRemoved()
+        this.listenForUserAdded()
+        this.listenForUserLeftGroup()
     },
 
     methods: {   
@@ -133,7 +137,6 @@ export default {
         {
             this.getMessages()
 
-            // this user is not listening to his own new message event
             Echo.private("group." + this.group.id)
             .listen('.message.new', e => {
                 this.getMessages()
@@ -182,6 +185,30 @@ export default {
             Echo.private("group." + this.group.id)
             .listen('.participant.role.change', e => {
                 this.$store.dispatch('groups/patchParticipantRole', e.data)
+            });
+        },
+
+        listenForUserRemoved()
+        {
+            Echo.private("group." + this.group.id)
+            .listen('.participant.removed', e => {
+                this.$store.dispatch('groups/removedParticipantEvent', e.data)
+            });
+        },
+
+        listenForUserAdded()
+        {
+            Echo.private("group." + this.group.id)
+            .listen('.participant.added', e => {
+                this.$store.dispatch('groups/addedParticipantEvent', e.data)
+            });
+        },
+
+        listenForUserLeftGroup()
+        {
+            Echo.private("group." + this.group.id)
+            .listen('.participant.left', e => {
+                this.$store.dispatch('groups/participantLeftGroupEvent', e.data)
             });
         },
 

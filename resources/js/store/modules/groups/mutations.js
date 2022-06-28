@@ -47,7 +47,9 @@ const mutations = {
     // once this is set, earliest messages request can no longer be trigged (up to 'first' message in group is pulled)
     lockReachedEarliestMsgId: (state, grI) => state.groups[grI].reachedEarliestMsgId = true, 
 
-    patchParticipantRole: (state, data) => state.groups[data.grI].participants[data.prI].pivot.participant_role = data.participant_role
+    patchParticipantRole: (state, data) => state.groups[data.grI].participants[data.prI].pivot.participant_role = data.participant_role,
+
+    refreshGroupParticipants: (state, data) => state.groups[data.grI].participants = data.participants,
 }
 
 export default mutations 

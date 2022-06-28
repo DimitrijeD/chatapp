@@ -21,7 +21,7 @@ class ListenerCanNeverAddAnybodyTest extends TestCase
         // role of user making request
         $this->requesterRole = ChatRole::LISTENER;
 
-        $this->expectedError = ["errors" => __("You have no rights to add users to group.")];
+        $this->expectedError = ["error" => __("You have no rights to add users to group.")];
     }
 
     public function test_listener_cannot_add_anybody_to_any_group()

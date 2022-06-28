@@ -7,17 +7,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
-use App\Models\ParticipantPivot;
 use App\Models\ChatRole;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotFormatter;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
-use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 use App\Http\Requests\Participant\AddParticipantRequest;
 use App\Http\Requests\Participant\ChangeRoleRequest;
 
 use App\Events\UserRoleInGroupChangedEvent;
+use App\Events\UserRemovedFromGroupEvent;
+use App\Events\UserAddedToGroupEvent;
+use App\Events\UserLeftGroupEvent;
 
 class ParticipantsController extends Controller
 { 
@@ -42,7 +43,7 @@ class ParticipantsController extends Controller
 
         // get group with only request initiators pivot 
         if(!$group = $chatGroupRepo->getGroupWithPivot($request->group_id, $user->id)) 
-            return response()->json(['errors' => __("Group doesn't exist.")], 404);
+            return response()->json(['error' => __("Group doesn't exist.")], 404);
 
         // check if all selected participants can be added to group on requested individual roles
         foreach($request->usersToAdd as $userToAdd){
@@ -53,7 +54,7 @@ class ParticipantsController extends Controller
                 ],
                 'add'
             )) 
-            return response()->json(['errors' => __("You have no rights to add users to group.")], 401);
+            return response()->json(['error' => __("You have no rights to add users to group.")], 401);
         }
 
         // if at least one participant selected is already in group, return error
@@ -61,33 +62,36 @@ class ParticipantsController extends Controller
             $request->usersToAdd, 
             $request->group_id
         ))) 
-        return response()->json(['errors' => __("Some or all selected participants are already in group. Please select only those which are not in group.")], 409);
+        return response()->json(['error' => __("Some or all selected participants are already in group. Please select only those which are not in group.")], 409);
 
         $msgText = count($request->usersToAdd) > 1 ? 'Participants' : 'Participant';
 
-        if(!$createStatus = $this->pivotRepo->createMany($pivotFormatter->prepareManyToInsert($request->usersToAdd, $request->group_id)))
-            return response()->json(['errors'  => __("{$msgText} could not be added.")], 500);
+        if(!$this->pivotRepo->createMany($pivotFormatter->prepareManyToInsert($request->usersToAdd, $request->group_id)))
+            return response()->json(['error'  => __("{$msgText} could not be added.")], 500);
             
-        return response()->json([
-            'success' => __("{$msgText} successfully added."),
-            'group' => $chatGroupRepo->get(
+        broadcast(new UserAddedToGroupEvent([
+            'group_id' => $request->group->id,
+            'participants' => $chatGroupRepo->get(
                 ['id' => $request->group_id], 
                 ['participants']
-            )
-        ]);
+            )->participants
+        ]));
+        
+        return response()->json([ 'success' => __("{$msgText} successfully added.") ]);
     }
 
-    /**
-     * Expects midleware ChatGroupAccess to provide group with participants and user models othwerwise this code wont work
-     * 
-     * @todo check if $status is true after deleting model
-     */
     public function leaveGroup(Request $request)
     {
         if(!$userWithPivot = $request->group->participants->where('id', $request->user->id)->first())
-            return response()->json(['errors' => __('An error occured.')], 500); 
+            return response()->json(['error' => __('An error occured.')], 500); 
 
-        $status = $this->pivotRepo->delete($userWithPivot->pivot);
+        if(!$this->pivotRepo->delete($userWithPivot->pivot))
+            return response()->json(['error' => __('An error occured while disconnecting you from the group.')]); 
+
+        broadcast(new UserLeftGroupEvent([
+            'group_id' => $request->group->id,
+            'user_left_id' => $request->user->id
+        ]))->toOthers();
 
         return response()->json(['success' => __('You have left this group.')]); 
     }
@@ -107,13 +111,21 @@ class ParticipantsController extends Controller
                 $targetForRemove = $participant;
         }
 
-        if(!ChatRole::can([ $myPivot->pivot->participant_role, $targetForRemove->pivot->participant_role, $request->group->model_type ], 'remove')){
-            return response()->json(['errors' => __("You cannot remove this user from group.")], 401);
-        }
+        if(!$myPivot || !$targetForRemove)
+            return response()->json(['error' => __("An error occured.")], 404); 
 
-        return $this->pivotRepo->delete($targetForRemove->pivot) 
-            ? response()->json(['success' => __("User has been removed from group.")])
-            : response()->json(['error'   => __("An error occured while removing user from group.")], 500);
+        if(!ChatRole::can([ $myPivot->pivot->participant_role, $targetForRemove->pivot->participant_role, $request->group->model_type ], 'remove'))
+            return response()->json(['error' => __("You cannot remove this user from group.")], 401);
+
+        if(!$this->pivotRepo->delete($targetForRemove->pivot))
+            return response()->json(['error' => __("An error occured while removing user from group.")], 500); 
+
+        broadcast(new UserRemovedFromGroupEvent([
+            'group_id' => $request->group->id,
+            'removed_user_id' => $targetForRemove->id
+        ]));
+
+        return response()->json(['success' => __("User has been removed from group.")]);
     }
 
     public function chageParticipantsRole(ChangeRoleRequest $request)

@@ -24,7 +24,7 @@ class ModeratorAddCreatorsTest extends TestCase
         // role 'requester' is attempting to give to user/users
         $this->targetRole = ChatRole::CREATOR;
 
-        $this->expectedError = ["errors" => __("You have no rights to add users to group.")];
+        $this->expectedError = ["error" => __("You have no rights to add users to group.")];
     }
 
     public function test_moderator_cannot_add_1_creator_to_any_group()
