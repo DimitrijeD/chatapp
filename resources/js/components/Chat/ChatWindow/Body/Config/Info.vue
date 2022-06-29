@@ -42,7 +42,7 @@ import { mapGetters } from 'vuex'
 
 export default {
     props: [
-        'group', 'role', 'permissions'
+        'group', 'permissions'
     ],
 
     data() {

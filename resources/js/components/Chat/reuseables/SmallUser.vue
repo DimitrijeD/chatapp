@@ -1,12 +1,15 @@
 <template>
-    <div class="py-2 flex hover:bg-gray-50 items-center cursor-pointer">
+    <div 
+        class="py-2 flex hover:bg-gray-50 items-center cursor-pointer"
+        :class="[getGap]"
+    >
         <img
             :src="user.thumbnail"
             alt="no img :/"
             class="w-16 h-16 inline-block ml-0.5 object-cover border border-gray-100 rounded-full"
-        >
+        > 
 
-        <p class="ml-1 text-blue-600 inline-block truncate">
+        <p class="text-blue-600 inline-block truncate">
             {{ user.first_name }} {{ user.last_name }}
         </p>
     </div>
@@ -15,8 +18,14 @@
 <script>
 export default {
     props:[
-        'user'
+        'user', 'img_name_gap'
     ],
+
+    computed: {
+        getGap(){
+            return this.img_name_gap ? "space-x-" + this.img_name_gap : "space-x-1"  
+        }
+    },
 
     data() {
         return {

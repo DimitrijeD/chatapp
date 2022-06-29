@@ -63,7 +63,7 @@ import SmallUser from '../../../reuseables/SmallUser.vue'
 
 export default {
     props: [
-        'group', 'role', 'permissions'
+        'group', 'permissions'
     ],
 
     components: {

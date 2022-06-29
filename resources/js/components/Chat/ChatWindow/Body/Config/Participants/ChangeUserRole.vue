@@ -18,9 +18,9 @@
         <div v-else>
             <select 
                 @change="roleUpdate($event)" 
-                class="text-base font-light text-gray-700 flex w-full px-3 py-1.5 bg-gray-50 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                class="text-base font-light text-gray-700 w-full px-3 py-1.5 participant-role-color focus:outline-none focus:ring-2 focus:border-primary ring-inset"
             >
-                <option class="block w-full bg-green-100" selected>{{ participant.pivot.participant_role.toLowerCase() }}</option>
+                <option class="block w-full" selected>{{ participant.pivot.participant_role.toLowerCase() }}</option>
                 <option 
                     v-for="toRole in changeableRoles"
                     :value="toRole"
@@ -36,7 +36,7 @@
 export default{
 
     props:[
-        'participant_id', 'changeableRoles', 'role', 'group_id'
+        'participant_id', 'changeableRoles', 'group_id'
     ],
 
     data(){

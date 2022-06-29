@@ -17,7 +17,7 @@
                     'bg-gray-100 hover:bg-blue-100':       !setting.opened,
                 }"
             >
-                {{ setting.name }}
+                {{ setting.name }} 
             </li>
         </ul>
         <!-- End Nav Bar -->
@@ -27,28 +27,26 @@
             <add-users 
                 v-if="settings.hasOwnProperty('add_users') && settings.add_users.opened" 
                 :group="group"  
-                :role="userRole"
                 :permissions="permissions"  
             />
 
             <info 
                 v-if="settings.hasOwnProperty('info') && settings.info.opened" 
                 :group="group" 
-                :role="userRole"
                 :permissions="permissions"
             />
 
             <participants 
                 v-if="settings.hasOwnProperty('participants') && settings.participants.opened" 
                 :group="group" 
-                :role="userRole"
+                :chatRole="chatRole"
                 :permissions="permissions"
+                :roles="roles"
             />
 
             <options 
                 v-if="settings.hasOwnProperty('options') && settings.options.opened"
                 :group="group" 
-                :role="userRole"
                 :permissions="permissions"
             />
         </div>
@@ -64,7 +62,7 @@ import AddUsers     from './Config/AddUsers.vue'
 
 export default {
     props: [
-        'showConfig', 'group', 'permissions', 'userRole'
+        'showConfig', 'group', 'permissions', 'chatRole', 'roles'
     ],
 
     components: {
@@ -102,6 +100,12 @@ export default {
         }
     },
 
+    watch: {
+        chatRole: function () {
+            this.createPermissibleSettings() // reset UI when users role changes
+        },
+    },
+
     created(){
         this.createPermissibleSettings()
         this.setFirstOpenedConfig()
@@ -127,8 +131,17 @@ export default {
          */
         createPermissibleSettings()
         {
-            if(!this.permissions.add.length)
-                delete this.settings['add_users']
+            if(this.permissions.add.length){
+                if(!this.settings.hasOwnProperty('add_users')){
+                        this.settings.add_users = {
+                        name: 'Add Users',
+                        opened: false, 
+                    }
+                }
+            } else {
+                if(this.settings.hasOwnProperty('add_users'))
+                    delete this.settings.add_users
+            }
 
             if(this.group.model_type == "PRIVATE")
                 delete this.settings['participants']

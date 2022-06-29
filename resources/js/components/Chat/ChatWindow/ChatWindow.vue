@@ -26,11 +26,12 @@
                 @click="selfAcknowledged();"
             >
                 <config 
+                    class="window-x-minus-border h-full"
                     :showConfig="showConfig"
                     :group="group"
                     :permissions="permissions"
-                    :userRole="userRole"
-                    class="window-x-minus-border h-full"
+                    :chatRole="chatRole"
+                    :roles="roles"
                 />
 
                 <!-- Chat Window Body -->
@@ -78,7 +79,6 @@ export default {
             showConfig: false,
             // user: this.$store.state.auth.user,
             permissions: {},
-            userRole: null
         }
     },
 
@@ -94,6 +94,20 @@ export default {
         { 
             return this.$store.getters['groups/filterById'](this.group_id)
         },
+
+        chatRole(){ 
+            return this.$store.getters['groups/getUserRole']({ 
+                group_id: this.group.id, 
+                user_id: this.user.id
+            })
+        }
+    },
+
+    watch: {
+        chatRole: function () {
+            this.createPermissions()
+            // call event here: User, ur role has been changed
+        },
     },
 
     components: {
@@ -105,7 +119,6 @@ export default {
     },
 
     created() {
-        this.setUserRole()
         this.createPermissions()
 
         this.listenForNewMessages()
@@ -225,26 +238,26 @@ export default {
         permission_canAdd()
         {
             let action = 'add'
-            this.ruleDepth3(this.rules[action][this.userRole], action)
+            this.ruleDepth3(this.rules[action][this.chatRole], action)
         },
 
         permission_canRemove()
         {
             let action = 'remove'
-            this.ruleDepth3(this.rules[action][this.userRole], action)
+            this.ruleDepth3(this.rules[action][this.chatRole], action)
         },
 
         permission_canChangeRole()
         {
             let action = 'change_role'
-            this.ruleDepth4(this.rules[action][this.userRole], action)
+            this.ruleDepth4(this.rules[action][this.chatRole], action)
         },
 
 
         permission_canSendMessage()
         {
             let action = 'send_message'
-            this.ruleDepth2(this.rules[action][this.userRole], action)
+            this.ruleDepth2(this.rules[action][this.chatRole], action)
         },
 
         ruleDepth2(level1, action)
@@ -288,14 +301,6 @@ export default {
 
             return object
         },
-
-        setUserRole()
-        {
-            this.userRole = this.$store.getters['groups/getUserRole']({ 
-                group_id: this.group.id, 
-                user_id: this.user.id 
-            })
-        }
 
     }
 }
