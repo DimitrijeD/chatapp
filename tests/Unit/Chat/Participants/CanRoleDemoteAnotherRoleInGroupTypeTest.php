@@ -14,8 +14,8 @@ class CanRoleDemoteAnotherRoleInGroupTypeTest extends TestCase
     {
         parent::setUp();
 
-        $this->rules = ChatRole::ROLE_CAN_DEMOTE_ROLE_TO_ROLE_IN;
-        $this->action = "demote";
+        // $this->rules = ChatRole::ROLE_CAN_DEMOTE_ROLE_TO_ROLE_IN;
+        // $this->action = "demote";
     }
 
     // private function assertLeavesInNodeExist($roleMakingRequest, $level)

@@ -28,12 +28,14 @@ class ChatRole
     const ACTION_KEY_REMOVE = 'remove';
     const ACTION_KEY_SEND_MESSAGE = 'send_message';
     const ACTION_KEY_CHANGE_ROLE = 'change_role';
+    const ACTION_KEY_CHANGE_GROUP_NAME = 'change_group_name';
 
     const ACTION_KEYS = [
         self::ACTION_KEY_ADD,
         self::ACTION_KEY_REMOVE,
         self::ACTION_KEY_SEND_MESSAGE,
         self::ACTION_KEY_CHANGE_ROLE,
+        self::ACTION_KEY_CHANGE_GROUP_NAME,
     ];
 
 
@@ -133,54 +135,6 @@ class ChatRole
 
     ];
 
-    const ROLE_CAN_PROMOTE_ROLE_IN_GROUP_TYPE_TO_ROLE = [
-        self::CREATOR => [
-            self::PARTICIPANT => [
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PROTECTED,
-                ],
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PUBLIC_OPEN,
-                ],
-            ],
-            self::LISTENER => [
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PUBLIC_CLOSED,
-                ],
-            ],
-        ],
-
-        self::MODERATOR => [
-            self::PARTICIPANT => [
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PROTECTED,
-                ],
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PUBLIC_OPEN,
-                ],
-            ],
-            self::LISTENER => [
-                self::MODERATOR => [
-                    ChatGroup::TYPE_PUBLIC_CLOSED,
-                ],
-            ],
-        ],
-    ]; 
-
-    const ROLE_CAN_DEMOTE_ROLE_TO_ROLE_IN = [
-        self::CREATOR => [
-            self::MODERATOR => [
-                self::PARTICIPANT => [
-                    ChatGroup::TYPE_PROTECTED, 
-                    ChatGroup::TYPE_PUBLIC_OPEN
-                ],
-                self::LISTENER => [
-                    ChatGroup::TYPE_PUBLIC_CLOSED,
-                ],
-            ],
-        ],
-    ]; 
-
     const ROLE_CAN_SEND_MESSAGE_IN = [
         self::CREATOR => [
             ChatGroup::TYPE_PRIVATE,
@@ -244,28 +198,43 @@ class ChatRole
         ],
     ]; 
 
+    const ROLE_CAN_CHANGE_GROUP_NAME = [
+        self::CREATOR => [
+            ChatGroup::TYPE_PUBLIC_CLOSED, 
+            ChatGroup::TYPE_PUBLIC_OPEN, 
+            ChatGroup::TYPE_PROTECTED,
+            ChatGroup::TYPE_PRIVATE,
+        ],
+        self::MODERATOR => [
+            ChatGroup::TYPE_PUBLIC_CLOSED, 
+            ChatGroup::TYPE_PUBLIC_OPEN,
+            ChatGroup::TYPE_PRIVATE,
+        ],
+        self::PARTICIPANT => [
+            ChatGroup::TYPE_PRIVATE,
+        ],
+        self::LISTENER => []
+    ];
+
     public static function can($levels, $action = null)
     {
         if(!$action || !is_string($action) || !is_array($levels)) return false;
 
         switch(strtolower($action)){
-            case 'add':
+            case self::ACTION_KEY_ADD:
                 return self::onLevel3($levels, self::ROLE_CAN_ADD_ROLE_IN);
                 
-            case 'remove':
+            case self::ACTION_KEY_REMOVE:
                 return self::onLevel3($levels, self::ROLE_CAN_REMOVE_ROLE_FROM);
 
-            case 'promote':
-                return self::onLevel4($levels, self::ROLE_CAN_PROMOTE_ROLE_IN_GROUP_TYPE_TO_ROLE);
-
-            case 'demote':
-                return self::onLevel4($levels, self::ROLE_CAN_DEMOTE_ROLE_TO_ROLE_IN);
-
-            case 'change_role':
+            case self::ACTION_KEY_CHANGE_ROLE:
                 return self::onLevel4($levels, self::ROLE_CAN_CHANGE_ROLE_TO_ROLE_IN_GROUP_TYPE);
 
-            case 'send_message':
+            case self::ACTION_KEY_SEND_MESSAGE:
                 return self::onLevel2($levels, self::ROLE_CAN_SEND_MESSAGE_IN);
+
+            case self::ACTION_KEY_CHANGE_GROUP_NAME:
+                return self::onLevel2($levels, self::ROLE_CAN_CHANGE_GROUP_NAME);
 
             default:
                 return false;
@@ -276,11 +245,7 @@ class ChatRole
 
     /**
      * OnLevel2, OnLevel3 ... means how deep given rule array is. 
-     * Im afraid of recursion, 
-     * so this approach is implemented. 
-     */
-
-    /**
+     * 
      * $levels = [
      *      'role making request', 
      *      'group type', 

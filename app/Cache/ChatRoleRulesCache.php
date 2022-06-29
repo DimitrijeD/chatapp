@@ -28,10 +28,11 @@ class ChatRoleRulesCache
     public function createTableArrayOfRules()
     {
         return json_encode([
-            ChatRole::ACTION_KEY_SEND_MESSAGE => $this->depth2($this->chatRole::ACTION_KEY_SEND_MESSAGE),
-            ChatRole::ACTION_KEY_ADD          => $this->depth3($this->chatRole::ACTION_KEY_ADD),
-            ChatRole::ACTION_KEY_REMOVE       => $this->depth3($this->chatRole::ACTION_KEY_REMOVE),
-            ChatRole::ACTION_KEY_CHANGE_ROLE  => $this->depth4($this->chatRole::ACTION_KEY_CHANGE_ROLE),
+            ChatRole::ACTION_KEY_CHANGE_GROUP_NAME => $this->depth2($this->chatRole::ACTION_KEY_CHANGE_GROUP_NAME),
+            ChatRole::ACTION_KEY_SEND_MESSAGE      => $this->depth2($this->chatRole::ACTION_KEY_SEND_MESSAGE),
+            ChatRole::ACTION_KEY_ADD               => $this->depth3($this->chatRole::ACTION_KEY_ADD),
+            ChatRole::ACTION_KEY_REMOVE            => $this->depth3($this->chatRole::ACTION_KEY_REMOVE),
+            ChatRole::ACTION_KEY_CHANGE_ROLE       => $this->depth4($this->chatRole::ACTION_KEY_CHANGE_ROLE),
         ]);
     }
 

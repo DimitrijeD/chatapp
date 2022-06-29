@@ -15,8 +15,6 @@ class ChangeRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        $this->user;
-
         $requestInitiatorsRole = $this->group->participants->where('id', $this->user->id)      ->first()?->pivot->participant_role;
         $targetUserCurrentRole = $this->group->participants->where('id', $this->target_user_id)->first()?->pivot->participant_role;
         $targetUserNewRole     = $this->to_role;
@@ -25,7 +23,7 @@ class ChangeRoleRequest extends FormRequest
         // if at least one of them is not set
         if( !$requestInitiatorsRole || !$targetUserCurrentRole || !$targetUserNewRole || !$groupType) return false;
 
-        return ChatRole::can([ $requestInitiatorsRole, $targetUserCurrentRole, $targetUserNewRole, $groupType ], 'change_role');
+        return ChatRole::can([ $requestInitiatorsRole, $targetUserCurrentRole, $targetUserNewRole, $groupType ], ChatRole::ACTION_KEY_CHANGE_ROLE);
     }
 
     /**

@@ -4,23 +4,20 @@ namespace App\Http\Controllers\Chat;
 
 use App\Http\Controllers\Controller;
 
-use App\ChatApp\Repos\User\UserEloquentRepo;
 use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
-use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
-
+use App\Http\Requests\ChatGroup\ChangeGroupNameRequest;
 use App\Http\Requests\ChatGroup\StoreGroupRequest;
 use Illuminate\Http\Request;
+use App\Events\GroupNameChangeEvent;
 
 class GroupController extends Controller
 {
     protected $chatGroupRepo, $userRepo, $chatMessageRepo;
 
-    public function __construct(ChatGroupEloquentRepo $chatGroupRepo, UserEloquentRepo $userRepo, ChatMessageEloquentRepo $chatMessageRepo)
+    public function __construct(ChatGroupEloquentRepo $chatGroupRepo)
     {
         $this->chatGroupRepo = $chatGroupRepo;
-        $this->userRepo = $userRepo;
-        $this->chatMessageRepo = $chatMessageRepo;
     }
 
     public function store(StoreGroupRequest $request, ParticipantPivotEloquentRepo $participantPivotRepo)
@@ -68,6 +65,19 @@ class GroupController extends Controller
             return response()->json($group);
 
         return response()->json(null, 404);
+    }
+
+    public function changeGroupName(ChangeGroupNameRequest $request)
+    {
+        if( !$this->chatGroupRepo->update($request->group, [ 'name' => $request->new_name ]) )
+            return response()->json(['error' => __("An error occured while changing group name.")], 500);
+
+        broadcast(new GroupNameChangeEvent([
+            'group_id' => $request->group->id,
+            'new_name' => $request->new_name
+        ]));
+        
+        return response()->json(['success' => __("Group name has been changed.")]);
     }
 
 }
