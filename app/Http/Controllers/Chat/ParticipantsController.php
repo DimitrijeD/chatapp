@@ -52,7 +52,7 @@ class ParticipantsController extends Controller
                     $userToAdd['target_role'], 
                     $group->model_type,
                 ],
-                'add'
+                ChatRole::ACTION_KEY_ADD
             )) 
             return response()->json(['error' => __("You have no rights to add users to group.")], 401);
         }
@@ -114,7 +114,7 @@ class ParticipantsController extends Controller
         if(!$myPivot || !$targetForRemove)
             return response()->json(['error' => __("An error occured.")], 404); 
 
-        if(!ChatRole::can([ $myPivot->pivot->participant_role, $targetForRemove->pivot->participant_role, $request->group->model_type ], 'remove'))
+        if(!ChatRole::can([ $myPivot->pivot->participant_role, $targetForRemove->pivot->participant_role, $request->group->model_type ], ChatRole::ACTION_KEY_REMOVE))
             return response()->json(['error' => __("You cannot remove this user from group.")], 401);
 
         if(!$this->pivotRepo->delete($targetForRemove->pivot))

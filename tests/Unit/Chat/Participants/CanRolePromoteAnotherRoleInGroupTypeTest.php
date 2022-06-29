@@ -14,8 +14,8 @@ class CanRolePromoteAnotherRoleInGroupTypeTest extends TestCase
     {
         parent::setUp();
 
-        $this->rules = ChatRole::ROLE_CAN_PROMOTE_ROLE_IN_GROUP_TYPE_TO_ROLE;
-        $this->action = "promote";
+        // $this->rules = ChatRole::ROLE_CAN_PROMOTE_ROLE_IN_GROUP_TYPE_TO_ROLE;
+        // $this->action = "promote";
     }
 
     // private function assertLeavesInNodeExist($roleMakingRequest, $level)

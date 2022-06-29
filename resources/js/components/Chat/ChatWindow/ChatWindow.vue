@@ -127,6 +127,7 @@ export default {
         this.listenForUserRemoved()
         this.listenForUserAdded()
         this.listenForUserLeftGroup()
+        this.listenForGroupNameChange()
     },
 
     methods: {   
@@ -225,6 +226,14 @@ export default {
             });
         },
 
+        listenForGroupNameChange()
+        {
+            Echo.private("group." + this.group.id)
+            .listen('.group.new_name', e => {
+                this.$store.dispatch('groups/changeGroupNameEvent', e.data)
+            });
+        },
+
         createPermissions()
         {
             this.permissions = this.createObjectFromArrayValues(this.actionKeys)
@@ -233,6 +242,7 @@ export default {
             this.permission_canRemove()
             this.permission_canChangeRole()
             this.permission_canSendMessage()
+            this.permission_canChangeGroupName()
         },
 
         permission_canAdd()
@@ -257,6 +267,12 @@ export default {
         permission_canSendMessage()
         {
             let action = 'send_message'
+            this.ruleDepth2(this.rules[action][this.chatRole], action)
+        },
+
+        permission_canChangeGroupName()
+        {
+            let action = 'change_group_name'
             this.ruleDepth2(this.rules[action][this.chatRole], action)
         },
 

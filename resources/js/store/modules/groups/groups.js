@@ -361,6 +361,23 @@ const actions =
         })
     },
 
+    changeGroupName(context, data)
+    {
+        axios.post("/api/chat/group/change-group-name", data)
+        .then(res => {
+            // console.log(res.data) success message here
+        })
+    },
+
+    changeGroupNameEvent(context, data)
+    {
+        const grI = h.getGroupIndexById(state.groups, data.group_id) 
+
+        context.commit('changeGroupName', {
+            grI: grI,
+            new_name: data.new_name
+        })
+    },
 }
 
 export default {

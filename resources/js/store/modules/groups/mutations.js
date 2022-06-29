@@ -50,6 +50,8 @@ const mutations = {
     patchParticipantRole: (state, data) => state.groups[data.grI].participants[data.prI].pivot.participant_role = data.participant_role,
 
     refreshGroupParticipants: (state, data) => state.groups[data.grI].participants = data.participants,
+
+    changeGroupName: (state, data) => state.groups[data.grI].name = data.new_name,
 }
 
 export default mutations 
