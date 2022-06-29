@@ -56,7 +56,7 @@
 <script>
 export default {
     props: [
-        'group', 'role', 'permissions'
+        'group', 'permissions'
     ],
     
     data() {
