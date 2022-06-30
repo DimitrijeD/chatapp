@@ -47,40 +47,27 @@
                 </div>
 
                 <div class="m-2">
-                    <input
-                        class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Search for users"
-                        type="text"
-                        @keyup="searchInput"
-                        v-model="userSearchStr"
-                    >
+                    <search-input 
+                        :actions="input.actions"
+                        :exclude="[]"
+                        :placeholder="input.placeholder"
+                    />
                 </div>
 
                 <div class=" user-list-height select-none pt-1">
-                    <vue-scroll>
-                        <div 
-                            v-for="user in this.allUsers" 
-                            class="flex flex-col m-2 cursor-pointer " 
-                            @click="selectedUserForChat(user)"
-                            :key="user.id"
-                        >
-                            <div 
-                                :class="{
-                                    'text-blue-500 bg-white hover:bg-red-50': !user.selectionStatus,
-                                    'text-white bg-blue-400 font-semibold': user.selectionStatus,
-                                }">
-                                
-                                <img
-                                    :src="user.thumbnail"
-                                    alt="no img :/"
-                                    class="w-16 h-16 inline-block m-2 object-cover border border-gray-100 rounded-full"
-                                >
-
-                                <p class="ml-2 inline-block">
-                                    {{ user.first_name }} {{ user.last_name }}
-                                </p>
-                            </div>
-                        </div>
+                    <vue-scroll :ops="ops">
+                        <ul> 
+                            <li v-for="(id, index) in users" :key="index">
+                                <small-user 
+                                    :user="getUser(id)"
+                                    @click.native="selectOrDeseceltUser(id)"
+                                    :class="{
+                                        'text-blue-500 bg-white hover:bg-red-50': !isUserSelected(id),
+                                        'text-white bg-blue-400 font-semibold':    isUserSelected(id),
+                                    }"
+                                /> 
+                            </li>
+                        </ul>
                     </vue-scroll>
                 </div>
 
@@ -102,21 +89,25 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import SearchInput from './reuseables/SearchInput.vue'
+import SmallUser from './reuseables/SmallUser.vue';
 
 export default {
+    components: {
+        'search-input': SearchInput,
+        'small-user': SmallUser,
+    },
 
     data() {
         return {
-            allUsers: [],
             showCreateDropdown: false,
             newChatGroup: {
                 name: '',
-                users: [],
+                users_ids: [],
                 model_type: '',
             },
             errors: [],
             nothingFound: '',
-            userSearchStr: '',
 
             selected_model_type: 'PRIVATE',
 
@@ -128,6 +119,26 @@ export default {
             ],
 
             defaultNewGroupType: 'PRIVATE',
+
+
+            input: {
+                actions: {
+                    api: 'searchForAddUsersInApi',
+                    store: 'searchForAddUsersInStore'
+                },
+                placeholder: "Find users to add",
+            },
+
+            ops: {
+                vuescroll: {},
+                scrollPanel: {
+                    scrollingX: false
+                },
+                rail: {},
+                bar: {
+                    keepShow: true
+                }
+            },
         }
     },
 
@@ -149,7 +160,9 @@ export default {
             }
 
             return groupTypes
-        }
+        },
+
+        users(){ return this.$store.getters['users/getFilterForAddUsers'] },
 
     },
 
@@ -159,7 +172,6 @@ export default {
 
     mounted()
     {
-        this.getAllUsersExceptSelf()
 
     },
 
@@ -170,53 +182,15 @@ export default {
         },
 
         showDropdown(){
-            for(let userIndex in this.allUsers){
-                this.allUsers[userIndex].selectionStatus = false
-            }
-
             this.newChatGroup = {
                 name: '',
-                users: [],
+                users_ids: [],
                 model_type: '',
             }
 
             this.errors = []
 
             this.showCreateDropdown = !this.showCreateDropdown
-        },
-
-        getAllUsersExceptSelf()
-        {
-            axios.get('/api/chat/users/without-self')
-            .then((res) => {
-                this.allUsersOriginal = this.addSelectedStatusToAllUsers(res.data)
-                this.allUsers = this.allUsersOriginal
-            });
-        },
-
-        addSelectedStatusToAllUsers(users)
-        {
-            for(let i = 0; i < users.length; i++){
-                users[i].selectionStatus = false
-            }
-            return users
-        },
-
-        // this user is chosen for new chat group, change color of user to blue and add it to newChatGroup
-        // if user is already chosen and then clicked again, remove it from newChatGroup and set user style in list to default
-        selectedUserForChat(user)
-        {
-            if( !this.checkIfUserAlreadySelected(user) )
-            {
-                this.newChatGroup.users.push(user)
-                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = true
-            } else {
-                const index = this.getArrayIndexFromElement(this.newChatGroup.users, user)
-                if (index > -1) {
-                    this.newChatGroup.users.splice(index, 1)
-                }
-                this.allUsers[ this.findArrIndexByUserId(this.allUsers, user.id) ].selectionStatus = false
-            }
         },
 
         createNewChatGroup()
@@ -232,23 +206,12 @@ export default {
             this.resetComponentVars()
         },
 
-        // return true if user is already selected
-        checkIfUserAlreadySelected(user)
-        {
-            for(let i = 0; i < this.newChatGroup.users.length; i++){
-                if( this.newChatGroup.users[i].id === user.id ){
-                    return true
-                }
-            }
-            return false
-        },
-
         checkForErrors()
         {
             // reset errors before pushing new messages
             this.errors = []
 
-            if(this.newChatGroup.users.length === 0){
+            if(this.newChatGroup.users_ids.length === 0){
                 this.errors.push('Select at least one user')
             }
             return this.errors
@@ -258,75 +221,22 @@ export default {
         {
             this.newChatGroup = {
                 name: '',
-                users: [],
+                users_ids: [],
                 model_type: '',
             }
             this.errors = []
             this.showCreateDropdown = false
         },
 
-        findArrIndexByUserId(users, id)
-        {
-            for(let i = 0; i < users.length; i++){
-                if(users[i].id == id){
-                    return i
-                }
-            }
-            // user with that Id does not exist in this array of users
-            return false
-        },
-
-        getArrayIndexFromElement(array, element){
-            return array.indexOf(element)
-        },
-
-        // this.groupsOriginal is constant and is used to filter chat groups multiple times (typing and erasing input)
-        searchInput()
-        {
-            this.nothingFound = ''
-            // @todo req exp bugs when there are certain characters in string such as '?, *'
-            this.allUsers = this.searchForUsers(this.userSearchStr, this.allUsersOriginal)
-
-            if(!this.allUsers.length){
-                this.nothingFound = 'Nothing found :/'
-            }
-        },
-
-        // find all users which match string strSearch
-        searchForUsers(strSearch, users)
-        {
-            let arrOfSearchMatchedUsers = []
-
-            for (let i in users){
-                let first_name = users[i].first_name
-                let last_name = users[i].last_name
-
-                let text = first_name + ' ' + last_name
-
-                // If input match anything in this string, return as match
-                if(this.regExpressionMatch(strSearch, text)){
-                    arrOfSearchMatchedUsers.push( users[i] )
-                }
-            }
-            return arrOfSearchMatchedUsers
-        },
-
-        // Find string in text using case insensitive reg exp
-        regExpressionMatch(find, text)
-        {
-            let regex = new RegExp(find, 'i')
-            return text.match(regex)
-        },
-
         resolveGroupParams()
         {
-            this.newChatGroup.users.push(this.user)
+            this.newChatGroup.users_ids.push(this.user.id)
             this.resolveGroupType()
         },
 
         resolveGroupType()
         {
-            if(this.selected_model_type == "PRIVATE" && this.newChatGroup.users.length > 2){
+            if(this.selected_model_type == "PRIVATE" && this.newChatGroup.users_ids.length > 2){
                 this.newChatGroup.model_type = "PROTECTED" 
                 return
             }
@@ -335,6 +245,26 @@ export default {
                 ? this.selected_model_type 
                 : this.defaultNewGroupType
 
+        },
+
+        getUser(id)
+        {
+            return this.$store.getters['users/getById'](id)
+        },
+
+        selectOrDeseceltUser(id)
+        {
+            if(this.newChatGroup.users_ids.includes(id)){
+                this.newChatGroup.users_ids.splice(this.newChatGroup.users_ids.indexOf(id), 1)
+            } else {
+                this.newChatGroup.users_ids.push(id)
+            }
+            console.log(this.newChatGroup.users_ids)
+        },
+
+        isUserSelected(id)
+        {
+            return this.newChatGroup.users_ids.includes(id)
         }
     }
 

@@ -30,7 +30,7 @@ class CreateChatGroupTest extends TestCase
         $this->userFormData = [
             'name' => 'some',
             'model_type' => ChatGroup::TYPE_PUBLIC_OPEN,
-            'users' => [$this->user, $chatParticipant],
+            'users_ids' => [$this->user->id, $chatParticipant->id],
         ];
 
         $this->storeGroupEndpoint = '/api/chat/group/store';

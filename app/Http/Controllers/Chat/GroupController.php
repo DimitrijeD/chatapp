@@ -29,12 +29,12 @@ class GroupController extends Controller
 
         $request_initiator_id = auth()->user()->id;
 
-        foreach($request->users as $user){
+        foreach($request->users_ids as $user_id){
             $participantPivotRepo->create([
-                'user_id' => $user['id'], 
+                'user_id' => $user_id, 
                 'group_id' => $chatGroup->id, 
                 'last_message_seen_id' => null, 
-                'participant_role' => $participantPivotRepo->roleResolver($user['id'], $request_initiator_id, $chatGroup->model_type),
+                'participant_role' => $participantPivotRepo->roleResolver($user_id, $request_initiator_id, $chatGroup->model_type),
             ]);
         }
 

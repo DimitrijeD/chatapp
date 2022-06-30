@@ -34,7 +34,7 @@ class StoreGroupRequest extends FormRequest
         return [
             'name' => ['string', 'max:255', 'nullable'],
             'model_type' => ['string', 'max:255', 'nullable', new IsModelTypeValidRule($this->model_type)],
-            'users' => [new MoreThanOneParticipantRule($this->users), new ParticipantsExistRule($this->formatUserIds($this->users)), ],
+            'users_ids' => [new MoreThanOneParticipantRule($this->users_ids), new ParticipantsExistRule($this->users_ids), ],
         ];
     }
 
@@ -47,20 +47,6 @@ class StoreGroupRequest extends FormRequest
         ], 422);
 
         throw new HttpResponseException($response);
-    }
-
-    private function formatUserIds($users){
-        $arrayOfUserIds = [];
-        foreach($users as $user){
-            if(gettype($user) == 'object'){
-                $arrayOfUserIds[] = $user->id;
-            }
-            if(gettype($user) == 'array'){
-                $arrayOfUserIds[] = $user['id'];
-            }
-        }
-        
-        return $arrayOfUserIds;
     }
     
 }

@@ -206,7 +206,9 @@ export default {
         {
             Echo.private("group." + this.group.id)
             .listen('.participant.removed', e => {
-                this.$store.dispatch('groups/removedParticipantEvent', e.data)
+                e.data.removed_user_id == this.user.id
+                    ? this.$store.dispatch('groups/clearGroupData', e.data)
+                    : this.$store.dispatch('groups/removedParticipantEvent', e.data)
             });
         },
 

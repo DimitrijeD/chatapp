@@ -1,9 +1,7 @@
-import axios from "axios"
-
 const state = {
     rules: null,
     keys: null,
-    roles: null
+    roles: null,
 }
 
 const getters = 
@@ -15,7 +13,6 @@ const getters =
     StateRoles: (state) => state.roles,
 
     StateGroupTypes: (state) => state.groupTypes,
-
 }
 
 const actions = 
