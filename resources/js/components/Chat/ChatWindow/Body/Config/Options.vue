@@ -124,7 +124,7 @@ export default {
 
     created()
     {
-        console.log(this.permissions.change_group_name)
+         
     },
 
     methods: 

@@ -7,7 +7,7 @@ import {
 const getters = {
     allGroups: (state) => state.groups,
 
-    filterById: (state) => (id) => helpers.getById(state.groups, id),
+    getGroupById: (state) => (id) => state.groups[id],
     
     openedGroupsIds: (state) => state.openedGroupsIds,
 
@@ -19,28 +19,22 @@ const getters = {
 
     getUserRole: (state) => (data) =>
     {
-        const grI = helpers.getGroupIndexById(state.groups, data.group_id)
-        const prI = helpers.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_id)
-        return state.groups[grI].participants[prI].pivot.participant_role
+        return state.groups[data.group_id].participants[data.user_id].pivot.participant_role
     },
 
-    getMyParticipants: (state) => (group_id) => state.groups[helpers.getGroupIndexById(state.groups, group_id)].participants,
+    getMyParticipants: (state) => (group_id) => state.groups[group_id].participants,
 
     getParticipant: (state) => (data) =>
     {
-        const grI = helpers.getGroupIndexById(state.groups, data.group_id)
-        const prI = helpers.getParticipantIndexInGroupByGroupId(state.groups[grI].participants, data.user_id)
-        
-        return state.groups[grI].participants[prI]
+        return state.groups[data.group_id].participants[data.participant_id]
     },
 
     getOwnerIdOfLastMessage: (state) => (data) => 
     {
-        const grI = helpers.getGroupIndexById(state.groups, data.group_id)
-        const msg = state.groups[grI].messages[data.last_msg_id]
+        return state.groups[data.group_id].messages[data.last_msg_id].user_id
+    },
 
-        return msg.user_id
-    }
+    getGroupLastMsgId: (state) => (data) => state.groups[data.group_id].last_msg_id,
 }
 
 export default getters 

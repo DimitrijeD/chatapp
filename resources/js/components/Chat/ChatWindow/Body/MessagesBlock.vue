@@ -23,7 +23,6 @@
                         <messages-seen 
                             :message="message"
                             :participants="group.participants"
-                            :last_msg_id="group.last_msg_id"
                             :group_id="group.id"
                         />
                     </div>
@@ -75,7 +74,7 @@ export default {
                 scrollDownOnNewMessage: true,
                 awaitsEarlyMessages: false,
                 scrollAdjustmentOffset: 200,
-            }
+            },
 
         }
     },

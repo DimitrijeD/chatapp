@@ -50,6 +50,18 @@ export default {
         ...mapGetters({ user: "StateUser" }),
     },
 
+    watch: {
+        // these 2 watchers make sure header content is reset when participants or group name are changed
+        'group.participants': function (newVal, oldVal){
+            this.whatToShowInHeader()
+        },
+
+        'group.name': function (newVal, oldVal){
+            this.whatToShowInHeader()
+        },
+        // -----------------------------------------------------------------------------------------------
+    },
+
     methods:{
         /**
          * Determine what content should be displayed in Chat Window Header
@@ -58,36 +70,35 @@ export default {
          */
         whatToShowInHeader()
         {
-            if(this.group.model_type == "PRIVATE"){
-                this.showComponent = 'list-chat-participants'
-                return
-            }
-
-            if(!this.group.name && this.group.participants.length == 1){
-                this.showComponent = 'default-show'
-                return
-            }
-
-            if(!this.group.name && this.group.participants.length > 1){
-                this.showComponent = 'list-chat-participants'
-                return
-            }
-
             if(this.group.name){
                 this.showComponent = 'group-name'
                 return
             } 
 
+            if(this.group.model_type == "PRIVATE"){
+                this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            const numParticipants = Object.keys(this.group.participants).length
+
+            if(numParticipants == 1){
+                this.showComponent = 'default-show'
+                return
+            }
+
+            if(numParticipants > 1){
+                this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            this.showComponent = 'list-chat-participants'
         }
     },
 }
 </script>
 
 <style>
-.nowrap {
-    white-space: nowrap ;
-}
-
 .header-text {
     @apply text-base text-white font-semibold ml-2;
 }

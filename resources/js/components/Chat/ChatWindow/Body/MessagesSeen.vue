@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-end mx-4 my-1 flex-wrap">
         <div 
-            v-for="participant in this.participants" 
+            v-for="participant in participants" 
             :key="participant.id" 
         >
             <div v-if="showParticipantAsSeen(participant)">
@@ -24,7 +24,7 @@ import { mapGetters } from "vuex";
 
 export default {
     props:[
-        'message', 'participants', 'last_msg_id', 'group_id'
+        'message', 'participants', 'group_id'
     ],
 
     data(){
@@ -34,7 +34,13 @@ export default {
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ 
+            user: "StateUser",
+        }),
+
+        last_msg_id() {
+            return this.$store.getters['groups/getGroupLastMsgId']({group_id: this.group_id})
+        },
     },
 
     created(){
@@ -45,12 +51,13 @@ export default {
     {
         showParticipantAsSeen(participant)
         {
-
             if(!this.isThisLastSeenMessage(participant)) return false
 
             if(this.isOwnerOfThisMessage(participant)) return false
 
             if(this.isParticipantOwnerOfLastMessage(participant)) return false
+
+            if(this.hasMessagesAfterSeen(participant)) return false
 
             return true
         },
@@ -80,6 +87,12 @@ export default {
                 ? true
                 : false
         },
+
+        // if there are messages, after "participant.pivot.last_message_seen_id" which belong to him, do not show that user here
+        hasMessagesAfterSeen(participant)
+        {
+            return false // TODO
+        }
 
     }
 

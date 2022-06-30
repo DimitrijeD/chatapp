@@ -15,7 +15,7 @@
             </div>
 
             <div class="col-span-2 m-1 p-2 text-left select-all cursor-pointer">
-                <span>{{ group.participants.length }}</span>
+                <span>{{ getNumberOfParticipants(group.participants) }}</span>
             </div>
 
             <div class=" m-1 p-2 flex items-center justify-center select-none">
@@ -67,6 +67,11 @@ export default {
         formatDate()
         {
             return new Date(this.group.created_at)
+        },
+
+        getNumberOfParticipants(participants)
+        {
+            return Object.keys(participants).length
         },
 
     }

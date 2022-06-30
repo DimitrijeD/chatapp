@@ -90,9 +90,8 @@ export default {
             actionKeys: "chat_rules/StateKeys",
         }),
 
-        group()
-        { 
-            return this.$store.getters['groups/filterById'](this.group_id)
+        group(){ 
+            return this.$store.getters['groups/getGroupById'](this.group_id)
         },
 
         chatRole(){ 

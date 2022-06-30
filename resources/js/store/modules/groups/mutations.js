@@ -1,57 +1,62 @@
-const mutations = {
-    addGroups: (state, groups) => state.groups = groups,
+import Vue from 'vue'
 
+const mutations = {
     refreshGroup(state, data){ 
-        state.groups[data.grI].updated_at = data.group.updated_at
-        state.groups[data.grI].last_msg_id = data.group.last_msg_id
-        state.groups[data.grI].participants = data.group.participants
+        state.groups[data.group_id].updated_at = data.group.updated_at
+        state.groups[data.group_id].last_msg_id = data.group.last_msg_id
+        state.groups[data.group_id].participants = data.group.participants
     },
 
     setFilteredGroupsIds: (state, ids) => state.filteredGroupsIds = ids,
 
     removeFilteredGroupsId: (state, id) => state.filteredGroupsIds = state.filteredGroupsIds.filter((item) => item !== id ),
 
-    addGroup: (state, group) => state.groups.push(group),
+    addGroups: (state, group) => state.groups = {...state.groups,  ...group },
 
     addToOpenedGroups: (state, id) => state.openedGroupsIds.push(id),
 
     closeWindow: (state, index) => state.openedGroupsIds.splice(index, 1),
 
-    mergeMessagesInGroup: (state, data) => state.groups[data.grI].messages = { ...state.groups[data.grI].messages, ...data.messages},
+    mergeMessagesInGroup: (state, data) => state.groups[data.group_id].messages = { ...state.groups[data.group_id].messages, ...data.messages},
 
-    setAcknowledgedMessages: (state, data) => state.groups[data.grI].lastAcknowledgedMessageId = data.lastAcknowledgedMessageId,
+    setAcknowledgedMessages: (state, data) => state.groups[data.group_id].lastAcknowledgedMessageId = data.lastAcknowledgedMessageId,
 
-    setLastMessageIdInGroup: (state, data) => state.groups[data.grI].last_msg_id = data.last_msg_id,
+    setLastMessageIdInGroup: (state, data) => state.groups[data.group_id].last_msg_id = data.last_msg_id,
 
-    setEarliestMessageIdInGroup: (state, data) => state.groups[data.grI].eariestMessageId = data.eariestMessageId,
+    setEarliestMessageIdInGroup: (state, data) => state.groups[data.group_id].eariestMessageId = data.eariestMessageId,
 
-    doesntUnseenState: (state, data) => state.groups[data.grI].hasUnseenState = false,
+    doesntUnseenState: (state, data) => state.groups[data.group_id].hasUnseenState = false,
 
-    hasUnseenState: (state, data) => state.groups[data.grI].hasUnseenState = true,
+    hasUnseenState: (state, data) => state.groups[data.group_id].hasUnseenState = true,
 
-    updateSeenPivot: (state, data) => state.groups[data.grI].participants[data.prI].pivot = data.pivot,
+    updateSeenPivot: (state, data) => state.groups[data.group_id].participants[data.participant_id].pivot = data.pivot,
 
     updateSeenPivotOnly_last_message_seen_id(state, data) {
-        state.groups[data.grI].participants[data.prI].pivot.last_message_seen_id = data.last_msg_id
-        state.groups[data.grI].participants[data.prI].pivot.updated_at = data.now
+        state.groups[data.group_id].participants[data.participant_id].pivot.last_message_seen_id = data.last_msg_id
+        state.groups[data.group_id].participants[data.participant_id].pivot.updated_at = data.now
     },
 
     addToFilteredGroups: (state, id) => state.filteredGroupsIds.push(id),
 
-    updateGroup_updated_at: (state, data) => state.groups[data.grI].updated_at = data.now,
+    updateGroup_updated_at: (state, data) => state.groups[data.group_id].updated_at = data.now,
 
-    removeGroupFromStore: (state, index) => state.groups.splice(index, 1),
+    removeGroupFromStore: (state, group_id) => delete state.groups[group_id],
 
-    removeParticipantFromGroup: (state, data) => state.groups[data.grI].participants.splice(data.prI, 1),
+    removeParticipantFromGroup(state, data) {
+        // delete state.groups[data.group_id].participants[data.participant_id], // didnt work
+
+        // solution which made component with computed prop for this getter be reactive after deleting 
+        Vue.delete(state.groups[data.group_id].participants, data.participant_id)
+    }, 
 
     // once this is set, earliest messages request can no longer be trigged (up to 'first' message in group is pulled)
-    lockReachedEarliestMsgId: (state, grI) => state.groups[grI].reachedEarliestMsgId = true, 
+    lockReachedEarliestMsgId: (state, group_id) => state.groups[group_id].reachedEarliestMsgId = true, 
 
-    patchParticipantRole: (state, data) => state.groups[data.grI].participants[data.prI].pivot.participant_role = data.participant_role,
+    patchParticipantRole: (state, data) => state.groups[data.group_id].participants[data.participant_id].pivot.participant_role = data.participant_role,
 
-    refreshGroupParticipants: (state, data) => state.groups[data.grI].participants = data.participants,
+    refreshGroupParticipants: (state, data) => state.groups[data.group_id].participants = {...state.groups[data.group_id].participants, ...data.participants},
 
-    changeGroupName: (state, data) => state.groups[data.grI].name = data.new_name,
+    changeGroupName: (state, data) => state.groups[data.group_id].name = data.new_name,
 }
 
 export default mutations 
