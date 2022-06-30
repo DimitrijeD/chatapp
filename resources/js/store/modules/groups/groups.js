@@ -46,23 +46,27 @@ const actions =
             if(!state.openedGroupsIds.includes(id)) 
                 context.commit('addToOpenedGroups', group.id)  
         } else {
-            axios.get('/api/chat/group/' + id).then((res)=>{
-                let groups = [res.data]
-                groups = m.propInit(groups)
-                groups = m.attachUnseenStateBool(groups, context.rootState.auth.user.id)
-                const group = groups[0]
-
-                context.commit('addGroup', group)
-                context.commit('addToOpenedGroups', group.id)
-                context.commit('addToFilteredGroups', group.id)
-            })
-            .catch((error) => {
-                console.log('groups/openGroup')
-                console.log('Trying to get group by id which doesnt exist in store nor in database.')
-                console.log(error)
-            })
+            context.dispatch('getMissingGroup', id)
         }
+    },
 
+    getMissingGroup(context, id)
+    {
+        axios.get('/api/chat/group/' + id).then((res)=>{
+            let groups = [res.data]
+            groups = m.propInit(groups)
+            groups = m.attachUnseenStateBool(groups, context.rootState.auth.user.id)
+            const group = groups[0]
+
+            context.commit('addGroup', group)
+            context.commit('addToOpenedGroups', group.id)
+            context.commit('addToFilteredGroups', group.id)
+        })
+        .catch((error) => {
+            console.log('groups/getMissingGroup')
+            console.log('Trying to get group by id which doesnt exist in store nor in database.')
+            console.log(error)
+        })
     },
 
     closeGroup({ commit, state }, id)
@@ -297,6 +301,14 @@ const actions =
         })
     },
 
+    clearGroupData(context, data)
+    {
+        context.dispatch('closeGroup', data.group_id) 
+        context.commit('removeGroupFromStore', h.getGroupIndexById(state.groups, data.group_id) )
+        context.commit('removeFilteredGroupsId', data.group_id)
+
+    },
+
     setEarliestMessageInGroup(context, data)
     {
         data.eariestMessageId = h.getEarliestMsgId(state.groups[data.grI].messages)
@@ -343,6 +355,11 @@ const actions =
     addedParticipantEvent(context, data)
     {
         const grI = h.getGroupIndexById(state.groups, data.group_id) 
+
+        if(!state.groups[grI]){
+            context.dispatch('getMissingGroup', data.group_id)
+            return
+        }
 
         context.commit('refreshGroupParticipants', {
             grI: grI,

@@ -9,17 +9,17 @@ class ParticipantsExistRule implements Rule
 {
     protected $arrayOfUserIds;
 
-    public function __construct($arrayOfUserIds)
+    public function __construct($users_ids)
     {
-        $this->arrayOfUserIds = $arrayOfUserIds; 
+        $this->users_ids = $users_ids; 
         $this->userRepo = new UserEloquentRepo;
     }
 
     public function passes($attribute, $value)
     {
-        if(!$users = $this->userRepo->getMany(['id' => $this->arrayOfUserIds])) return false;
+        if(!$users = $this->userRepo->getMany(['id' => $this->users_ids])) return false;
 
-        return count($users) == count($this->arrayOfUserIds) ? true : false;
+        return count($users) == count($this->users_ids) ? true : false;
     }
 
     public function message()
