@@ -70,13 +70,14 @@ export default {
             user: this.$store.state.auth.user,
             change_role: 'change_role',
             remove: 'remove',
-            listVersion: 1,
         }
     },
 
     computed: {
         participants(){
-            return this.sortParticipantsByRoleHierarchy(this.group.participants)
+            // console.log('called   getMyParticipants')
+            return this.group.participants
+            // return this.$store.getters['groups/getMyParticipants'](this.group.id)
         },
     },
 

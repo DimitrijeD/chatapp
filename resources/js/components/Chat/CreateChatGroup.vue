@@ -200,7 +200,7 @@ export default {
             if(this.errors.length > 0) return
 
             this.resolveGroupParams()
-
+            
             this.$store.dispatch('groups/storeGroup', this.newChatGroup)
 
             this.resetComponentVars()
@@ -259,7 +259,6 @@ export default {
             } else {
                 this.newChatGroup.users_ids.push(id)
             }
-            console.log(this.newChatGroup.users_ids)
         },
 
         isUserSelected(id)

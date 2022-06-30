@@ -1,5 +1,5 @@
 const state = {
-    groups: [], 
+    groups: {}, // dictionary
     openedGroupsIds: [],
     filteredGroupsIds: [],
 }

@@ -50,7 +50,7 @@ export default{
         participant(){
             return this.$store.getters['groups/getParticipant']({
                 group_id: this.group_id,
-                user_id: this.participant_id
+                participant_id: this.participant_id
             })
         }
     },
