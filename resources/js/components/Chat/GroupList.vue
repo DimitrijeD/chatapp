@@ -35,7 +35,7 @@
         <transition name="slide-fade-nav-dropdowns">
             <div
                 v-if="showExistingChats"
-                class="z-30 width-300 absolute bg-gray-100 mt-1 shadow-2xl "
+                class="z-30 width-300 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-b-2 border-blue-200"
             >
                 <div class="m-2">
                     <input
@@ -55,7 +55,7 @@
                                     class="p-2 m-2 rounded-xl cursor-pointer shadow-inner"
                                     @click="createChatWindow(group)"
                                     :class="{
-                                        'bg-blue-100 hover:bg-blue-200': !group.hasUnseenState,
+                                        'bg-blue-100 hover:bg-blue-200':  !group.hasUnseenState,
                                         'bg-green-200 hover:bg-green-300': group.hasUnseenState,
                                     }"
                                 >

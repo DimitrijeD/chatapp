@@ -12,6 +12,7 @@
             />
 
             <div class="header-text" v-if="showComponent == 'default-show'">{{ defaultText }}</div>
+            <div class="header-text" v-if="showComponent == 'many-user-text'">{{ manyUserText }}</div>
         </div>
     </div>
 </template>
@@ -48,6 +49,10 @@ export default {
 
     computed: {
         ...mapGetters({ user: "StateUser" }),
+
+        manyUserText(){
+            return `Group with ${Object.keys(this.group.participants).length} participants`
+        }
     },
 
     watch: {
@@ -87,8 +92,13 @@ export default {
                 return
             }
 
-            if(numParticipants > 1){
+            if(numParticipants > 1 && numParticipants <= 3){
                 this.showComponent = 'list-chat-participants'
+                return
+            }
+
+            if(numParticipants >= 4){
+                this.showComponent = 'many-user-text'
                 return
             }
 

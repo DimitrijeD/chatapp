@@ -19,8 +19,8 @@
         <transition name="slide-fade-nav-dropdowns">
             <div
                 v-if="showCreateDropdown"
-                class="width-300 z-50 absolute bg-gray-100 mt-1 shadow-2xl"
-            >        
+                class="width-300 z-50 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-blue-200"
+            >      
                 <div class="m-2">
                     <input
                         class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
@@ -54,17 +54,15 @@
                     />
                 </div>
 
-                <div class=" user-list-height select-none pt-1">
+                <div class="user-list-height select-none">
                     <vue-scroll :ops="ops">
                         <ul> 
-                            <li v-for="(id, index) in users" :key="index">
+                            <li v-for="(id, index) in users" :key="index" class="mx-3 my-1">
                                 <small-user 
                                     :user="getUser(id)"
                                     @click.native="selectOrDeseceltUser(id)"
-                                    :class="{
-                                        'text-blue-500 bg-white hover:bg-red-50': !isUserSelected(id),
-                                        'text-white bg-blue-400 font-semibold':    isUserSelected(id),
-                                    }"
+                                    :overrideClasses="isUserSelected(id) ? 'text-white bg-blue-400 font-semibold' : 'text-blue-500 bg-white hover:bg-red-50'"
+                                    :img_name_gap="'3'"
                                 /> 
                             </li>
                         </ul>

@@ -252,12 +252,8 @@ const actions =
     addParticipants(context, data)
     {
         data = m.prepareParticipantsForStoreRequest(data)
-        let endpoint = `/api/chat/group/${data.group_id}/add-users`
 
-        /**
-         * Request returns fresh group with particiapants, without messages
-         */
-        return axios.post(endpoint, data).then(res => {
+        return axios.post(`/api/chat/group/${data.group_id}/add-users`, data).then(res => {
             
         }).catch( error => {
             console.log('groups/addParticipants')
@@ -279,10 +275,7 @@ const actions =
     leaveGroup(context, data)
     {
         axios.get(`/api/chat/group/${data.group_id}/leave`).then((res) => {
-            context.dispatch('closeGroup', data.group_id) 
-            context.commit('removeGroupFromStore', data.group_id)
-            context.commit('removeFilteredGroupsId', data.group_id)
-            
+            context.dispatch('clearGroupData', data) 
         }).catch(error => {
             console.log(error)
         })
@@ -294,6 +287,7 @@ const actions =
         context.commit('removeGroupFromStore', data.group_id) 
         context.commit('removeFilteredGroupsId', data.group_id)
 
+        Echo.leave('group.' + data.group_id)
     },
 
     setEarliestMessageInGroup(context, data)

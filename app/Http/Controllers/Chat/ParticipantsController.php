@@ -14,6 +14,7 @@ use App\ChatApp\Repos\ParticipantPivot\ParticipantPivotEloquentRepo;
 
 use App\Http\Requests\Participant\AddParticipantRequest;
 use App\Http\Requests\Participant\ChangeRoleRequest;
+use App\Http\Requests\Participant\RemoveParticipantRequest;
 
 use App\Events\UserRoleInGroupChangedEvent;
 use App\Events\UserRemovedFromGroupEvent;
@@ -27,11 +28,6 @@ class ParticipantsController extends Controller
     public function __construct(ParticipantPivotEloquentRepo $pivotRepo)
     {
         $this->pivotRepo = $pivotRepo;
-    }
-
-    public function getAllUsersExceptSelf()
-    {
-        return User::all()->except(Auth::id());
     }
 
     public function addUsersToGroup(
@@ -74,7 +70,8 @@ class ParticipantsController extends Controller
             'participants' => $chatGroupRepo->get(
                 ['id' => $request->group_id], 
                 ['participants']
-            )->participants
+            )->participants,
+            'addedUsers' => $request->usersToAdd
         ]));
         
         return response()->json([ 'success' => __("{$msgText} successfully added.") ]);
@@ -96,26 +93,13 @@ class ParticipantsController extends Controller
         return response()->json(['success' => __('You have left this group.')]); 
     }
 
-    public function removeUserFromGroup(Request $request)
+    public function removeUserFromGroup(RemoveParticipantRequest $request)
     {
-        $user = auth()->user();
-        $myPivot = null;
-        $targetForRemove = null;
-        
-        // get pivot of user making request
-        foreach($request->group->participants as $participant){
-            if($participant->id == $user->id)
-                $myPivot = $participant;
-
-            if($participant->id == $request->user_id_to_remove)
-                $targetForRemove = $participant;
-        }
+        $myPivot         = $request->group->participants->where('id', $request->user->id)         ->first();
+        $targetForRemove = $request->group->participants->where('id', $request->user_id_to_remove)->first();
 
         if(!$myPivot || !$targetForRemove)
             return response()->json(['error' => __("An error occured.")], 404); 
-
-        if(!ChatRole::can([ $myPivot->pivot->participant_role, $targetForRemove->pivot->participant_role, $request->group->model_type ], ChatRole::ACTION_KEY_REMOVE))
-            return response()->json(['error' => __("You cannot remove this user from group.")], 401);
 
         if(!$this->pivotRepo->delete($targetForRemove->pivot))
             return response()->json(['error' => __("An error occured while removing user from group.")], 500); 
@@ -130,32 +114,24 @@ class ParticipantsController extends Controller
 
     public function chageParticipantsRole(ChangeRoleRequest $request)
     {
-        $data = $request->all();
-
-        $participantPivotToUpdate = null;
-
-        foreach($data['group']->participants as $participant){
-            if($participant->id == $data['target_user_id'])
-                $participantPivotToUpdate = $participant->pivot;
-        }
+        $participantPivotToUpdate = $request->group->participants->where('id', $request->target_user_id)->first()?->pivot;
 
         if(!$participantPivotToUpdate)
             return response()->json(['error' => __("User you are trying to change role to, is not in this group.")]);
 
         $updatedPivot = $this->pivotRepo->update($participantPivotToUpdate, [
-            'participant_role' => $data['to_role'],
+            'participant_role' => $request->to_role,
         ]);
 
-        if($updatedPivot->participant_role == $data['to_role']){
-            broadcast(new UserRoleInGroupChangedEvent([
-                'group_id' => $data['group']->id,
-                'pivot' => $updatedPivot
-            ]));
+        if($updatedPivot->participant_role != $request->to_role)
+            return response()->json(['error' => __("We are not able to change role at this time.")], 500);
 
-            return response()->json(['success' => __("Role has been successfully changed.")]);
-        }
+        broadcast(new UserRoleInGroupChangedEvent([
+            'group_id' => $request->group->id,
+            'pivot' => $updatedPivot
+        ]));
 
-        return response()->json(['error' => __("We are not able to change role at this time.")], 500);
+        return response()->json(['success' => __("Role has been successfully changed.")]);
     }
 
 }

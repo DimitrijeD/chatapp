@@ -45,7 +45,6 @@ Route::post('/chat/group/store', [GroupController::class, 'store'])->middleware(
 
 
 //-----------------------------Participants-----------------------------// 
-Route::get('/chat/users/without-self', [ParticipantsController::class, 'getAllUsersExceptSelf'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}/users', [ParticipantsController::class, 'getUsersByGroup'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}/leave', [ParticipantsController::class, 'leaveGroup'])->middleware(['auth', 'chat_group_access']);
 Route::get('/chat/group/{group_id}/remove/{user_id_to_remove}', [ParticipantsController::class, 'removeUserFromGroup'])->middleware(['auth', 'chat_group_access']);

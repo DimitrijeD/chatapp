@@ -27,7 +27,6 @@ class ChangeRoleTest extends TestCase
 
     public function test_creator_can_change_participant_to_moderator_in_public_open()
     {
-
         $this->chatGroupSeeder->massSetter([
             'model_type' => ChatGroup::TYPE_PUBLIC_OPEN,
             'participants' => [
@@ -44,16 +43,7 @@ class ChangeRoleTest extends TestCase
 
         Auth::login($this->allChatData['group_creator']);
 
-        $targetUserId = null;
-        // get id of other user in group
-        foreach($this->allChatData['pivots'] as $user){
-            if($user->participant_role == ChatRole::PARTICIPANT){
-                $targetUserId = $user->user_id;
-                break;
-            }
-        }
-
-        if(!$targetUserId)
+        if(!$targetUserId = $this->allChatData['pivots']->where('participant_role', ChatRole::PARTICIPANT)->first()?->user_id)
             $this->markTestIncomplete("Cannot finish this test because target user for role change doesn't exist");
 
         $response = $this->post($this->changeRoleEndpoint, [

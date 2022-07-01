@@ -75,9 +75,7 @@ export default {
 
     computed: {
         participants(){
-            // console.log('called   getMyParticipants')
-            return this.group.participants
-            // return this.$store.getters['groups/getMyParticipants'](this.group.id)
+            return this.sortParticipantsByRoleHierarchy(this.$store.getters['groups/getMyParticipants'](this.group.id))
         },
     },
 

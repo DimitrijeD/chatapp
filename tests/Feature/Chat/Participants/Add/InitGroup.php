@@ -17,7 +17,7 @@ use App\Models\ChatRole;
  */
 trait InitGroup 
 {
-    private function groupSetUp($groupConfig, $requestInitiatorRole)
+    private function groupSetUp($groupConfig, $requestInitiatorRole = ChatRole::CREATOR)
     {
         $this->chatGroupSeeder = (resolve(ChatGroupClusterSeeder::class));
         $this->chatGroupSeeder->massSetter($groupConfig);

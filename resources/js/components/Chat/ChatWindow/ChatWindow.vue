@@ -72,12 +72,19 @@ export default {
         'group_id',
     ],
 
+    components: {
+        'chat-participants': ChatParticipants,
+        'messages-block': MessagesBlock,
+        'message-input': MessageInput,
+        'window-management': WindowManagement,
+        'config': Config,
+    },
+
     data(){
         return {
             isMinimized: false,
             lastAcknowledgedMessageId: null,
             showConfig: false,
-            // user: this.$store.state.auth.user,
             permissions: {},
         }
     },
@@ -109,14 +116,6 @@ export default {
         },
     },
 
-    components: {
-        'chat-participants': ChatParticipants,
-        'messages-block': MessagesBlock,
-        'message-input': MessageInput,
-        'window-management': WindowManagement,
-        'config': Config,
-    },
-
     created() {
         this.createPermissions()
 
@@ -127,6 +126,10 @@ export default {
         this.listenForUserAdded()
         this.listenForUserLeftGroup()
         this.listenForGroupNameChange()
+    },
+
+    mounted(){
+
     },
 
     methods: {   
@@ -145,16 +148,6 @@ export default {
         findLatestMessageId: (messages) => Math.max(...Object.keys(messages)),
 
         isUserOwnerOfLastMessage: (message, userId) => message.user_id == userId ? true : false,
-
-        listenForNewMessages()
-        {
-            this.getMessages()
-
-            Echo.private("group." + this.group.id)
-            .listen('.message.new', e => {
-                this.getMessages()
-            })
-        },
 
         // Event when user clicks his own window (he saw/red all messages)
         selfAcknowledged()
@@ -182,6 +175,16 @@ export default {
             this.$store.dispatch('groups/setAllMessagesAcknowledged', {
                 group_id: this.group.id,
                 lastAcknowledgedMessageId: this.lastAcknowledgedMessageId
+            })
+        },
+
+        listenForNewMessages()
+        {
+            this.getMessages()
+
+            Echo.private("group." + this.group.id)
+            .listen('.message.new', e => {
+                this.getMessages()
             })
         },
 
@@ -215,7 +218,18 @@ export default {
         {
             Echo.private("group." + this.group.id)
             .listen('.participant.added', e => {
-                this.$store.dispatch('groups/addedParticipantEvent', e.data)
+                let isAmongThem = false
+
+                for(let i in e.data.addedUsers){
+                    if(e.data.addedUsers[i].user_id == this.user.id){
+                        isAmongThem = true
+                        break
+                    }
+                }
+
+                isAmongThem
+                    ? true  
+                    : this.$store.dispatch('groups/addedParticipantEvent', e.data)
             });
         },
 

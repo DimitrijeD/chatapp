@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="pendingRoleChangeAccept">
-            <div class="text-center grid grid-cols-4 gap-2">
+            <div class="text-center grid grid-cols-4 gap-2 bg-yellow-100 p-1">
                 <span class="col-span-2">Make user {{ this.chosenNewRole.toLowerCase() }}</span>
 
                 <button
