@@ -1,13 +1,10 @@
 <template>
     <div>
         <nav-bar />
-        <div v-if="user">
-            <chat />
-        </div>
-        <div>
-            <router-view />
-        </div>
-
+        <chat 
+            v-if="user"
+        />
+        <router-view />
     </div>
 </template>
 

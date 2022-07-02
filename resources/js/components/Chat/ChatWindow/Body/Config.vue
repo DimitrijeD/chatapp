@@ -1,6 +1,5 @@
 <template>
     <div 
-        v-if="showConfig"
         class="z-40 fixed bg-gray-50 border border-gray-300 box-border"
     >
         <!-- Create Nav bar for config -->
@@ -62,7 +61,7 @@ import AddUsers     from './Config/AddUsers.vue'
 
 export default {
     props: [
-        'showConfig', 'group', 'permissions', 'chatRole', 'roles'
+        'group', 'permissions', 'chatRole', 'roles'
     ],
 
     components: {
@@ -133,7 +132,7 @@ export default {
         {
             if(this.permissions.add.length){
                 if(!this.settings.hasOwnProperty('add_users')){
-                        this.settings.add_users = {
+                    this.settings.add_users = {
                         name: 'Add Users',
                         opened: false, 
                     }
