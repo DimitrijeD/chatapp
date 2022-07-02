@@ -1,5 +1,4 @@
 import Home from './components/Home.vue';
-import About from './components/About.vue';
 import NotFound from "./components/NotFound.vue";
 import Login from "./components/Auth/Login.vue";
 import Register from "./components/Auth/Register.vue";
@@ -21,22 +20,6 @@ export default {
         {
             path: '/',
             component: Home,
-            beforeEnter: (to, from, next) => {
-                if(store.getters.StateUser) return next()
-
-                axios.get('/api/get-user').then((res) => {
-                    store.commit('setUser', res.data.user)
-                    return next()
-                }).catch(()=>{
-                    return next({ path: '/login' })
-                });
-            },
-        },
-
-        {
-            path: '/about',
-            component: About,
-            name: "About",
             beforeEnter: (to, from, next) => {
                 if(store.getters.StateUser) return next()
 

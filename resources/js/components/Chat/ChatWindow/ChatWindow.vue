@@ -26,8 +26,8 @@
                 @click="selfAcknowledged();"
             >
                 <config 
+                    v-if="showConfig"
                     class="window-x-minus-border h-full"
-                    :showConfig="showConfig"
                     :group="group"
                     :permissions="permissions"
                     :chatRole="chatRole"
@@ -228,7 +228,7 @@ export default {
                 }
 
                 isAmongThem
-                    ? true  
+                    ? console.log("error, ChatWindow::listenForUserAdded() - user listens for event which he shouldn't be listening to since he was no longer participant in chat group.")  
                     : this.$store.dispatch('groups/addedParticipantEvent', e.data)
             });
         },
