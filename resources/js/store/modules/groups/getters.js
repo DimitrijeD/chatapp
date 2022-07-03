@@ -1,4 +1,4 @@
-import * as helpers from './helper_functions.js'
+import * as h from './helper_functions.js'
 
 import {
     sort_filteredGroups_by_updated_at
@@ -11,30 +11,25 @@ const getters = {
     
     openedGroupsIds: (state) => state.openedGroupsIds,
 
-    numOfUnseenGroups: (state) => helpers.getNumOfUnseenGroups(state.groups),
+    numOfUnseenGroups: (state) => h.getNumOfUnseenGroups(state.groups),
 
-    filteredGroups: (state) => { 
-        return sort_filteredGroups_by_updated_at(helpers.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds))
-    },
+    filteredGroups: (state) => sort_filteredGroups_by_updated_at(h.getModelsFromIds(state.groups, state.filteredGroupsIds)),
 
-    getUserRole: (state) => (data) =>
-    {
-        return state.groups[data.group_id].participants[data.user_id].pivot.participant_role
-    },
+    getUserRole: (state) => (data) => state.groups[data.group_id].participants[data.user_id].pivot.participant_role,
 
     getMyParticipants: (state) => (group_id) => state.groups[group_id].participants,
 
-    getParticipant: (state) => (data) =>
-    {
-        return state.groups[data.group_id].participants[data.participant_id]
-    },
+    getParticipant: (state) => (data) => state.groups[data.group_id].participants[data.participant_id],
 
-    getOwnerIdOfLastMessage: (state) => (data) => 
-    {
-        return state.groups[data.group_id].messages[data.last_msg_id].user_id
-    },
+    getOwnerIdOfLastMessage: (state) => (data) => state.groups[data.group_id].messages[data.last_msg_id].user_id,
 
     getGroupLastMsgId: (state) => (data) => state.groups[data.group_id].last_msg_id,
+
+    getGroupLastMsg: (state) => (group_id) => state.groups[group_id].last_message ? state.groups[group_id].last_message : null,
+
+    getPossesedNumberOfMessagesInGroup: (state) => (group_id) => Object.keys(state.groups[group_id].messages).length,
+
+    getLastPossesedMsgId: (state) => (group_id) => h.getMinObjKey(state.groups[group_id].messages),
 }
 
 export default getters 

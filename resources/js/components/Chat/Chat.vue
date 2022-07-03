@@ -37,26 +37,22 @@ export default {
 
     created(){
         this.$store.dispatch('groups/getGroups')
-        this.connectToActiveChatting()
+        this.listenUserToUserNotifications()
         this.fetchRulesTables()
     },
 
 
     methods:
     {
-        connectToActiveChatting()
+        listenUserToUserNotifications()
         {
             Echo.private("App.Models.User." + this.user.id)
             .listen('.message.notification', e => {
-                const notif = e.messageNotification
-                this.$store.dispatch('groups/openGroup', notif.group_id)
-            });
+                this.$store.dispatch('groups/openGroup', e.messageNotification.group_id)
+            })
         },
 
-        fetchRulesTables()
-        {
-            this.$store.dispatch('chat_rules/FetchRules')
-        },
+        fetchRulesTables() { this.$store.dispatch('chat_rules/FetchRules') },
 
 
     },

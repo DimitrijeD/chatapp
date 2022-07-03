@@ -21,7 +21,6 @@
                         <div class="col-span-6 cursor-pointer">
                             <small-user 
                                 :user="participant" 
-                                :img_name_gap="'2'"
                             /> 
                         </div>
 

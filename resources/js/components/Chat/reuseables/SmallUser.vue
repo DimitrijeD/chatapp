@@ -1,16 +1,13 @@
 <template>
-    <div 
-        class="py-2 flex items-center cursor-pointer"
-        :class="[getGap, getOveriddenClasses]"
-    >
+    <div :class="[static.layout, getLayoutCls]" v-if="user">
         <img
             :src="user.thumbnail"
+            :class="[static.img, getImgCls]"
             alt="no img :/"
-            class="w-16 h-16 inline-block ml-0.5 object-cover border border-gray-100 rounded-full"
         > 
 
-        <p class="inline-block truncate">
-            {{ user.first_name }} {{ user.last_name }}
+        <p :class="[static.userName, getUserNameCls]">
+            {{ getUserNameDisplay }}
         </p>
     </div>
 </template>
@@ -18,27 +15,37 @@
 <script>
 export default {
     props:[
-        'user', 'img_name_gap', 'overrideClasses'
+        'user', 'layoutCls', 'imgCls', 'userNameCls', 'showOnly' 
     ],
 
     computed: {
-        getGap(){
-            return this.img_name_gap 
-                ? "space-x-" + this.img_name_gap 
-                : this.defaultGap
-        },
+        getLayoutCls(){ return this.layoutCls ? this.layoutCls : this.default.layout },
 
-        getOveriddenClasses(){
-            return this.overrideClasses 
-                ? this.overrideClasses 
-                : this.defaultOverridenClasses
+        getImgCls(){ return this.imgCls ? this.imgCls : this.default.img },
+
+        getUserNameCls(){ return this.userNameCls ? this.userNameCls : this.default.userName },
+
+        // expects "first_name", "last_name" or ""
+        getUserNameDisplay(){ 
+            if(!this.showOnly) return `${this.user.first_name} ${this.user.last_name}`
+
+            return this.user[this.showOnly]
         }
     },
 
     data() {
         return {
-            defaultGap: "space-x-1",
-            defaultOverridenClasses: "hover:bg-gray-50 text-blue-600"
+            default:{ 
+                layout: "py-2 space-x-1",
+                img: "w-16 h-16",
+                userName: "truncate",
+            },
+
+            static: {
+                layout: "flex items-center cursor-pointer",
+                img: "inline-block ml-0.5 object-cover border border-gray-100 rounded-full",
+                userName: "inline-block font-semibold",
+            },
         }
     },
 

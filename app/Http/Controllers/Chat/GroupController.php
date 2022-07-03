@@ -43,7 +43,7 @@ class GroupController extends Controller
 
     public function getGroupsByUser()
     {
-        $groups = (auth()->user()->groups()->with('participants'))
+        $groups = (auth()->user()->groups()->with(['participants', 'lastMessage.user']))
             ->orderBy('updated_at', 'desc')
             ->get();
 
@@ -78,6 +78,18 @@ class GroupController extends Controller
         ]));
         
         return response()->json(['success' => __("Group name has been changed.")]);
+    }
+
+    public function refreshGroup(Request $request)
+    {
+        $group = $this->chatGroupRepo->get(
+            ['id' => $request->group_id], 
+            ['participants', 'latestMessages.user']
+        );
+
+        return $group->participants->where('id', auth()->user()->id)->first() // if user is participant
+            ? response()->json($group)
+            : response()->json(['errors' => __("You have no access rights to this chat group.")], 403);
     }
 
 }

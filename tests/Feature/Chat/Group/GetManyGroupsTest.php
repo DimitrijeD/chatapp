@@ -26,16 +26,16 @@ class GetManyGroupsTest extends TestCase
         for($i = 0; $i < 3; $i++){
             $this->groups[] = $chatGroupSeeder->run();
         }
-
-        // IF TESTS FAIL CHECK THIS EMAIL
-        $this->user = User::where(['email' => 'qwe@qwe'])->first();
+        
+        if(!$this->user = User::where(['email' => 'qwe@qwe'])->first())
+            $this->markTestIncomplete("Cannot finish this test because target user doesn't exist");
 
         $this->withHeaders([ 'Accept' => 'application/json', ]);
 
         $this->getManyGroupsEndpoint = "/api/chat/user/groups";
     }
 
-    public function test_get_same_number_of_groups_as_seeder_created()
+    public function test_get_number_of_groups_user_belongs_to()
     {
         Auth::login($this->user);
 

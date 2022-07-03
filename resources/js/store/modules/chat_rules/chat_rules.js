@@ -2,6 +2,7 @@ const state = {
     rules: null,
     keys: null,
     roles: null,
+    groupTypes: null
 }
 
 const getters = 

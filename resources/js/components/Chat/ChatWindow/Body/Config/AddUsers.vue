@@ -16,6 +16,7 @@
                             <small-user 
                                 :user="getUser(id)"
                                 @click.native="add(id)"
+                                :userNameCls="'text-blue-600 space-x-2'"
                             /> 
                         </li>
                     </ul>
@@ -35,6 +36,7 @@
                                 :user="getUser(id)"
                                 @click.native="remove(id)"
                                 class="bg-green-100 hover:bg-red-300"
+                                :userNameCls="'text-sky-600 space-x-2'"
                             />
                         </li>
                     </ul>

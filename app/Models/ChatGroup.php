@@ -50,4 +50,13 @@ class ChatGroup extends Model
         return $this->hasMany(ParticipantPivot::class, 'group_id', 'id');
     }
 
+    public function lastMessage()
+    {
+        return $this->hasOne(ChatMessage::class, 'group_id', 'id')->latestOfMany();
+    }
+
+    public function latestMessages()
+    {
+        return $this->hasMany(ChatMessage::class, 'group_id', 'id')->limit(ChatMessage::INIT_NUM_MESSAGES);
+    }
 }

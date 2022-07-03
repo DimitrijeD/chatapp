@@ -54,15 +54,15 @@
                     />
                 </div>
 
-                <div class="user-list-height select-none">
+                <div class="user-list-height select-none m-2">
                     <vue-scroll :ops="ops">
                         <ul> 
-                            <li v-for="(id, index) in users" :key="index" class="mx-3 my-1">
+                            <li v-for="(id, index) in users" :key="index">
                                 <small-user 
                                     :user="getUser(id)"
                                     @click.native="selectOrDeseceltUser(id)"
-                                    :overrideClasses="isUserSelected(id) ? 'text-white bg-blue-400 font-semibold' : 'text-blue-500 bg-white hover:bg-red-50'"
-                                    :img_name_gap="'3'"
+                                    :layoutCls="isUserSelected(id) ? 'text-white bg-blue-400 space-x-2 py-1' : 'text-blue-500 bg-white hover:bg-red-50 space-x-2 py-1'"
+                                    class="m-1 mr-3"
                                 /> 
                             </li>
                         </ul>
@@ -74,7 +74,11 @@
                 </div>
 
                 <div
-                    class="bg-blue-500 hover:bg-blue-600 text-white text-base mt-2 p-2 text-center cursor-pointer"
+                    class="text-base mt-2 p-2 text-center cursor-pointer"
+                    :class="{
+                        'bg-blue-500 hover:bg-blue-600 text-white':  canCreate,
+                        'disabled text-gray-600 bg-gray-200':       !canCreate,
+                    }"
                     @click="createNewChatGroup()"
                 >
                     Create chat group
@@ -108,16 +112,7 @@ export default {
             nothingFound: '',
 
             selected_model_type: 'PRIVATE',
-
-            model_types: [
-                { text: 'Private chat', value: 'PRIVATE' },
-                { text: 'Protected chat', value: 'PROTECTED' },
-                { text: 'Public chat', value: 'PUBLIC_OPEN' },
-                { text: 'Public closed chat', value: 'PUBLIC_CLOSED' }
-            ],
-
             defaultNewGroupType: 'PRIVATE',
-
 
             input: {
                 actions: {
@@ -128,11 +123,14 @@ export default {
             },
 
             ops: {
-                vuescroll: {},
                 scrollPanel: {
                     scrollingX: false
                 },
-                rail: {},
+                rail: {
+                    background: '#BFDBFF',
+                    opacity: 0.5,
+                    size: '6px',
+                },
                 bar: {
                     keepShow: true
                 }
@@ -161,6 +159,10 @@ export default {
         },
 
         users(){ return this.$store.getters['users/getFilterForAddUsers'] },
+
+        canCreate(){
+            return this.newChatGroup.users_ids.length
+        }
 
     },
 
@@ -245,10 +247,7 @@ export default {
 
         },
 
-        getUser(id)
-        {
-            return this.$store.getters['users/getById'](id)
-        },
+        getUser(id) { return this.$store.getters['users/getById'](id)},
 
         selectOrDeseceltUser(id)
         {

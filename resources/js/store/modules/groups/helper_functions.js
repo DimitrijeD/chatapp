@@ -53,17 +53,6 @@ function regExpressionMatch(find, text)
     return text.match(regex)
 }
 
-export function getGroupIndexById(groups, id)
-{
-    for(let grI in groups){
-        if(groups[grI].id == id){
-            return grI
-        }
-    }
-
-    return undefined
-}
-
 // expects hash map of messages: messages{ ... msgId: msgObject ... }
 export function getLastOwnedMsgId(messages)
 {
@@ -87,17 +76,6 @@ export function getLastOwnedMsgId(messages)
     }
 }
 
-export function getParticipantIndexInGroupByGroupId(participants, user_id)
-{
-    for(let prI in participants){
-        if(participants[prI].id == user_id){
-            return prI
-        }
-    }
-
-    return undefined
-}
-
 export function getNumOfUnseenGroups(groups)
 {
     let num = 0
@@ -105,50 +83,26 @@ export function getNumOfUnseenGroups(groups)
     if(!groups) return num
 
     for(let grI in groups){
-        if(groups[grI].hasUnseenState) num++
+        if(groups[grI].seenState) num++
     }
 
     return num
 }
 
-export function getGroupsFrom_openedGroupsIds(groups, openedGroupsIds)
+export function getModelsFromIds(collection, arrIds)
 {
-    if(!groups) return []
-    var openedGroups = []
+    if(!collection) return []
+    var filteredModels = []
 
-    for(let i in openedGroupsIds){
-        for(let j in groups){
-            if(groups[j].id == openedGroupsIds[i]){
-                openedGroups.push( groups[j] )
-                break
+    for(let i in arrIds){
+        for(let j in collection){
+            if(collection[j].id == arrIds[i]){
+                filteredModels.push( collection[j] )
             }
         }
     }
 
-    return openedGroups
-}
-
-export function getGroupsFrom_filteredGroupsIds(groups, filteredGroupsIds)
-{
-    if(!groups) return []
-    var filteredGroups = []
-
-    for(let i in filteredGroupsIds){
-        for(let j in groups){
-            if(groups[j].id == filteredGroupsIds[i]){
-                filteredGroups.push( groups[j] )
-            }
-        }
-    }
-
-    return filteredGroups
-}
-
-export function getGroupIndexByIdIn_openedGroupsIds(openedGroupsIds, id)
-{
-    return openedGroupsIds.findIndex((group_id, index) => {
-        if(group_id == id) return true;
-    })
+    return filteredModels
 }
 
 export function nowISO()
@@ -156,7 +110,7 @@ export function nowISO()
     return (new Date(Date.now())).toISOString();  
 }
 
-export function getEarliestMsgId(x)
+export function getMinObjKey(x)
 {
     x = Object.keys(x)
     return Math.min(...x.filter(x => typeof x === 'string'))

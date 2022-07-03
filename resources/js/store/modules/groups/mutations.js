@@ -23,11 +23,7 @@ const mutations = {
 
     setLastMessageIdInGroup: (state, data) => state.groups[data.group_id].last_msg_id = data.last_msg_id,
 
-    setEarliestMessageIdInGroup: (state, data) => state.groups[data.group_id].eariestMessageId = data.eariestMessageId,
-
-    doesntUnseenState: (state, data) => state.groups[data.group_id].hasUnseenState = false,
-
-    hasUnseenState: (state, data) => state.groups[data.group_id].hasUnseenState = true,
+    setSeenState: (state, data) => state.groups[data.group_id].seenState = data.seenState,
 
     updateSeenPivot: (state, data) => state.groups[data.group_id].participants[data.participant_id].pivot = data.pivot,
 
@@ -57,6 +53,8 @@ const mutations = {
     refreshGroupParticipants: (state, data) => state.groups[data.group_id].participants = {...state.groups[data.group_id].participants, ...data.participants},
 
     changeGroupName: (state, data) => state.groups[data.group_id].name = data.new_name,
+
+    setLastMessage: (state, data) => state.groups[data.group_id].last_message = data.last_message,
 }
 
 export default mutations 
