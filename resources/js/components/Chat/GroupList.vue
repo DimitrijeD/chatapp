@@ -4,18 +4,18 @@
             @click="manageDropdown()"
             class="z-40 text-center width-300 height-44 py-2 pr-2 text-xl font-medium"
             :class="{
-                'hover:bg-blue-800': !showExistingChats,
+                'hover:bg-blue-800': !show,
                 // Doesn't have unseen messages and dropdown is open
-                'text-blue-50 bg-blue-800 hover:bg-blue-600': !newMessage && showExistingChats,
+                'text-blue-50 bg-blue-800 hover:bg-blue-600': !newMessage && show,
 
                 // Doesn't have unseen messages and dropdown is closed
-                'text-gray-50': !newMessage && !showExistingChats,
+                'text-gray-50': !newMessage && !show,
 
                 // Has unseen messages and dropdown is open
-                'bg-green-500 font-semibold text-white': newMessage && showExistingChats,
+                'bg-green-500 font-semibold text-white': newMessage && show,
 
                 // Has unseen messages and dropdown is closed
-                'font-semibold text-green-200 hover:text-green-300': newMessage && !showExistingChats,
+                'font-semibold text-green-200 hover:text-green-300': newMessage && !show,
         }">
             {{ dropdownText }}                 
             <font-awesome-icon 
@@ -34,7 +34,7 @@
 
         <transition name="slide-fade-nav-dropdowns">
             <div
-                v-if="showExistingChats"
+                v-if="show"
                 class="z-30 width-300 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-b-2 border-blue-200"
             >
                 <div class="m-2">
@@ -48,43 +48,13 @@
                 </div>
 
                 <div class="h-96">
-                    <vue-scroll>
-                        <div class="flex flex-col-reverse">
+                    <vue-scroll :ops="ops">
+                        <div class="flex flex-col-reverse mx-1">
                             <div v-for="group in groups" :key="group.id">
-                                <div
-                                    class="p-2 m-2 rounded-xl cursor-pointer shadow-inner"
-                                    @click="createChatWindow(group)"
-                                    :class="{
-                                        'bg-blue-100 hover:bg-blue-200':  !group.hasUnseenState,
-                                        'bg-green-200 hover:bg-green-300': group.hasUnseenState,
-                                    }"
-                                >
-                                    <!-- Group Name -->
-                                    <div class="mb-1">
-                                        <p v-if="group.name" class="p-0.5 m-0.5 text-gray-700 overflow-ellipsis break-words ">
-                                            {{group.name}}
-                                        </p>
-
-                                        <p v-else class="p-0.5 m-0.5 text-gray-700">
-                                            No name
-                                        </p>
-                                    </div>
-
-                                    <!-- List of all participants in 'this' chat group -->
-                                    <!-- @todo Need overflow when there are too many participants in list -->
-                                    <span
-                                        v-for="participant in group.participants"
-                                        :key="participant.id"
-                                    >
-                                        <span 
-                                            v-if="participant.id !== user.id"
-                                            class="bg-blue-400 text-white rounded p-1.5 m-1"
-                                        >
-                                            {{ participant.first_name }} {{ participant.last_name }}
-                                        </span>
-                                    </span>
-
-                                </div>
+                                <group-card
+                                    @click.native="openChatWindow(group.id)"
+                                    :group_id="group.id"
+                                />
                             </div>
                         </div>
                     </vue-scroll>
@@ -100,16 +70,30 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from "vuex"
+import GroupCard from "./reuseables/GroupCard.vue"
 
 export default {
+    
+    components: {
+        'group-card': GroupCard
+    },
+
     data(){
         return {
-            showExistingChats: false,
+            show: false,
             searchStr: '',
             nothingFound: '',
 
             newMessage: false,
+
+            ops: {
+                scrollPanel: { scrollingX: false },
+                bar: { 
+                    keepShow: true,
+                    background: '#73affa',
+                }
+            },
         }
     },
 
@@ -127,7 +111,8 @@ export default {
             }
             this.newMessage = true
             return 'New Messages in ' + num + ' chats'
-        }
+        }, 
+
     },
 
     created(){  
@@ -135,37 +120,23 @@ export default {
     },
 
     mounted() {
-        this.groupsWithUnseenMessages
+        
     },
 
     methods:{
-        manageDropdown()
-        {
-            this.showExistingChats = !this.showExistingChats;
-            // Intent to open window
-            if(this.showExistingChats){
-                // refresh current array of groups - Intent to open window
-                // this.getGroupsByUserWithParticipants();
-            }
-        },
+        manageDropdown() { this.show = !this.show},
 
-        createChatWindow(group)
+        openChatWindow(group_id)
         {
-            this.$store.dispatch('groups/openGroup', group.id)
-            this.showExistingChats = false;
+            this.$store.dispatch('groups/openGroup', group_id)
+            this.show = false;
         },
 
         searchInput()
         {
             this.nothingFound = '';
-            // @todo req exp bugs when there are certain characters in string such as '?, *'
-
-            //this.$store.getters.filterGroupsBySearchString(this.searchStr)
             this.$store.dispatch('groups/filterGroupsBySearchString', this.searchStr)
-            
-            if(!this.groups.length){
-                this.nothingFound = 'Nothing found :/';
-            }
+            if(!this.groups.length) this.nothingFound = 'Nothing found :/';
         },
     }
 }

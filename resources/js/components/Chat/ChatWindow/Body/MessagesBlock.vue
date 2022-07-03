@@ -1,8 +1,8 @@
 <template>
     <div class="h-full"
         :class="{
-            'bg-gray-50': !group.hasUnseenState,
-            'bg-green-50': group.hasUnseenState,
+            'bg-gray-50': !group.seenState,
+            'bg-green-50': group.seenState,
         }"
     >
         <vue-scroll 

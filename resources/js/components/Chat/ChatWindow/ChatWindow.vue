@@ -86,6 +86,10 @@ export default {
             lastAcknowledgedMessageId: null,
             showConfig: false,
             permissions: {},
+
+            config: {
+                refreshGroupOnLoad: true
+            },
         }
     },
 
@@ -118,8 +122,9 @@ export default {
 
     created() {
         this.createPermissions()
+        this.initGroup()
 
-        this.listenForNewMessages()
+        this.getMinMessages()
         this.listenForMessagesSeen()
         this.listenForParticipantRoleChange()
         this.listenForUserRemoved()
@@ -133,17 +138,19 @@ export default {
     },
 
     methods: {   
-        minimizeWindow(){
-            this.isMinimized = !this.isMinimized
+        
+        minimizeWindow(){ this.isMinimized = !this.isMinimized },
+
+        initGroup()
+        {
+            if(this.config.refreshGroupOnLoad)
+                this.$store.dispatch('groups/refreshGroup', {group_id: this.group_id})
         },
 
-        openConfig(){
-            this.showConfig = !this.showConfig
-        },
+        openConfig(){ this.showConfig = !this.showConfig },
 
-        getMessages(){
-            this.$store.dispatch('groups/getMessages', {group_id: this.group.id })
-        },
+        // if this group has less then N num of messages, store will trigger API for more messages
+        getMinMessages(){ this.$store.dispatch('groups/getMessages', {group_id: this.group.id }) },
 
         findLatestMessageId: (messages) => Math.max(...Object.keys(messages)),
 
@@ -156,7 +163,7 @@ export default {
             // this was called only once (when there accualy are no messages)
             if(!Object.keys(this.group.messages).length) return 
 
-            if(this.group?.hasUnseenState)
+            if(this.group?.seenState)
                 this.messageSeen()
 
             // Preventing user from acknowledging his own message.
@@ -175,16 +182,6 @@ export default {
             this.$store.dispatch('groups/setAllMessagesAcknowledged', {
                 group_id: this.group.id,
                 lastAcknowledgedMessageId: this.lastAcknowledgedMessageId
-            })
-        },
-
-        listenForNewMessages()
-        {
-            this.getMessages()
-
-            Echo.private("group." + this.group.id)
-            .listen('.message.new', e => {
-                this.getMessages()
             })
         },
 

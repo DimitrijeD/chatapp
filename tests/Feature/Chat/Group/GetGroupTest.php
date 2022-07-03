@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\ChatGroup;
+use App\Models\ChatMessage;
 use App\Models\ParticipantPivot;
 use App\Models\ChatRole;
+use Illuminate\Support\Str;
 
 class GetGroupTest extends TestCase
 {
@@ -38,6 +40,12 @@ class GetGroupTest extends TestCase
             'group_id' => $this->group->id, 
             'last_message_seen_id' => null, 
             'participant_role' => ChatRole::PARTICIPANT,
+        ]);
+
+        $this->messages = ChatMessage::factory(20)->create([
+            'user_id' => $this->user->id,
+            'group_id' => $this->group->id,
+            'text' => "Msg txt",
         ]);
 
         Auth::login($this->user);
@@ -131,5 +139,12 @@ class GetGroupTest extends TestCase
         $response = $this->get("/api/chat/group/34789");
 
         $response->assertJson(['errors' => __("Group doesn't exist.")]);
+    }
+
+    public function test_get_refreshed_group()
+    {
+        $response = $this->get("/api/chat/group/refresh/{$this->group->id}");
+
+        $response->assertOk(); // TODO
     }
 }

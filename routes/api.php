@@ -38,6 +38,7 @@ Route::post('/chat/message/seen', [MessageController::class, 'messageIsSeen'])->
 //-----------------------------ChatGroup-----------------------------//
 Route::get('/chat/user/groups', [GroupController::class, 'getGroupsByUser'])->middleware(['auth']);
 Route::get('/chat/group/{group_id}', [GroupController::class, 'getGroupById'])->middleware(['chat_group_access', 'auth']);
+Route::get('/chat/group/refresh/{group_id}', [GroupController::class, 'refreshGroup'])->middleware(['auth']);
 
 Route::post('/chat/group/change-group-name', [GroupController::class, 'changeGroupName'])->middleware(['chat_group_access', 'auth']);
 Route::post('/chat/group/store', [GroupController::class, 'store'])->middleware(['auth']);

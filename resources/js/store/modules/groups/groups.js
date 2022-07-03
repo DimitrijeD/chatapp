@@ -19,6 +19,7 @@ const actions =
 
             for(let i in groups){
                 groups[i].participants = helpers.createHashMap_OneToOne(groups[i].participants, 'id')
+                context.dispatch('listenForNewMessages', {group_id: groups[i].id})
             }
 
             groups = m.attachUnseenStateBool(groups, context.rootState.auth.user.id)
@@ -43,10 +44,11 @@ const actions =
                 groups[i].participants = helpers.createHashMap_OneToOne(groups[i].participants, 'id')
             }
 
+            context.dispatch('listenForNewMessages', {group_id: group_id})
             context.commit('addGroups', groups)
             context.commit('addToOpenedGroups', group_id)
             context.commit('addToFilteredGroups', group_id)
-        });
+        })
     },
 
     openGroup(context, id)
@@ -104,7 +106,10 @@ const actions =
                 group_id: data.group_id,
                 lastAcknowledgedMessageId: data.lastAcknowledgedMessageId
             })
-            commit('doesntUnseenState', { group_id: data.group_id, })
+            commit('setSeenState', { 
+                group_id: data.group_id, 
+                seenState: false
+            })
         })
     },
 
@@ -123,22 +128,20 @@ const actions =
     {
         return axios.post('/api/chat/message/store', message)
         .then(res => {
-            const message = helpers.createHashMap_OneToOne([res.data], 'id')
-
             const data = {
-                messages: message,
                 group_id: res.data.group_id,
-                participant_id: res.data.user_id,
-                lastAcknowledgedMessageId: res.data.id,
-                last_msg_id: res.data.id,
-                now: h.nowISO()
+                participant_id: res.data.user_id, 
+                lastAcknowledgedMessageId: res.data.id, 
+                last_msg_id: res.data.id, 
+                now: h.nowISO(),
+                seenState: false, 
             }
 
-            context.commit('mergeMessagesInGroup', data)
             context.commit('setAcknowledgedMessages', data) 
             context.commit('setLastMessageIdInGroup', data) 
             context.commit('updateSeenPivotOnly_last_message_seen_id', data) 
-            context.commit('doesntUnseenState', data)
+            context.commit('setSeenState', data)
+
         }).catch( error => {
             console.log('groups/storeMessage')
             console.log(error)
@@ -149,11 +152,19 @@ const actions =
     {
         request.lastOwnedMsgId = h.getLastOwnedMsgId(state.groups[request.group_id].messages)
 
-        if(isNaN(request.lastOwnedMsgId)) return
+        if(isNaN(request.lastOwnedMsgId)) {
+            console.log('is Nan, check this out - 8392839')
+            return
+        }
 
-        request.lastOwnedMsgId == 0
-            ? context.dispatch('getInitMessages', request)
-            : context.dispatch('getOnlyMissingMessages', request)
+        request.numMessages = context.getters.getPossesedNumberOfMessagesInGroup(request.group_id)
+
+        if(request.numMessages == 0){
+            context.dispatch('getInitMessages', request)
+            return 
+        } else {
+            context.dispatch('getEarliestMessages', request)
+        }
     },
 
     getInitMessages(context, request)
@@ -175,7 +186,6 @@ const actions =
 
             context.commit('mergeMessagesInGroup', data)
             context.commit('setLastMessageIdInGroup', data) 
-            context.dispatch('setEarliestMessageInGroup', data) 
         }).catch( error => {
             console.log('groups/getInitMessages')
             console.log(error)
@@ -203,9 +213,7 @@ const actions =
 
             context.commit('mergeMessagesInGroup', data)
             context.commit('setLastMessageIdInGroup', data) 
-            context.commit('hasUnseenState', data) // after pulling new messages, user must have unseen messages, otherwise code is dog
             context.commit('updateGroup_updated_at', data)
-            // context.dispatch('setEarliestMessageInGroup', data) 
             context.dispatch('updateOrderOfRecentGroups') 
         }).catch( error => {
             console.log('groups/getOnlyMissingMessages')
@@ -216,17 +224,12 @@ const actions =
     getEarliestMessages(context, request)
     {
         if(state.groups[request.group_id].reachedEarliestMsgId){
-            // console.log('earliest message ID reached, cannot pull any more')
+            console.log('earliest message ID reached, cannot pull any more')
             return
         }
 
-        const eariestMessageId = state.groups[request.group_id].eariestMessageId
-
-        if(!eariestMessageId){
-            // console.log(`trying to get earliest messages in \n group_id = ${request.group_id} \n which doesnt have 'eariestMessageId' set to integer value \n which is required for successful response`)
-            return
-        }
-
+        const eariestMessageId = context.getters.getLastPossesedMsgId(request.group_id)
+        
         const endpoint = `/api/chat/group/${request.group_id}/before-msg/${eariestMessageId}`
 
         return axios.get(endpoint).then(res => {
@@ -242,7 +245,6 @@ const actions =
             }
 
             context.commit('mergeMessagesInGroup', data)
-            context.dispatch('setEarliestMessageInGroup', data) 
         }).catch( error => {
             console.log('groups/getEarliestMessages')
             console.log(error)
@@ -290,16 +292,9 @@ const actions =
         Echo.leave('group.' + data.group_id)
     },
 
-    setEarliestMessageInGroup(context, data)
-    {
-        data.eariestMessageId = h.getEarliestMsgId(state.groups[data.group_id].messages)
-        context.commit('setEarliestMessageIdInGroup', data)
-    },
-
     updateOrderOfRecentGroups(context)
     {
-        // if first group in list is one triggering this method, there is no need to update 
-        h.getAllIds(s.sort_filteredGroups_by_updated_at(h.getGroupsFrom_filteredGroupsIds(state.groups, state.filteredGroupsIds)))
+        context.commit('setFilteredGroupsIds', h.getAllIds(s.sort_filteredGroups_by_updated_at(h.getModelsFromIds(state.groups, state.filteredGroupsIds))))
     },
 
     changeParticipantRole(context, data)
@@ -358,6 +353,58 @@ const actions =
         context.commit('changeGroupName', {
             group_id: data.group_id,
             new_name: data.new_name
+        })
+    },
+
+    newMessageEvent(context, data)
+    {
+        context.commit('setLastMessage', {
+            group_id: data.group_id, 
+            last_message: data 
+        })
+
+        context.commit('mergeMessagesInGroup', {
+            group_id: data.group_id, 
+            messages: { [data.id]: data } 
+        })
+
+        // If received message is not mine, then thats a message I haven't seen yet
+        if(context.rootState.auth.user.id != data.user_id){
+            context.commit('setSeenState', {
+                group_id: data.group_id, 
+                seenState: true
+            })
+        }
+        context.commit('updateGroup_updated_at', {
+            group_id: data.group_id,
+            now: h.nowISO()
+        })
+        context.dispatch('updateOrderOfRecentGroups')
+    },
+
+    listenForNewMessages(context, data)
+    {
+        Echo.private("group." + data.group_id)
+        .listen('.message.new', e => {
+            context.dispatch('newMessageEvent', e.data)
+        })
+    },
+
+    refreshGroup(context, data)
+    {
+        axios.get(`/api/chat/group/refresh/${data.group_id}`).then(res => {
+
+            context.commit('refreshGroupParticipants', {
+                group_id: data.group_id,
+                participants: helpers.createHashMap_OneToOne(res.data.participants, 'id')
+            })
+
+            context.commit('mergeMessagesInGroup', {
+                messages: helpers.createHashMap_OneToOne(res.data.latest_messages, 'id'),
+                group_id: res.data.id,
+            })
+
+            context.dispatch('updateOrderOfRecentGroups') 
         })
     },
 }

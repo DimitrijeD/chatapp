@@ -38,8 +38,8 @@
 
 <script>
 
-import VueMomentsAgo from 'vue-moments-ago';
-import { mapGetters } from "vuex";
+import VueMomentsAgo from 'vue-moments-ago'
+import { mapGetters } from "vuex"
 
 export default {
     props: [
@@ -48,7 +48,6 @@ export default {
 
     data(){
         return{
-            isSelf: false,
             
         }
     },
@@ -64,21 +63,21 @@ export default {
     computed: {
         ...mapGetters({ user: "StateUser" }),
 
+        isSelf(){ return this.message.user.id == this.user.id ? true : false },
     },
 
     mounted() {
-        this.whichUserIsIt();
+        
     },
 
     methods:{
-        whichUserIsIt() { this.isSelf = this.message.user.id == this.user.id ? true : false },
 
     },
 
 }
 </script>
 
-<style scoped>
+<style>
 
 .a-shadow-gray {
 	-webkit-box-shadow: -3px 8px 10px -6px rgb(45 35 35 / 42%);

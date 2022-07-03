@@ -61,8 +61,8 @@ class MessageController extends Controller
         );
 
         $message->user;
-        
-        broadcast(new NewChatMessage($message))->toOthers();
+
+        broadcast(new NewChatMessage($message));
         $this->newChatMessageNotification($request->group_id, $sender, $message);
 
         return response()->json($message, 201);
