@@ -10,7 +10,7 @@
                         </span>
                     </div>
                     <input
-                        class="shadow-inner tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="shadow-inner w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
                         placeholder="First name"
                         type="text"
                         v-model="form.first_name"
@@ -26,7 +26,7 @@
                         </span>
                     </div>
                     <input
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
                         placeholder="Last name"
                         type="text"
                         v-model="form.last_name"
@@ -42,7 +42,7 @@
                         </span>
                     </div>
                     <input
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
                         placeholder="Email"
                         type="email"
                         v-model="form.email"
@@ -58,7 +58,7 @@
                         </span>
                     </div>
                     <input
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
                         placeholder="Password"
                         type="password"
                         v-model="form.password"
@@ -69,7 +69,7 @@
 
                 <div class="my-3">
                     <input
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3"
                         placeholder="Confirm Password"
                         type="password"
                         v-model="form.password_confirmation"
@@ -90,7 +90,7 @@
                         type="file"
                         @change="onProfilePictureSelected"
                         name="profilePictureName"
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg text-gray-500 pl-3 py-3"
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg text-gray-500 pl-3 py-3"
                         required
                     >
                 </div>
@@ -98,7 +98,7 @@
                 <div class="p-2 w-full mt-3">
                     <button 
                         type="submit" 
-                        class="tnx-hver w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
+                        class="w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
                     >
                     Register
                     </button>
@@ -137,8 +137,7 @@ export default {
             this.form.profilePicture = event.target.files[0];
         },
 
-        collectInput()
-        {
+        collectInput(){
             let data = new FormData;
 
             data.append('first_name', this.form.first_name);

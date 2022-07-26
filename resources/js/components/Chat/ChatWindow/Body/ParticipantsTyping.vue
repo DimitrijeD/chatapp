@@ -54,8 +54,7 @@ export default {
     },
 
     methods:{
-        addOrUpdateTyper(user)
-        {
+        addOrUpdateTyper(user){
             this.$emit('typing')
 
             let temp = {}
@@ -65,16 +64,11 @@ export default {
             this.addOrResetTimer(user.id)
         },
 
-        removeTyper(id)
-        {
-            this.$delete(this.usersTyping, id)
-        },
+        removeTyper(id){ this.$delete(this.usersTyping, id) },
 
-        addOrResetTimer(id)
-        {
-            if(this.usersTimeouts[id]){
-                clearTimeout(this.usersTimeouts[id])
-            }
+        addOrResetTimer(id){
+            if(this.usersTimeouts[id]) clearTimeout(this.usersTimeouts[id])
+
             this.usersTimeouts[id] = setTimeout(() => {
                 this.removeTyper(id)
             }, this.config.removeTyperAfterMS)

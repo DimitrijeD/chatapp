@@ -14,7 +14,7 @@ class UsersController extends Controller
      * He requests for users by str and gives controller ID-s of users he has in store
      * Controller returns only those users:
      *      he doesn't have ,
-     *      which have email verified, -> @question can this cause conflicts if some1 later in app unverifies email and by doing so wont show in lists?
+     *      which have email verified,
      *      
      */
     public function getMissingUsers(GetMissingUsersRequest $request, UserEloquentRepo $userRepo)

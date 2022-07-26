@@ -51,7 +51,7 @@
                     'text-white bg-green-400 hover:bg-green-500 ': anySelected, 
                     'disabled text-gray-600 bg-gray-300': !anySelected,
                 }"
-                @click="addUsers"
+                @click="addParticipants"
             >{{ btnTxt }}</button>
         </div>
 
@@ -62,6 +62,7 @@
 import { mapGetters } from 'vuex'
 import SearchInput from '../../../reuseables/SearchInput.vue'
 import SmallUser from '../../../reuseables/SmallUser.vue'
+import * as ns from '../../../../../store/module_namespaces.js'
 
 export default {
     props: [
@@ -78,8 +79,8 @@ export default {
             addedUsersIds: [],
             input: {
                 actions: {
-                    api: 'searchForAddUsersInApi',
-                    store: 'searchForAddUsersInStore'
+                    api: ns.users() + '/searchForAddUsersInApi',
+                    store: ns.users() + '/searchForAddUsersInStore'
                 },
                 placeholder: "Find users to add",
             },
@@ -95,63 +96,49 @@ export default {
                 }
             },
 
+            gm_ns: ns.groupModule(this.group.id),
         }
     },
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
+            user: "user",
         }),
 
-        listUsers(){ return this.$store.getters['users/getFilterForAddUsers'] },
+        listUsers(){ return this.$store.getters[ns.users() + '/getFilterForAddUsers'] },
 
         anySelected() {return this.addedUsersIds.length ? true : false}, 
 
         btnTxt(){
             let numSelected = this.addedUsersIds.length
-            if(numSelected == 0)  return 'Select at least one user'
-            if(numSelected == 1) return 'Add selected user'
+            if(numSelected == 0)                    return 'Select at least one user'
+            if(numSelected == 1)                    return 'Add selected user'
             if(numSelected > 1 && numSelected <= 4) return 'Add selected users'
-            if(numSelected > 4) return `Add all ${numSelected} selected users`
+            if(numSelected > 4)                     return `Add all ${numSelected} selected users`
         },
 
-        excludeUsersFromSearch(){
-            let participants = this.$store.getters['groups/getMyParticipants'](this.group.id)
-            let arrayOfIds = []
-
-            for(let i in participants){
-                arrayOfIds.push(participants[i].id)
-            }
-
-            return arrayOfIds
-        }
+        excludeUsersFromSearch(){ return Object.keys(this.$store.getters[this.gm_ns + '/participants']) },
     },
 
     methods: 
     {
-        getUser(id)
-        {
-            return this.$store.getters['users/getById'](id)
+        getUser(id){
+            return this.$store.getters[ns.users() + '/getById'](id)
         },
         
-        add(id)
-        {
+        add(id){
             if(!this.addedUsersIds.includes(id)) this.addedUsersIds.push(id)
         },
 
-        remove(id)
-        {
-            if(this.addedUsersIds.includes(id))
-                this.addedUsersIds.splice(this.addedUsersIds.indexOf(id), 1)
+        remove(id){
+            if(this.addedUsersIds.includes(id)) this.addedUsersIds.splice(this.addedUsersIds.indexOf(id), 1)
         },
 
-        addUsers()
-        {
+        addParticipants(){
             if(!this.addedUsersIds.length) return
 
-            this.$store.dispatch('groups/addParticipants', {
+            this.$store.dispatch(this.gm_ns + '/addParticipants', {
                 addedUsersIds: this.addedUsersIds,
-                group_id: this.group.id,
                 massAssignRolesTo: this.group.model_type == "PUBLIC_CLOSED" ? "LISTENER" : "PARTICIPANT"
             }).then(() =>{
                 this.addedUsersIds = []

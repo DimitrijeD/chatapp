@@ -53,7 +53,7 @@ export default {
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
+            user: "user",
         }),
     },
 
@@ -64,15 +64,9 @@ export default {
 
     methods: 
     {
-        formatDate()
-        {
-            return new Date(this.group.created_at)
-        },
+        formatDate(){ return new Date(this.group.created_at) },
 
-        getNumberOfParticipants(participants)
-        {
-            return Object.keys(participants).length
-        },
+        getNumberOfParticipants(participants){ return Object.keys(participants).length },
 
     }
 }

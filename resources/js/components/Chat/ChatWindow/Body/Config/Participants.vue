@@ -53,6 +53,7 @@
 <script>
 import SmallUser from '../../../reuseables/SmallUser.vue'
 import ChangeUserRole from './Participants/ChangeUserRole.vue'
+import * as ns from '../../../../../store/module_namespaces.js'
 
 export default {
     props: [
@@ -69,13 +70,13 @@ export default {
             user: this.$store.state.auth.user,
             change_role: 'change_role',
             remove: 'remove',
+            gm_ns:  ns.groupModule(this.group.id),
         }
     },
 
     computed: {
-        participants(){
-            return this.sortParticipantsByRoleHierarchy(this.$store.getters['groups/getMyParticipants'](this.group.id))
-        },
+        participants(){ return this.sortParticipantsByRoleHierarchy(this.$store.getters[this.gm_ns + '/participants']) },
+
     },
 
     created()
@@ -85,18 +86,13 @@ export default {
 
     methods: 
     {
-        removeParticipant(id)
-        {
-            this.$store.dispatch('groups/removeParticipantFromGroup', {
-                group_id: this.group.id,
-                user_id_to_remove: id    
-            }).then(()=>{
+        removeParticipant(id){
+            this.$store.dispatch(this.gm_ns + '/removeParticipant', id).then(()=>{
                 // show success message that user was successfully added to group
             })
         },
 
-        canRemove(participant)
-        {
+        canRemove(participant){
             if(!this.actionRule_ParticipantNotSelf(participant.id)) return false
 
             if(!this.permissions.remove.includes(this.getPrticipantRole(participant))) return false 
@@ -104,8 +100,7 @@ export default {
             return true
         },
 
-        canPromoteDemote(participant)
-        {
+        canPromoteDemote(participant){
             if(!this.actionRule_ParticipantNotSelf(participant.id, this.user.id)) return false
 
             let fromRoles = Object.keys(this.permissions.change_role)
@@ -117,28 +112,23 @@ export default {
             return true
         }, 
 
-        actionRule_ParticipantNotSelf(participant_id)
-        {
+        actionRule_ParticipantNotSelf(participant_id){
             return participant_id == this.user.id ? false : true
         },
 
-        actionRule_RuleTableNotEmpty(permissionKeys)
-        {
+        actionRule_RuleTableNotEmpty(permissionKeys){
             return permissionKeys.length == 0 ? false : true
         },
 
-        getPrticipantRole(participant)
-        {
+        getPrticipantRole(participant){
             return participant.pivot.participant_role
         },
 
-        getParticipantRoleForHumans(participant)
-        {
+        getParticipantRoleForHumans(participant){
             return participant.pivot.participant_role.toLowerCase()
         },
 
-        sortParticipantsByRoleHierarchy(participants)
-        {
+        sortParticipantsByRoleHierarchy(participants){
             let groupedByRole = {}
             let sortedByRole = []
 

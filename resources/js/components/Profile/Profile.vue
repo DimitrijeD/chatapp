@@ -63,7 +63,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
     },
 
     mounted()

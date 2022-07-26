@@ -103,7 +103,7 @@ class MessageController extends Controller
         ]);
 
         if($updatedPivot){
-            broadcast(new MeSawMessage($updatedPivot))->toOthers();
+            broadcast(new MeSawMessage($updatedPivot));
             return response()->json('success', 200);
         }
         

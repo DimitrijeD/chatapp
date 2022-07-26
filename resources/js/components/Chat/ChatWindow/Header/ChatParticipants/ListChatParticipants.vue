@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-start ml-2">
         <div
-            v-for="participant in group.participants"
+            v-for="participant in participants"
             :key="participant.id"
         >            
             <div v-if="participant.id != user.id" 
@@ -25,11 +25,11 @@ import { mapGetters } from "vuex";
 
 export default{
     props: [
-        'group'
+        'participants'
     ],
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
     },
 
     data(){

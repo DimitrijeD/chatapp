@@ -116,8 +116,7 @@ export default {
 
     methods: 
     {
-        openSetting(key)
-        {
+        openSetting(key){
             for(let type in this.settings){
                 this.settings[type].opened = false
             }
@@ -128,8 +127,7 @@ export default {
         /**
          * Exclue settings from showing in Config nav if their role is not allowing certain action
          */
-        createPermissibleSettings()
-        {
+        createPermissibleSettings(){
             if(this.permissions.add.length){
                 if(!this.settings.hasOwnProperty('add_users')){
                     this.settings.add_users = {
@@ -138,16 +136,13 @@ export default {
                     }
                 }
             } else {
-                if(this.settings.hasOwnProperty('add_users'))
-                    delete this.settings.add_users
+                if(this.settings.hasOwnProperty('add_users')) delete this.settings.add_users
             }
 
-            if(this.group.model_type == "PRIVATE")
-                delete this.settings['participants']
+            if(this.group.model_type == "PRIVATE") delete this.settings['participants']
         },
 
-        setFirstOpenedConfig()
-        {
+        setFirstOpenedConfig(){
             let oneWillBeOpened = false
 
             for(let settingIndex in this.settings){

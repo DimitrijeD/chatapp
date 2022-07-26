@@ -55,10 +55,8 @@ export default{
     },
     
     methods:{
-        verifyEmail()
-        {
-            axios.get('/api/email-verification/uid/' + this.user_id + '/c/' + this.code)
-            .then( res => {
+        verifyEmail(){
+            axios.get('/api/email-verification/uid/' + this.user_id + '/c/' + this.code).then( res => {
                 this.status = res.data.status
                 this.message = res.data.message
                 this.email = res.data.user.email
@@ -69,23 +67,17 @@ export default{
 
             }).catch( error => {
                 this.$router.push({ path: '/404' });
-                // console.log('for what ever reason this never gets called. I dont understand. Even if i give request 4xx status code...');
-                // this.status = error.data.status
-                // this.message = error.data.message
-
             });
         },
 
-        resendEmailVerification()
-        {
-            axios.post('/api/email-verification/create-or-update', {email: this.email})
-                .then((res)=>{
-                    this.message = 'Another email has been sent. Please check if you inserted correct email.';
-                }).catch((error) =>{
-                    if(error.response.status == 429){
-                        this.message = "Please wait for 1 minute before requesting another email.";
-                    }
-                });
+        resendEmailVerification(){
+            axios.post('/api/email-verification/create-or-update', {email: this.email}).then((res)=>{
+                this.message = 'Another email has been sent. Please check if you inserted correct email.';
+            }).catch((error) =>{
+                if(error.response.status == 429){
+                    this.message = "Please wait for 1 minute before requesting another email.";
+                }
+            });
         },
     }
 

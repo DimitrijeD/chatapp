@@ -12,16 +12,16 @@ class MessageNotification implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $messageNotification;
+    public $data;
 
-    public function __construct($messageNotification)
+    public function __construct($data)
     {
-        $this->messageNotification = $messageNotification;
+        $this->data = $data;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('App.Models.User.' . $this->messageNotification['forUserId']);
+        return new PrivateChannel('App.Models.User.' . $this->data['forUserId']);
     }
 
     public function broadcastAs() {

@@ -10,7 +10,7 @@
                         </span>
                     </div>
                     <input 
-                        class="shadow-inner tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
+                        class="shadow-inner w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
                         placeholder="Email" 
                         type="email" 
                         v-model="form.email">
@@ -23,7 +23,7 @@
                         </span>
                     </div>
                     <input 
-                        class="tnx-hver w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
+                        class="w-full bg-gray-100 rounded border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-lg pl-3 py-3" 
                         placeholder="Password" 
                         type="password" 
                         v-model="form.password" 
@@ -32,7 +32,7 @@
                      
                 <button 
                     type="submit"
-                    class="tnx-hver w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
+                    class="w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
                 >Login</button>
             </form>
         </div>
@@ -55,19 +55,17 @@ export default {
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
+            user: "user",
         }),
     },
 
     created(){
-        // if there are data in store.user while user is inside login page, code is shit
-        // console.log(this.user)
+        
     },
 
     methods:
     {
-        login()
-        {
+        login(){
             axios.post('/api/login', this.form).then((res) => {
                 this.$store.dispatch('storeUser', res.data)
                 this.$router.push({ path: '/profile' });
@@ -81,12 +79,5 @@ export default {
 </script>
 
 <style>
-.tnx-hver {
 
-}
-
-.tnx-hver:hover {
-    /* font-size: 1.16rem; */
-    -webkit-transform: scale(1.006);
-}
 </style>
