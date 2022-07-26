@@ -1,8 +1,8 @@
 <template>
     <div class="h-full"
         :class="{
-            'bg-gray-50': !group.seenState,
-            'bg-green-50': group.seenState,
+            'bg-gray-50':   this.seen,
+            'bg-green-50': !this.seen,
         }"
     >
         <vue-scroll 
@@ -21,9 +21,10 @@
                             :message="message"
                         />
                         <messages-seen 
-                            :message="message"
-                            :participants="group.participants"
+                            :ref="getMessageSeenBlockRef(messageId)"
+                            :message_id="messageId"
                             :group_id="group.id"
+                            :message="message"
                         />
                     </div>
                 </div>
@@ -37,6 +38,7 @@ import OneMessage from './OneMessage.vue';
 import MessagesSeen from './MessagesSeen.vue';
 import ParticipantsTyping from "./ParticipantsTyping.vue";
 import { mapGetters } from "vuex";
+import * as ns from '../../../../store/module_namespaces.js'
 
 export default {
     props: [
@@ -65,7 +67,8 @@ export default {
 
             refsNames: {
                 scroll: 'messages-scroll',
-                block: 'msgesBlocks'
+                block: 'msgesBlocks',
+                seen: 'msgesSeen-'
             },
 
             config:{
@@ -75,12 +78,22 @@ export default {
                 awaitsEarlyMessages: false,
                 scrollAdjustmentOffset: 200,
             },
-
+            gm_ns: ns.groupModule(this.group.id), // group module name space
         }
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ 
+            user: "user",
+         }),
+
+        seen(){ 
+            return this.$store.getters[`${this.gm_ns}/seen`]
+        },
+    },
+
+    created(){
+        
     },
 
     mounted() {
@@ -88,15 +101,55 @@ export default {
     },
 
     watch: {
-        'group.last_msg_id': function(newVal, oldVal){
+        'group.messages_tracker.last_message.id': function(newVal, oldVal){
             this.$nextTick(() => {
                 if(this.passedHeigthThreshold()) this.scrollDown()
             })
+        },
+
+        'group.whoSawWhat': {
+            handler: function (newVal, oldVal) {
+                this.resetSeenStates(oldVal)
+                this.injectSeenStates(newVal)
+            },
+            deep: true,
         }
+
     }, 
 
     methods: 
     {
+        resetSeenStates(oldUsersIds){
+            for(let msg_id in oldUsersIds){
+                this.$refs[this.getMessageSeenBlockRef(msg_id)][0].resetUserIds()
+            }
+        },
+
+        injectSeenStates(newUsersIds){
+            for(let msg_id in newUsersIds){
+                if( !this.$refs[this.getMessageSeenBlockRef(msg_id)] ){ 
+                    console.log('msg seen ref doesnt exist. Most likely message isnt fetched (its old message)')
+                    // he i can have some kind of handler for this case
+                    // each time early messages are called, this function should be run
+                    continue
+                }
+            
+                if( !Array.isArray( this.$refs[this.getMessageSeenBlockRef(msg_id)] )){ 
+                    console.log('msg seen refs are no longer arrays.. what?')
+                    continue
+                }
+
+                if( this.$refs[this.getMessageSeenBlockRef(msg_id)].length > 1 ){
+                    console.log('MessagesBlock group.whoSawWhat watcher, msg seen  refs contain more than one element, wat is going on?')
+                    continue
+                }
+
+                this.$refs[this.getMessageSeenBlockRef(msg_id)][0].setUserIds(newUsersIds[msg_id])
+            }
+        },
+
+        getMessageSeenBlockRef(msg_id){ return this.refsNames.seen + msg_id },
+
         scrollDown() { this.$refs[this.refsNames.scroll].scrollTo({  y: "100%" },  300) },
 
         scrollDownSlow() { this.$refs[this.refsNames.scroll].scrollTo({  y: "200%" },  1000) },
@@ -105,15 +158,13 @@ export default {
          * Called every time user scolls and on mount
          * if user scrolled to top of chat indow AND isnt waiting for api to finish, 
          */
-        handleScroll(vertical, horizontal, nativeEvent)
-        {
+        handleScroll(vertical, horizontal, nativeEvent){
             // if user scrolled to top of chat indow AND isnt waiting for api to finish, 
             if(vertical.scrollTop < 200 && !this.config.awaitsEarlyMessages){
                 // set awaiting to true to prevent excessive api calls
                 this.config.awaitsEarlyMessages = true
 
-                this.$store.dispatch('groups/getEarliestMessages', {group_id: this.group.id})
-                .then(()=>{
+                this.$store.dispatch(this.gm_ns + '/getEarliestMessages').then(()=>{
                     // Earliest messages received, allow this request to be executed if user scroll to top of window again
                     this.config.awaitsEarlyMessages = false
                 })
@@ -124,10 +175,8 @@ export default {
          * config.constHeightUnknown value was calculated :
          * bottom - totalHeight = 16, for some reason, its constant for all chat windows
          */
-        passedHeigthThreshold()
-        { 
-            if(!this.config.scrollDownOnNewMessage) 
-                return
+        passedHeigthThreshold(){ 
+            if(!this.config.scrollDownOnNewMessage) return
 
             const bottom = this.getLowestPointUserSeesInMessagesBlock()
             const totalHeight = this.getCurrentMessagesHeight()
@@ -137,18 +186,15 @@ export default {
                 : false 
         },
 
-        getCurrentMessagesHeight() 
-        { 
+        getCurrentMessagesHeight(){ 
             return this.$refs[this.refsNames.block].clientHeight + this.config.constHeightUnknown
         },
 
-        getLowestPointUserSeesInMessagesBlock()
-        {
+        getLowestPointUserSeesInMessagesBlock(){
             return this.$refs[this.refsNames.scroll].getPosition().scrollTop + this.$refs[this.refsNames.scroll].$el.clientHeight
         },
 
-        adjustScrollIfBottom()
-        {
+        adjustScrollIfBottom(){
             const bottom = this.getLowestPointUserSeesInMessagesBlock()
             const totalHeight = this.getCurrentMessagesHeight()
 

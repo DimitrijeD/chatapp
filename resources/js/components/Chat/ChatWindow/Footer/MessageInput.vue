@@ -25,34 +25,23 @@
 
 <script>
 import { mapGetters } from "vuex";
+import * as ns from '../../../../store/module_namespaces.js'
 
 export default {
-    data(){
-        return{
-            message: '',
-            config: {
-                channel: {
-                    name: "group." + this.group_id,
-                    events: {
-                        typing: {
-                            name: 'typing'
-                        },
-
-                        stopTyping: {
-                            name: 'stoped-typing'
-                        },
-                    }
-                },
-            },
-        }
-    },
 
     props:[
         'group_id',
     ],
 
+    data(){
+        return{
+            message: '',
+            gm_ns: ns.groupModule(this.group_id),
+        }
+    },
+
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
 
     },
 
@@ -62,11 +51,10 @@ export default {
             this.userStopedTyping()
         },
 
-        sendMessage()
-        {
+        sendMessage(){
             if(this.message === '') return
 
-            this.$store.dispatch('groups/storeMessage', this.getMessageFormat()).then(()=> {
+            this.$store.dispatch(this.gm_ns + '/storeMessage', this.getMessageFormat()).then(()=> {
                 this.message = ''
             }).catch(error => {
                 console.log('message input component')
@@ -74,20 +62,15 @@ export default {
             })
         },
 
-        userTyping()
-        {
-            Echo.private(this.config.channel.name)
-            .whisper(this.config.channel.events.typing.name, this.getWhisperData());
+        userTyping(){
+            Echo.private("group." + this.group_id).whisper("typing", this.getWhisperData())
         },
 
-        userStopedTyping()
-        {
-            Echo.private(this.config.channel.name)
-            .whisper(this.config.channel.events.stopTyping.name, this.getWhisperData())
+        userStopedTyping(){
+            Echo.private("group." + this.group_id).whisper("stoped-typing", this.getWhisperData())
         },
 
-        getMessageFormat()
-        {
+        getMessageFormat(){
             return {
                 text: this.message,
                 group_id: this.group_id,
@@ -95,8 +78,7 @@ export default {
             };
         },
 
-        getWhisperData()
-        {
+        getWhisperData(){
             return {
                 'id': this.user.id,
                 'first_name': this.user.first_name,

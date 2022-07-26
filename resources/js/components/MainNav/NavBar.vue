@@ -46,8 +46,12 @@ export default {
         'create-chat-group': CreateChatGroup,
     },
 
+    props: [
+        
+    ],
+
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
     },
     
 }

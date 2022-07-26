@@ -13,7 +13,7 @@ use App\Events\GroupNameChangeEvent;
 
 class GroupController extends Controller
 {
-    protected $chatGroupRepo, $userRepo, $chatMessageRepo;
+    protected $chatGroupRepo;
 
     public function __construct(ChatGroupEloquentRepo $chatGroupRepo)
     {
@@ -52,19 +52,14 @@ class GroupController extends Controller
 
     public function getGroupById(Request $request)
     {
-        // if group is collected in middleware already, no need to fetch it again
-        if($request?->group?->participants)
-            return response()->json($request->group);
-        
         $group = $this->chatGroupRepo->get(
             ['id' => $request->group_id], 
-            ['participants']
+            ['participants', 'lastMessage.user']
         );
 
-        if($group)
-            return response()->json($group);
-
-        return response()->json(null, 404);
+        return $group
+            ? response()->json($group)
+            : response()->json(null, 404);
     }
 
     public function changeGroupName(ChangeGroupNameRequest $request)

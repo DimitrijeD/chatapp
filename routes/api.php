@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\Chat\GroupController;
 use App\Http\Controllers\Chat\MessageController;
 use App\Http\Controllers\Chat\ParticipantsController;
@@ -22,6 +23,11 @@ Route::post('/email-verification/create-or-update', [AccountVerificationControll
 Route::get('/email-verification/uid/{user_id}/c/{code}', [AuthenticationController::class, 'emailVerificationAttempt'])->middleware(['throttle:10,1']);
 
 Route::get('/get-user', [AuthenticationController::class, 'isAuthenticated']);
+//--------------------------------------------------------------//
+
+
+//-----------------------------Chat-----------------------------//
+Route::get('/chat/init', [ChatController::class, 'init'])->middleware(['auth']);
 //--------------------------------------------------------------//
 
 
@@ -61,6 +67,6 @@ Route::post('/users/search', [UsersController::class, 'getMissingUsers'])->middl
 
 
 //--------------------------------Role Cache--------------------------------//
-Route::get('/chat/role-rules/set', [RoleRuleCachingController::class, 'setAllRules']); //->middleware(['auth']) Add admin user and role based middleware
+Route::get('/chat/role-rules/set', [RoleRuleCachingController::class, 'setAllRules']); // Add admin user and role based middleware
 Route::get('/chat/role-rules/get', [RoleRuleCachingController::class, 'getAllRules']);
 //--------------------------------------------------------------------------//

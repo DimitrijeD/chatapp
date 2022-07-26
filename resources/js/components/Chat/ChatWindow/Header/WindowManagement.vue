@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import * as ns from '../../../../store/module_namespaces.js'
+
 export default {
     props:[
         'group_id', 'showConfig', 'isMinimized'
@@ -44,7 +46,7 @@ export default {
     methods:{
         minimize() { this.$emit('minimizeWindow') },
 
-        close() { this.$store.dispatch('groups/closeGroup', this.group_id) },
+        close() { this.$store.dispatch(ns.groupsManager() + '/closeGroup', this.group_id) },
 
         openConfig()  { this.$emit('openConfig') },
     },

@@ -24,7 +24,7 @@ ChatApp is a API web application for realtime chatting. It has following feature
 
 With many others currently in development.
 
-## Homestead Installation (not tested)
+## Homestead Installation
 
 Follow [offical Laravel docs](https://laravel.com/docs/8.x/homestead) for Homestead and Vagrant installation process.
 
@@ -60,6 +60,10 @@ Then:
 - php artisan config:cache
 - php artisan migrate
 
+Run tests (websockets must be ran in order to pass some tests)
+
+- php artisan test
+
 Install NPM packages:
 
 - npm install
@@ -92,11 +96,16 @@ To create users for one chat group with messages in it, run following seeder. Al
 
 - php artisan db:seed --class=ChatGroupClusterSeeder
 
-Login with user:
+Login with user on http://chatapp.test/login:
 
-- http://chatapp.test/login
 - email:    qwe@qwe
 - password: qweqweqweQ1
+
+Login with secondary user:
+
+- email:    asd@asd
+- password: qweqweqweQ1
+
 
 For registration feature (otherwise not required) you must setup mail config in .env and run command in separate console for queueing emails:
 

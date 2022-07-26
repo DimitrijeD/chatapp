@@ -12,16 +12,16 @@ class MeSawMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $seenData;
+    public $data;
 
-    public function __construct($seenData)
+    public function __construct($data)
     {
-        $this->seenData = $seenData;
+        $this->data = $data;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('group.' . $this->seenData['group_id']);
+        return new PrivateChannel('group.' . $this->data['group_id']);
     }
 
     public function broadcastAs()

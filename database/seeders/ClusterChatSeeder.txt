@@ -119,7 +119,7 @@ MessagesEven                          1                       0                 
 TimeEven                              1                       0                               0
 LastMessageSeenEven                   1                       0                               0
 
-Total:                               11/12                    0/12                            0/12
+Total:                               12/12                    0/12                            0/12
 
 Tests will be create if necessity arises.
 
@@ -132,4 +132,4 @@ Tests will be create if necessity arises.
 * Figure out how to allow programmer to input inside console configuration types and data to use for seeding
 * Default user block cluster is in alternate distribution, and should be in normal distribution
 * MAX_ACTIVITY user block cluster should be disordered
-* RANDOM time might not be working as intended. Check if created_at matches ID ordering if not, code is dog.
+* RANDOM time might not be working as intended. Check if created_at matches ID ordering.

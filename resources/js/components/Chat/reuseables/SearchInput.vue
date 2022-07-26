@@ -11,6 +11,7 @@
 </template>
 
 <script>
+
 export default {
     props:[
         'actions', 'exclude', 'placeholder'
@@ -28,8 +29,7 @@ export default {
 
     methods: 
     {
-        searchUser()
-        {
+        searchUser(){
             if(!this.searchStr.trim().length) return
 
             let payload = {
@@ -37,14 +37,14 @@ export default {
                 exclude:    this.exclude,
             }
             // Inside store we have some data, first filter those
-            this.$store.dispatch(`users/${this.actions.store}`, payload)
+            this.$store.dispatch(this.actions.store, payload)
             // only then ask api for records
 
             if(this.minStr > this.searchStr.trim().length) return
 
             clearTimeout(this.debounce)
 
-            this.debounce = setTimeout( () => this.$store.dispatch(`users/${this.actions.api}`, payload), this.apiRequestAfterMS )
+            this.debounce = setTimeout( () => this.$store.dispatch(this.actions.api, payload), this.apiRequestAfterMS )
         },
 
     }

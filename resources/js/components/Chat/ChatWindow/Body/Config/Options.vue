@@ -86,6 +86,8 @@
 </template>
 
 <script>
+import * as ns from '../../../../../store/module_namespaces.js'
+
 export default {
     props: [
         'group', 'permissions'
@@ -106,13 +108,13 @@ export default {
             ],
             awaitConfirmation: true,
             newGroupName: null,
+            gm_ns: ns.groupModule(this.group.id),
         }
     },
 
     computed: {
         validateChangeName(){
-            if(this.newGroupName == this.group.name || (this.group.name === null && this.newGroupName === ''))
-                return false
+            if(this.newGroupName == this.group.name || (this.group.name === null && this.newGroupName === '')) return false
 
             return true
         },
@@ -129,17 +131,16 @@ export default {
 
     methods: 
     {
-        leaveGroup() { this.$store.dispatch('groups/leaveGroup', {group_id: this.group.id}) },
+        leaveGroup() { this.$store.dispatch(this.gm_ns + '/leaveGroup') },
 
         askConfirmation() { this.awaitConfirmation = false },
 
         declined() { this.awaitConfirmation = true },
 
-        changeGroupName()
-        {
+        changeGroupName(){
             if(!this.validateChangeName) return
 
-            this.$store.dispatch('groups/changeGroupName', {
+            this.$store.dispatch(this.gm_ns + '/changeGroupName', {
                 group_id: this.group.id,
                 new_name: this.newGroupName
             })

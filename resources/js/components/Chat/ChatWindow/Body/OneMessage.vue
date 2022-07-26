@@ -61,7 +61,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
 
         isSelf(){ return this.message.user.id == this.user.id ? true : false },
     },

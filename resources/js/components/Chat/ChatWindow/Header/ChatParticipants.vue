@@ -3,12 +3,12 @@
         <div class=" ml-2">
             <list-chat-participants 
                 v-if="showComponent == 'list-chat-participants'"
-                :group="group"
+                :participants="group.participants"
             />
             
             <group-name 
                 v-if="showComponent == 'group-name'"
-                :group="group"
+                :group_name="group.name"
             />
 
             <div class="header-text" v-if="showComponent == 'default-show'">{{ defaultText }}</div>
@@ -21,6 +21,7 @@
 import { mapGetters } from "vuex";
 import ListChatParticipants from "./ChatParticipants/ListChatParticipants.vue";
 import GroupName from "./ChatParticipants/GroupName.vue";
+import * as ns from '../../../../store/module_namespaces.js'
 
 export default {
     props:[
@@ -35,7 +36,8 @@ export default {
     data(){
         return{
             showComponent: null,
-            defaultText: "A Quiet Place"
+            defaultText: "A Quiet Place",
+            gm_ns: ns.groupModule(this.group.id),
         }
     },
 
@@ -48,7 +50,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters({ user: "StateUser" }),
+        ...mapGetters({ user: "user" }),
 
         manyUserText(){
             return `Group with ${Object.keys(this.group.participants).length} participants`
@@ -73,8 +75,7 @@ export default {
          * 
          * List of users or group name.
          */
-        whatToShowInHeader()
-        {
+        whatToShowInHeader(){
             if(this.group.name){
                 this.showComponent = 'group-name'
                 return

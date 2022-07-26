@@ -55,8 +55,7 @@ export default {
     },
 
     methods: {
-        getUnAuthUser()
-        {
+        getUnAuthUser(){
             axios.get('/api/get-user').then((res) => {
                 this.$router.push({ path: '/profile' })
             }).catch((error) => {
@@ -70,17 +69,15 @@ export default {
             });
         },
 
-        resendEmailVerification()
-        {
-            axios.post('/api/email-verification/create-or-update', {email: this.email})
-                .then((res)=>{
-                    this.status = 'Another email has been sent. Please check if you inserted correct email.'
-                }).catch((error) =>{
-                    if(error.response.status == 429){
-                        this.status = "Please wait for 1 minute before requesting another email."
-                        this.status_type = false
-                    }
-                });
+        resendEmailVerification(){
+            axios.post('/api/email-verification/create-or-update', {email: this.email}).then((res)=>{
+                this.status = 'Another email has been sent. Please check if you inserted correct email.'
+            }).catch((error) =>{
+                if(error.response.status == 429){
+                    this.status = "Please wait for 1 minute before requesting another email."
+                    this.status_type = false
+                }
+            });
         }
 
     }

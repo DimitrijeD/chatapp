@@ -16,76 +16,73 @@
             /> 
         </button>
 
-        <transition name="slide-fade-nav-dropdowns">
-            <div
-                v-if="showCreateDropdown"
-                class="width-300 z-50 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-blue-200"
-            >      
-                <div class="m-2">
-                    <input
-                        class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Name of new group chat"
-                        type="text"
-                        v-model="newChatGroup.name"
-                    >
-                </div>
-
-                <!-- Chose group type -->
-                <div class="m-2">
-                    <select 
-                        class="text-gray-400 a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset" 
-                        v-model="selected_model_type"
-                    >
-                        <option 
-                            v-for="(type, index) in getHumanReadableGroupTypes" 
-                            v-bind:value="type.value" 
-                            :key="index"
-                        >
-                            {{ type.text }}
-                        </option>
-                    </select>
-                </div>
-
-                <div class="m-2">
-                    <search-input 
-                        :actions="input.actions"
-                        :exclude="[]"
-                        :placeholder="input.placeholder"
-                    />
-                </div>
-
-                <div class="user-list-height select-none m-2">
-                    <vue-scroll :ops="ops">
-                        <ul> 
-                            <li v-for="(id, index) in users" :key="index">
-                                <small-user 
-                                    :user="getUser(id)"
-                                    @click.native="selectOrDeseceltUser(id)"
-                                    :layoutCls="isUserSelected(id) ? 'text-white bg-blue-400 space-x-2 py-1' : 'text-blue-500 bg-white hover:bg-red-50 space-x-2 py-1'"
-                                    class="m-1 mr-3"
-                                /> 
-                            </li>
-                        </ul>
-                    </vue-scroll>
-                </div>
-
-                <div v-for="(error, index) in errors" class="text-danger" :key="index">
-                    {{ error }}
-                </div>
-
-                <div
-                    class="text-base mt-2 p-2 text-center cursor-pointer"
-                    :class="{
-                        'bg-blue-500 hover:bg-blue-600 text-white':  canCreate,
-                        'disabled text-gray-600 bg-gray-200':       !canCreate,
-                    }"
-                    @click="createNewChatGroup()"
+        <div
+            v-if="showCreateDropdown"
+            class="width-300 z-50 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-blue-200"
+        >      
+            <div class="m-2">
+                <input
+                    class="a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                    placeholder="Name of new group chat"
+                    type="text"
+                    v-model="newChatGroup.name"
                 >
-                    Create chat group
-                </div>
             </div>
 
-        </transition>
+            <!-- Chose group type -->
+            <div class="m-2">
+                <select 
+                    class="text-gray-400 a-input focus:outline-none focus:ring-2 focus:border-primary ring-inset" 
+                    v-model="selected_model_type"
+                >
+                    <option 
+                        v-for="(type, index) in getHumanReadableGroupTypes" 
+                        v-bind:value="type.value" 
+                        :key="index"
+                    >
+                        {{ type.text }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="m-2">
+                <search-input 
+                    :actions="input.actions"
+                    :exclude="[]"
+                    :placeholder="input.placeholder"
+                />
+            </div>
+
+            <div class="user-list-height select-none m-2">
+                <vue-scroll :ops="ops">
+                    <ul> 
+                        <li v-for="(id, index) in users" :key="index">
+                            <small-user 
+                                :user="getUser(id)"
+                                @click.native="selectOrDeseceltUser(id)"
+                                :layoutCls="isUserSelected(id) ? 'text-white bg-blue-400 space-x-2 py-1' : 'text-blue-500 bg-white hover:bg-red-50 space-x-2 py-1'"
+                                class="m-1 mr-3"
+                            /> 
+                        </li>
+                    </ul>
+                </vue-scroll>
+            </div>
+
+            <div v-for="(error, index) in errors" class="text-danger" :key="index">
+                {{ error }}
+            </div>
+
+            <div
+                class="text-base mt-2 p-2 text-center cursor-pointer"
+                :class="{
+                    'bg-blue-500 hover:bg-blue-600 text-white':  canCreate,
+                    'disabled text-gray-600 bg-gray-200':       !canCreate,
+                }"
+                @click="createNewChatGroup()"
+            >
+                Create chat group
+            </div>
+        </div>
     </div>
 </template>
 
@@ -93,6 +90,7 @@
 import { mapGetters } from 'vuex';
 import SearchInput from './reuseables/SearchInput.vue'
 import SmallUser from './reuseables/SmallUser.vue';
+import * as ns from '../../store/module_namespaces.js'
 
 export default {
     components: {
@@ -116,8 +114,8 @@ export default {
 
             input: {
                 actions: {
-                    api: 'searchForAddUsersInApi',
-                    store: 'searchForAddUsersInStore'
+                    api: ns.users() + '/searchForAddUsersInApi',
+                    store: ns.users() + '/searchForAddUsersInStore'
                 },
                 placeholder: "Find users to add",
             },
@@ -140,12 +138,11 @@ export default {
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
-            groupTypes: "chat_rules/StateGroupTypes",
+            user: "user",
+            groupTypes: ns.chat_rules() + "/StateGroupTypes",
         }),
 
-        getHumanReadableGroupTypes()
-        {
+        getHumanReadableGroupTypes(){
             let groupTypes = []
 
             for(let i in this.groupTypes){
@@ -158,11 +155,9 @@ export default {
             return groupTypes
         },
 
-        users(){ return this.$store.getters['users/getFilterForAddUsers'] },
+        users(){ return this.$store.getters[ns.users() + '/getFilterForAddUsers'] },
 
-        canCreate(){
-            return this.newChatGroup.users_ids.length
-        }
+        canCreate(){ return this.newChatGroup.users_ids.length }
 
     },
 
@@ -193,32 +188,28 @@ export default {
             this.showCreateDropdown = !this.showCreateDropdown
         },
 
-        createNewChatGroup()
-        {
+        createNewChatGroup(){
             this.checkForErrors()
 
             if(this.errors.length > 0) return
 
             this.resolveGroupParams()
             
-            this.$store.dispatch('groups/storeGroup', this.newChatGroup)
+            this.$store.dispatch(ns.groupsManager() + '/storeGroup', this.newChatGroup)
 
             this.resetComponentVars()
         },
 
-        checkForErrors()
-        {
+        checkForErrors(){
             // reset errors before pushing new messages
             this.errors = []
 
-            if(this.newChatGroup.users_ids.length === 0){
-                this.errors.push('Select at least one user')
-            }
+            if(this.newChatGroup.users_ids.length === 0) this.errors.push('Select at least one user')
+
             return this.errors
         },
 
-        resetComponentVars()
-        {
+        resetComponentVars(){
             this.newChatGroup = {
                 name: '',
                 users_ids: [],
@@ -228,14 +219,12 @@ export default {
             this.showCreateDropdown = false
         },
 
-        resolveGroupParams()
-        {
+        resolveGroupParams(){
             this.newChatGroup.users_ids.push(this.user.id)
             this.resolveGroupType()
         },
 
-        resolveGroupType()
-        {
+        resolveGroupType(){
             if(this.selected_model_type == "PRIVATE" && this.newChatGroup.users_ids.length > 2){
                 this.newChatGroup.model_type = "PROTECTED" 
                 return
@@ -247,21 +236,15 @@ export default {
 
         },
 
-        getUser(id) { return this.$store.getters['users/getById'](id)},
+        getUser(id) { return this.$store.getters[ns.users() + '/getById'](id)},
 
-        selectOrDeseceltUser(id)
-        {
-            if(this.newChatGroup.users_ids.includes(id)){
-                this.newChatGroup.users_ids.splice(this.newChatGroup.users_ids.indexOf(id), 1)
-            } else {
-                this.newChatGroup.users_ids.push(id)
-            }
+        selectOrDeseceltUser(id){
+            this.newChatGroup.users_ids.includes(id) 
+                ? this.newChatGroup.users_ids.splice(this.newChatGroup.users_ids.indexOf(id), 1)
+                : this.newChatGroup.users_ids.push(id)
         },
 
-        isUserSelected(id)
-        {
-            return this.newChatGroup.users_ids.includes(id)
-        }
+        isUserSelected(id){ return this.newChatGroup.users_ids.includes(id) }
     }
 
 }

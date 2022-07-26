@@ -1,65 +1,45 @@
 <template>
     <div
         v-if="group"
-        class="p-2 m-2 rounded-xl cursor-pointer shadow-inner"
+        class="p-2 rounded-xl cursor-pointer shadow-inner"
         :class="{
-            'bg-blue-100 hover:bg-blue-200':  !group.seenState,
-            'bg-green-200 hover:bg-green-300': group.seenState,
+            'bg-blue-200 hover:bg-blue-300':    this.seen,
+            'bg-green-200 hover:bg-green-300': !this.seen,
         }"
     >
-        <div v-if="group.model_type == 'PRIVATE'" class="grid grid-cols-7 gap-2">
+        <p 
+            v-if="group.name" 
+            class="p-0.5 mb-2 text-gray-700 text-center truncate gr-card-border">
+            {{group.name}}
+        </p>
+
+        <div class="gr-card-h grid grid-cols-7 gap-2">
             <div class="space-y-2 col-span-3">
                 
-                <div v-if="atLeastTwoParticpants" class="">
-                    <div v-for="participant in group.participants">
-                        <small-user 
-                            v-if="participant.id !== user.id"
-                            :user="participant" 
-                            :showOnly="'first_name'"
-                            :imgCls="'w-10 h-10'" 
-                            :userNameCls="'text-coolGray-700'"
-                        />
-                    </div>
+                <div v-if="atLeastTwoParticpants" class="gr-card-h gr-card-border">
+                    <vue-scroll :ops="ops">
+                        <div v-for="p in group.participants">
+                            <small-user 
+                                v-if="p.id !== user.id"
+                                class="ml-1"
+                                :user="p" 
+                                :showOnly="'first_name'"
+                                :imgCls="'w-8 h-8'" 
+                                :userNameCls="'text-coolGray-600'"
+                            />
+                        </div>
+                    </vue-scroll>
                 </div>
 
-                <div v-else class="block p-0.5 text-gray-700 truncate border border-white rounded-lg">
+                <div v-else class="p-0.5 text-gray-700 truncate gr-card-border">
                     {{ txtOneParticipant }}
                 </div>
             </div>
 
-            <message-card 
-                class="col-span-4 border border-white rounded-lg"
-                :message="lastMessage"
-            />
-        </div>
-
-        <div v-else>
-            <div class="grid grid-cols-7 gap-2">
-                <div class="space-y-2 col-span-3">
-                    <p v-if="group.name" class="block p-0.5 text-gray-700 truncate border border-white rounded-lg">{{group.name}}</p>
-                    
-                    <div v-if="atLeastTwoParticpants" class="block h-36 border border-white rounded-lg">
-                        <vue-scroll :ops="ops">
-                            <div v-for="participant in group.participants">
-                                <small-user 
-                                    v-if="participant.id !== user.id"
-                                    :user="participant" 
-                                    :showOnly="'first_name'"
-                                    :imgCls="'w-8 h-8'" 
-                                    :userNameCls="'text-coolGray-700'"
-                                />
-                            </div>
-                        </vue-scroll>
-                    </div>
-
-                    <div v-else class="block p-0.5 text-gray-700 truncate border border-white rounded-lg">
-                        {{ txtOneParticipant }}
-                    </div>
-                </div>
-
+            <div class="col-span-4 gr-card-border">
                 <message-card 
-                    class="col-span-4 border border-white rounded-lg"
                     :message="lastMessage"
+                    :heightCls="'gr-card-h'"
                 />
             </div>
         </div>
@@ -71,6 +51,7 @@
 import { mapGetters } from "vuex"
 import SmallUser from "./SmallUser.vue"
 import MessageCard from "./MessageCard.vue"
+import * as ns from "../../../store/module_namespaces.js"
 
 export default {
     props: [
@@ -79,26 +60,25 @@ export default {
 
     components: {
         'small-user': SmallUser,
-        'message-card': MessageCard
+        'message-card': MessageCard,
     },
 
     computed:{
         ...mapGetters({ 
-            user: "StateUser",
+            user: "user",
         }),
 
-        group(){ return this.$store.getters['groups/getGroupById'](this.group_id) },
+        group(){ return this.$store.getters[this.gm_ns + '/state'] },
 
-        lastMessage(){ return this.$store.getters['groups/getGroupLastMsg'](this.group_id) },
+        lastMessage(){ return this.$store.getters[this.gm_ns + '/last_message'] },
 
         atLeastTwoParticpants(){ return Object.keys(this.group.participants).length >= 2 },
 
+        seen(){ return this.$store.getters[`${this.gm_ns}/seen`] },
     },
 
     data(){
         return {
-            txtOneParticipant: "Only you.",
-
             ops: {
                 scrollPanel: {
                     scrollingX: false
@@ -113,6 +93,8 @@ export default {
                     background: '#88b7f2',
                 }
             },
+            txtOneParticipant: "Only you.",
+            gm_ns: ns.groupModule(this.group_id),
         }
     },
 
@@ -121,7 +103,21 @@ export default {
     },
 
     methods: {
-
+        hasLastMessage(msg){ return msg.hasOwnProperty('id') ? true : false },
+        
     },
 }
 </script>
+
+<style>
+
+.gr-card-h{
+    height: 160px;
+}
+
+.gr-card-border{
+    box-shadow: inset 0px 0px 5px 1px rgb(0 0 0 / 11%);
+    @apply border border-white rounded-lg;
+}
+
+</style>

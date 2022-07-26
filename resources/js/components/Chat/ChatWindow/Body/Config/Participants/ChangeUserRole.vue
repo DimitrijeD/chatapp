@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import * as ns from '../../../../../../store/module_namespaces.js'
 
 export default{
 
@@ -42,17 +43,14 @@ export default{
     data(){
         return {
             pendingRoleChangeAccept: false,
-            chosenNewRole: null
+            chosenNewRole: null,
+            gm_ns: ns.groupModule(this.group_id),
         }
     },
 
     computed: {
-        participant(){
-            return this.$store.getters['groups/getParticipant']({
-                group_id: this.group_id,
-                participant_id: this.participant_id
-            })
-        }
+        participant(){ return this.$store.getters[this.gm_ns + '/getParticipant'](this.participant_id) },
+        
     },
 
     created(){
@@ -60,30 +58,23 @@ export default{
     },
 
     methods: {
-        roleUpdate(e)
-        {
+        roleUpdate(e){
             this.chosenNewRole = e.target.value
             this.pendingRoleChangeAccept = true
         },
 
-        confirmedChangeRole()
-        {
-            this.$store.dispatch('groups/changeParticipantRole', {
+        confirmedChangeRole(){
+            this.$store.dispatch(this.gm_ns + '/changeParticipantRole', {
                 target_user_id: this.participant.id,
-                group_id: this.group_id,
                 to_role: this.chosenNewRole,
             })
 
             this.resetVars()
         },
 
-        declinedChangeRole()
-        {
-            this.resetVars()
-        },
+        declinedChangeRole(){ this.resetVars() },
 
-        resetVars()
-        {
+        resetVars(){
             this.pendingRoleChangeAccept = false
             this.chosenNewRole = null
         }

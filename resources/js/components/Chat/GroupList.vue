@@ -6,77 +6,78 @@
             :class="{
                 'hover:bg-blue-800': !show,
                 // Doesn't have unseen messages and dropdown is open
-                'text-blue-50 bg-blue-800 hover:bg-blue-600': !newMessage && show,
+                'text-blue-50 bg-blue-800 hover:bg-blue-600': !numGroupsWithUnseen && show,
 
                 // Doesn't have unseen messages and dropdown is closed
-                'text-gray-50': !newMessage && !show,
+                'text-gray-50': !numGroupsWithUnseen && !show,
 
                 // Has unseen messages and dropdown is open
-                'bg-green-500 font-semibold text-white': newMessage && show,
+                'bg-green-500 font-semibold text-white': numGroupsWithUnseen && show,
 
                 // Has unseen messages and dropdown is closed
-                'font-semibold text-green-200 hover:text-green-300': newMessage && !show,
+                'font-semibold text-green-200 hover:text-green-300': numGroupsWithUnseen && !show,
         }">
             {{ dropdownText }}                 
             <font-awesome-icon 
-                v-if="!newMessage"
+                v-if="!numGroupsWithUnseen"
                 icon="envelope" 
                 size="xl" 
                 class="ml-1"
             /> 
             <font-awesome-icon 
-                v-if="newMessage"
+                v-else
                 icon="envelope-open" 
                 size="xl" 
                 class="ml-1"
             /> 
         </button>
 
-        <transition name="slide-fade-nav-dropdowns">
-            <div
-                v-if="show"
-                class="z-30 width-300 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-b-2 border-blue-200"
-            >
-                <div class="m-2">
-                    <input
-                        class="w-full p-2 bg-white text-base hover:bg-blue-50 focus:bg-blue-100 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
-                        placeholder="Find chats by user or chat name"
-                        type="text"
-                        v-model="searchStr"
-                        @keyup="searchInput"
-                    >
-                </div>
-
-                <div class="h-96">
-                    <vue-scroll :ops="ops">
-                        <div class="flex flex-col-reverse mx-1">
-                            <div v-for="group in groups" :key="group.id">
-                                <group-card
-                                    @click.native="openChatWindow(group.id)"
-                                    :group_id="group.id"
-                                />
-                            </div>
-                        </div>
-                    </vue-scroll>
-                </div>
-
-
-                <div v-if="nothingFound" class="m-2 text-red-500">
-                    {{ nothingFound }}
-                </div>
+        <div
+            class="z-30 width-300 absolute bg-gray-100 shadow-2xl border-l-2 border-r-2 border-b-2 border-blue-200"
+            :class="{
+                'hidden': !show
+            }"
+        >
+            <div class="m-2">
+                <input
+                    class="w-full p-2 bg-white text-base hover:bg-blue-50 focus:bg-blue-100 focus:outline-none focus:ring-2 focus:border-primary ring-inset"
+                    placeholder="Find chats by user or chat name"
+                    type="text"
+                    v-model="searchStr"
+                    @keyup="searchInput()"
+                >
             </div>
-         </transition>
+
+            <div class="h-96">
+                <vue-scroll :ops="ops">
+                    <div class="flex flex-col space-y-2 ml-1 mr-2">
+                        <div v-for="group_id in filteredGroupsIds" :key="group_id">
+                            <group-card
+                                @click.native="openChatWindow(group_id)"
+                                :group_id="group_id"
+                            />
+                        </div>
+                    </div>
+                </vue-scroll>
+            </div>
+
+
+            <div v-if="nothingFound" class="m-2 text-red-500">
+                {{ nothingFound }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
 import GroupCard from "./reuseables/GroupCard.vue"
+import * as ns from '../../store/module_namespaces.js'
 
 export default {
     
     components: {
-        'group-card': GroupCard
+        'group-card': GroupCard,
     },
 
     data(){
@@ -84,8 +85,6 @@ export default {
             show: false,
             searchStr: '',
             nothingFound: '',
-
-            newMessage: false,
 
             ops: {
                 scrollPanel: { scrollingX: false },
@@ -99,44 +98,44 @@ export default {
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
-            groups: "groups/filteredGroups",
+            user: "user",
+            filteredGroupsIds: ns.groupsManager() + "/filteredGroupsIds",
+            numGroupsWithUnseen: ns.groupsManager() + "/numGroupsWithUnseen",
         }),
 
         dropdownText(){
-            let num = this.$store.getters['groups/numOfUnseenGroups']
-            if(!num) {
-                this.newMessage = false
-                return 'Chat groups'
-            }
-            this.newMessage = true
-            return 'New Messages in ' + num + ' chats'
+            return this.numGroupsWithUnseen > 0 
+                ? 'New Messages in ' + this.numGroupsWithUnseen + ' chats'
+                : 'Chat groups'
         }, 
 
     },
 
-    created(){  
+    beforeCreate(){  
         
+    },
+
+    created(){  
+         
     },
 
     mounted() {
         
     },
 
-    methods:{
-        manageDropdown() { this.show = !this.show},
+    methods:
+    {
+        manageDropdown() { this.show = !this.show },
 
-        openChatWindow(group_id)
-        {
-            this.$store.dispatch('groups/openGroup', group_id)
+        openChatWindow(group_id){
+            this.$store.dispatch(ns.groupsManager() + '/openGroup', group_id)
             this.show = false;
         },
 
-        searchInput()
-        {
+        searchInput(){
             this.nothingFound = '';
-            this.$store.dispatch('groups/filterGroupsBySearchString', this.searchStr)
-            if(!this.groups.length) this.nothingFound = 'Nothing found :/';
+            this.$store.dispatch(ns.groupsManager() + '/filterGroupsBySearchString', this.searchStr)
+            if(!this.filteredGroupsIds.length) this.nothingFound = 'Nothing found :/';
         },
     }
 }

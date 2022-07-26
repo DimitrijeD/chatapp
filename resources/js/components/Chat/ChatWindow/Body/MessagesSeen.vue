@@ -1,46 +1,52 @@
 <template>
-    <div class="flex justify-end mx-4 my-1 flex-wrap">
-        <div 
-            v-for="participant in participants" 
-            :key="participant.id" 
-        >
-            <div v-if="showParticipantAsSeen(participant)">
+    <div 
+        v-if="hasAnybodySeenThis()" 
+        class="flex justify-end mx-4 my-1 flex-wrap"
+    >
+        <div v-for="participant_id in user_ids">
+            <div v-if="toShow(participant_id)">
                 <img
-                    :src="participant.thumbnail"
-                    alt="no img :/"
+                    :src="getParticipantThumbnail(participant_id)"
                     class="w-8 h-8 object-cover border-2 border-gray-200 rounded-full"
-                    :class="{
-                        'shadow-small-img-self':   isOwnerOfThisMessage(participant),
-                        'shadow-small-img-other': !isOwnerOfThisMessage(participant),
-                    }"
-                >
-            </div>
+                    :class="diffSelfCls(participant_id)"
+                    alt=""
+                >    
+            </div>  
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import * as ns from '../../../../store/module_namespaces.js'
 
 export default {
     props:[
-        'message', 'participants', 'group_id'
+        'group_id', 'message'
     ],
 
     data(){
         return{
-            
+            gm_ns: ns.groupModule(this.group_id),
+            user_ids: [],
+
+            classes: {
+                self: 'shadow-small-img-self',
+                notSelf: 'shadow-small-img-other'
+            },
+
+            config: {
+                neverShowUserBewlowHisOwnMsg: true,
+                neverShowSelf: true,
+            }
         }
     },
 
     computed: {
         ...mapGetters({ 
-            user: "StateUser",
+            user: "user",
         }),
 
-        last_msg_id() {
-            return this.$store.getters['groups/getGroupLastMsgId']({group_id: this.group_id})
-        },
     },
 
     created(){
@@ -49,51 +55,41 @@ export default {
 
     methods: 
     {
-        showParticipantAsSeen(participant)
-        {
-            if(!this.isThisLastSeenMessage(participant)) return false
+        setUserIds(user_ids){ this.user_ids = user_ids },
 
-            if(this.isOwnerOfThisMessage(participant)) return false
+        getUserIds(){ return this.user_ids },
 
-            if(this.isParticipantOwnerOfLastMessage(participant)) return false
+        resetUserIds(){ this.user_ids.splice(0) }, 
 
-            if(this.hasMessagesAfterSeen(participant)) return false
+        hasAnybodySeenThis(){ return this.user_ids.length > 0 ? true : false },
+
+        getParticipantThumbnail(id) { return this.$store.getters[this.gm_ns + '/getParticipantThumbnail'](id) },
+
+        diffSelfCls(participant_id) { 
+            return this.message.user_id == participant_id 
+                ? this.classes.self 
+                : this.classes.notSelf 
+        },
+
+        toShow(participant_id){
+            if(this.config.neverShowUserBewlowHisOwnMsg){
+                if(this.isMsgOwner(participant_id)) return false
+            }
+
+            if(this.config.neverShowSelf){
+                if(this.isSelf(participant_id)) return false
+            }
 
             return true
         },
 
-        isThisLastSeenMessage(participant)
-        {
-            return participant.pivot.last_message_seen_id == this.message.id 
-                ? true 
-                : false
+        isMsgOwner(participant_id){
+            return this.message.user_id == participant_id
         },
 
-        isOwnerOfThisMessage(participant)
-        {
-            return participant.id == this.message.user_id 
-                ? true 
-                : false
-        },
-        
-        isParticipantOwnerOfLastMessage(participant)
-        {
-            const lastMsgOwnerId = this.$store.getters['groups/getOwnerIdOfLastMessage']({
-                group_id: this.group_id,
-                last_msg_id: this.last_msg_id
-            })
-
-            return lastMsgOwnerId == participant.id
-                ? true
-                : false
-        },
-
-        // if there are messages, after "participant.pivot.last_message_seen_id" which belong to him, do not show that user here
-        hasMessagesAfterSeen(participant)
-        {
-            return false // TODO
+        isSelf(participant_id){
+            return this.user.id == participant_id
         }
-
     }
 
 }

@@ -39,7 +39,7 @@ class GetInitialGroupsWithLatestMessageTest extends TestCase
     public function test_gets_groups_with_latest_message()
     {
         $response = $this->get($this->getManyGroupsEndpoint);
-        dd(json_decode($response->content()));
+        // dd(json_decode($response->content()));
         // $response->assertJsonFragment([]);
     }
 }

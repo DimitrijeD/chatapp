@@ -116,11 +116,9 @@ class SeenTest extends TestCase
         $this->post($this->seenEndpoint, $data);
 
         Event::assertDispatched(MeSawMessage::class, function ($e) {
-            $evData = $e->seenData;
-
-            return $e->seenData->group_id == $this->group->id 
-                && $e->seenData->user_id == $this->user->id
-                && $e->seenData->last_message_seen_id == $this->lastMessage->id;
+            return $e->data->group_id == $this->group->id 
+                && $e->data->user_id == $this->user->id
+                && $e->data->last_message_seen_id == $this->lastMessage->id;
         });
     }
 
