@@ -23,6 +23,8 @@ class AllConfigTypesTest extends TestCase
 
     public function test_all_types_create_valid_chat()
     {
+        $this->markTestSkipped('');
+
         foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $msgType){
             foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $timeType){
                 foreach(ChatGroupClusterSeeder::DISTRIBUTION_TYPES as $seenType){

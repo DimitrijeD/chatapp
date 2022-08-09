@@ -3,13 +3,10 @@
 namespace Tests\Feature\Chat\Participants\Leave;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 
 use Database\Seeders\ChatGroupClusterSeeder;
-use App\Models\ChatGroup;
-use App\Models\ChatMessage;
 use App\Models\User;
 
 class ParticipantCanLeaveGroupTest extends TestCase
@@ -19,7 +16,7 @@ class ParticipantCanLeaveGroupTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->chatGroupSeeder = (resolve(ChatGroupClusterSeeder::class));
+        $this->chatGroupSeeder = resolve(ChatGroupClusterSeeder::class);
         $this->groupData = $this->chatGroupSeeder->run();
 
         $this->group = $this->groupData['group'];
@@ -35,7 +32,7 @@ class ParticipantCanLeaveGroupTest extends TestCase
         $this->endpoint = "/api/chat/group/{$this->group->id}/leave";
     }
 
-    public function test_leaving_group_receives_confirmation_message()
+    public function test_successfully_left_group()
     {
         $response = $this->get($this->endpoint);
 
@@ -54,7 +51,7 @@ class ParticipantCanLeaveGroupTest extends TestCase
 
     public function test_user_is_not_removed()
     {
-        $response = $this->get($this->endpoint);
+        $this->get($this->endpoint);
 
         $this->assertDatabaseHas('users', [
             'id' => $this->user->id,
@@ -63,7 +60,7 @@ class ParticipantCanLeaveGroupTest extends TestCase
 
     public function test_group_is_not_removed()
     {
-        $response = $this->get($this->endpoint);
+        $this->get($this->endpoint);
 
         $this->assertDatabaseHas('chat_groups', [
             'id' => $this->group->id,

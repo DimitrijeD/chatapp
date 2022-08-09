@@ -4,13 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 use App\ChatApp\Repos\User\UserEloquentRepo;
-use App\ChatApp\Repos\ChatGroup\ChatGroupEloquentRepo;
-use App\ChatApp\Repos\ChatMessage\ChatMessageEloquentRepo;
 use App\ChatApp\Repos\AccountVerification\AccountVerificationEloquentRepo;
 use App\ChatApp\Repos\AccountVerification\EmailVerification;
 
@@ -21,27 +17,20 @@ class AuthenticationController extends Controller
     /**
      * Return currently logged in user if he is logged in and has email verified. 
      */
-    public function isAuthenticated()
+    public function user()
     {
         $user = auth()->user();
 
-        if($user){
-            
-            if( $user->email_verified_at ){
-                return response()->json([
-                    'user' => $user
-                ], 200);
-            }
+        if(!$user)
+            return response()->json(false, 401);
 
-            if( !$user->email_verified_at ){
-                return response()->json([
-                    'status' => 'must_verify_email',
-                    'email' => $user->email
-                ], 403);
-            }
-        }
-
-        return response()->json(false, 401);
+        if($user->email_verified_at)
+            return response()->json([ 'user' => $user], 200);
+        
+        return response()->json([
+            'status' => 'must_verify_email',
+            'email' => $user->email
+        ], 403);
     }
 
     public function emailVerificationAttempt(Request $request, UserEloquentRepo $userRepo, AccountVerificationEloquentRepo $accountVerificationRepo)
@@ -51,9 +40,8 @@ class AuthenticationController extends Controller
             'code' =>  ['required', 'string', 'size:' . AccountVerification::EMAIL_HASH_LENGTH, ],
         ]);
 
-        if(!$user = $userRepo->find($request->user_id)){
+        if(!$user = $userRepo->find($request->user_id))
             abort(403);
-        }
 
         $status = (new EmailVerification)->attempt($user, $request->code);
 
