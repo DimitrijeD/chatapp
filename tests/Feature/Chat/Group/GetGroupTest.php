@@ -12,7 +12,6 @@ use App\Models\ChatGroup;
 use App\Models\ChatMessage;
 use App\Models\ParticipantPivot;
 use App\Models\ChatRole;
-use Illuminate\Support\Str;
 
 class GetGroupTest extends TestCase
 {
@@ -113,7 +112,7 @@ class GetGroupTest extends TestCase
 
         $response = $this->get($this->getOneGroupEndpoint);
 
-        $response->assertStatus(401);
+        $response->assertJson(["message" => __("Unauthenticated.")]);
     }
 
     public function test_not_accessible_by_non_participant()

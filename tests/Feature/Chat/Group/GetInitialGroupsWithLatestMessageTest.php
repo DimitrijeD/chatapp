@@ -39,7 +39,47 @@ class GetInitialGroupsWithLatestMessageTest extends TestCase
     public function test_gets_groups_with_latest_message()
     {
         $response = $this->get($this->getManyGroupsEndpoint);
-        // dd(json_decode($response->content()));
-        // $response->assertJsonFragment([]);
+
+        $response->assertJsonStructure([[
+            'id', 
+            'name', 
+            'created_at', 
+            'updated_at',
+
+            'participants' => [[
+                    'id', 
+                    'first_name', 
+                    'last_name', 
+                    'email',
+                    'image',
+                    'thumbnail',
+                    'pivot' => [
+                        'group_id', 
+                        'user_id', 
+                        'last_message_seen_id', 
+                        'participant_role', 
+                        'updated_at'
+                    ]
+                ],
+                // ...
+            ],
+
+            'last_message' => [
+                'id',
+                'group_id',
+                'user_id',
+                'text',
+                'created_at',
+                'updated_at',
+                'user' => [
+                    'id', 
+                    'first_name', 
+                    'last_name', 
+                    'email',
+                    'image',
+                    'thumbnail',
+                ]
+            ]
+        ]]);
     }
 }
