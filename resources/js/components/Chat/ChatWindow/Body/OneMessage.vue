@@ -29,7 +29,7 @@
                     lang="en"
                 />
             </div>
-            <p class="mt-0.5 msg-txt text-gray-700 font-sans tracking-wide ">
+            <p class="mt-0.5 msg-txt text-gray-700 font-sans tracking-wide break-words">
                 {{ message.text }}
             </p>
         </div>

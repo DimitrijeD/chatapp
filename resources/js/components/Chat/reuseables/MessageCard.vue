@@ -8,13 +8,15 @@
             :imgCls="'w-8 h-8'" 
             :userNameCls="'text-coolGray-700'"
         />
-
+        
         <div class="content mx-1 my-1.5">
-            <div v-if="messageExists" class="m-1 multi-line-ellipsis font-normal text-gray-800 font-sans">
-                {{ message.text }}
-            </div>
-            <div v-else class="m-1 multi-line-ellipsis font-normal text-gray-800 font-sans">
-                {{ noMessageText }}
+            <div class="m-1 multi-line-ellipsis font-normal text-gray-800 font-sans">
+                <div v-if="messageExists">
+                    {{ message.text }}
+                </div>
+                <div v-else>
+                    {{ noMessageText }}
+                </div>                
             </div>
         </div>
 

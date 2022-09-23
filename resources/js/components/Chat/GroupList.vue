@@ -48,7 +48,7 @@
                 >
             </div>
 
-            <div class="h-96">
+            <div class="h-96 mb-1">
                 <vue-scroll :ops="ops">
                     <div class="flex flex-col space-y-2 ml-1 mr-2">
                         <div v-for="group_id in filteredGroupsIds" :key="group_id">
