@@ -14,6 +14,7 @@
                     <ul> 
                         <li v-for="(id, index) in listUsers" :key="index">
                             <small-user 
+                                v-if="!addedUsersIds.includes(id)"
                                 :user="getUser(id)"
                                 @click.native="add(id)"
                                 :userNameCls="'text-blue-600 space-x-2'"
