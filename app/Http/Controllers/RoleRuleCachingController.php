@@ -16,6 +16,9 @@ class RoleRuleCachingController extends Controller
         return response()->json(['success' => __("Role rules successfully cached.")]);
     }   
     
+    /**
+     * If caching rules doesn't work, it will fallback to create rules from definition from \App\Models\ChatRole arrays
+     */
     public function getAllRules(Request $request, ChatRoleRulesCache $chatRoleRules)
     {
         $roleTables = $chatRoleRules->getAll();
@@ -23,7 +26,7 @@ class RoleRuleCachingController extends Controller
         return response()->json([
             'chat_rules' => !$roleTables 
                 ? $chatRoleRules->createTableArrayOfRules() 
-                : $roleTables,
+                : $roleTables, 
             'keys' => ChatRole::ACTION_KEYS,
             'roles' => ChatRole::ROLES,
             'groupTypes' => ChatGroup::TYPES
