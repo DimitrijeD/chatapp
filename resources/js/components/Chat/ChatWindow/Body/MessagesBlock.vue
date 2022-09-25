@@ -15,8 +15,11 @@
                     :group_id="group.id"
                     @typing="adjustScrollIfBottom"
                 />
-                <div class="mx-2" >
+                
+                <!-- <div class="mx-2">
                     <div v-for="(message, messageId) in group.messages" :key="messageId" >
+
+                    
                         <one-message
                             :message="message"
                         />
@@ -25,6 +28,14 @@
                             :message_id="messageId"
                             :group_id="group.id"
                             :message="message"
+                        />
+                    </div>
+                </div> -->
+
+                <div> <!-- This div is required to leave flex-col-reverse class -->
+                    <div v-for="(block, index) in blocks" :key="index">
+                        <same-user-message-block 
+                            :block="block"
                         />
                     </div>
                 </div>
@@ -37,6 +48,7 @@
 import OneMessage from './OneMessage.vue';
 import MessagesSeen from './MessagesSeen.vue';
 import ParticipantsTyping from "./ParticipantsTyping.vue";
+import SameUserMessageBlock from './SameUserMessageBlock.vue';
 import { mapGetters } from "vuex";
 import * as ns from '../../../../store/module_namespaces.js'
 
@@ -49,20 +61,17 @@ export default {
         'one-message': OneMessage,
         'messages-seen': MessagesSeen,
         'participants-typing': ParticipantsTyping,
+        'same-user-message-block': SameUserMessageBlock,
     },
 
     data() {
         return {
             ops: {
-                vuescroll: {},
                 scrollPanel: {
                     initialScrollY: 1000000000000, // i need percent here and it doesnt work 
                     scrollingX: false,
                 },
-                rail: {},
-                bar: {
-                    keepShow: true
-                }
+                bar: { keepShow: true }
             },
 
             refsNames: {
@@ -79,6 +88,8 @@ export default {
                 scrollAdjustmentOffset: 200,
             },
             gm_ns: ns.groupModule(this.group.id), // group module name space
+
+            blocks: []
         }
     },
 
@@ -101,19 +112,26 @@ export default {
     },
 
     watch: {
-        'group.messages_tracker.last_message.id': function(newVal, oldVal){
-            this.$nextTick(() => {
-                if(this.passedHeigthThreshold()) this.scrollDown()
-            })
-        },
+        // 'group.messages_tracker.last_message.id': (newVal, oldVal) => {
+        //     this.$nextTick(() => {
+        //         if(this.passedHeigthThreshold()) this.scrollDown()
+        //     })
+        // },
 
-        'group.whoSawWhat': {
+        // 'group.whoSawWhat': {
+        //     handler: (newVal, oldVal) => {
+        //         this.resetSeenStates(oldVal)
+        //         this.injectSeenStates(newVal)
+        //     },
+        //     deep: true,
+        // },
+
+        'group.messages': {
             handler: function (newVal, oldVal) {
-                this.resetSeenStates(oldVal)
-                this.injectSeenStates(newVal)
+                this.createBlocks()
             },
             deep: true,
-        }
+        },
 
     }, 
 
@@ -204,7 +222,48 @@ export default {
                 })
             }
                 
-        }
+        },
+
+        createBlocks()
+        {
+            if(this.group.messages == {}) return 
+
+            const msgIds = Object.keys( this.group.messages).map(id => {
+                return Number(id);
+            }).sort((a, b) => {
+                return a - b;
+            })
+
+            let blockCollector = this.getFreshBlockCollector()
+
+            let blockOwner = this.group.messages[msgIds[0]].user_id
+
+            for(let i in msgIds){
+                if(this.group.messages[msgIds[i]].user_id == blockOwner){
+                    blockCollector.messages_ids.push(msgIds[i])
+                    blockCollector.blockOwner = this.group.messages[msgIds[i]].user_id
+                } else {
+                    this.blocks.push(blockCollector)
+                    blockCollector = this.getFreshBlockCollector()
+                    blockCollector.messages_ids.push(msgIds[i])
+                    blockOwner = this.group.messages[msgIds[i]].user_id
+                    blockCollector.blockOwner = this.group.messages[msgIds[i]].user_id
+                }
+            }
+
+            // add last collected block if not empty
+            if(blockCollector.messages_ids.length != 0) this.blocks.push(blockCollector)
+
+        },
+
+        getFreshBlockCollector(){
+            return {
+                messages_ids: [],
+                blockOwner: null
+            }
+        },
+
+
     },
 
 }

@@ -1,17 +1,18 @@
 <template>
-    <div 
-        v-if="hasAnybodySeenThis()" 
-        class="flex justify-end mx-4 my-1 flex-wrap"
-    >
-        <div v-for="participant_id in user_ids">
-            <div v-if="toShow(participant_id)">
-                <img
-                    :src="getParticipantThumbnail(participant_id)"
-                    class="w-8 h-8 object-cover border-2 border-gray-200 rounded-full"
-                    :class="diffSelfCls(participant_id)"
-                    alt=""
-                >    
-            </div>  
+    <div>
+        <div 
+            class="flex justify-end mx-4 flex-wrap"
+        >
+            <div v-for="participant_id in user_ids">
+                <div v-if="toShow(participant_id)">
+                    <img
+                        :src="getParticipantThumbnail(participant_id)"
+                        class="w-8 h-8 object-cover border-2 border-gray-200 rounded-full"
+                        :class="diffSelfCls(participant_id)"
+                        alt=""
+                    >    
+                </div>  
+            </div>
         </div>
     </div>
 </template>

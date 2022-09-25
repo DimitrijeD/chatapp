@@ -1,24 +1,22 @@
 <template>
     <div class="grid inline-grid grid-cols-3 gap-x-3 m-auto pr-3">
         <!-- Chat Window Config -->
-        <font-awesome-icon 
-            icon="gear" 
+        <div 
             class="cw-btn opacity-80 hover:text-white"
             @click="openConfig()"             
             v-bind:class="{
                 'opacity-90': showConfig,
             }"
-        />
+        >c</div>
 
         <!-- Minimize chat window -->
-        <font-awesome-icon 
-            icon="angles-down"
+        <div
             @click="minimize()"
             class="cw-btn hover:text-white"
             v-bind:class="{
                 'transform rotate-180': isMinimized,
             }"
-        />
+        >m</div>
 
 
         <!-- Close chat window -->

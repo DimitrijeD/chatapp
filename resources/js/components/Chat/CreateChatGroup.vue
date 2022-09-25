@@ -9,11 +9,6 @@
             }"
         >
             New chat
-            <font-awesome-icon 
-                icon="people-line" 
-                size="lg" 
-                class="ml-1"
-            /> 
         </button>
 
         <div

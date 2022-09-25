@@ -14,11 +14,7 @@
             @click="whenMessageSent()"
             class="text-base flex-none w-10 "
         >
-            <font-awesome-icon 
-                icon="message" 
-                size="2xl" 
-                class="text-blue-400 hover:text-blue-500"
-            /> 
+            <div class="text-blue-400 hover:text-blue-500">send</div> 
         </button>
     </div>
 </template>

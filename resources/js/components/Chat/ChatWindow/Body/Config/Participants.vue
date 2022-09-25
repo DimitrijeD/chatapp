@@ -37,12 +37,11 @@
                             </div>
                         </div>
 
-                        <font-awesome-icon 
-                            icon="xmark" 
+                        <div 
                             v-if="canRemove(participant)"
                             @click="removeParticipant(participant.id)"
                             class="text-center bg-red-400 w-6 h-6 rounded-full text-gray-50 hover:text-white hover:bg-red-500 ml-auto cursor-pointer"
-                        />  
+                        >X</div>  
                     </div>
                 </div>
             </vue-scroll>
