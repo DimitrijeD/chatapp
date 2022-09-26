@@ -95,7 +95,7 @@
                     >
                 </div>
 
-                <div class="p-2 w-full mt-3">
+                <div class="p-2 w-full mt-3 mx-3">
                     <button 
                         type="submit" 
                         class="w-full text-center text-lg text-white bg-blue-500 border-0 py-3 focus:outline-none hover:bg-blue-600 rounded"
@@ -109,7 +109,11 @@
 </template>
 
 <script>
+
 export default {
+    components:{
+    },
+
     data(){
         return{
             form:{
@@ -149,6 +153,7 @@ export default {
 
             return data
         },
+
     },
 
 }

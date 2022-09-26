@@ -54,9 +54,9 @@ class ChatGroupClusterSeeder extends Seeder
         $this->minTextLen = self::MIN_TEXT_LEN;
         $this->maxTextLen = self::MAX_TEXT_LEN;
 
-        $this->msgType = self::DISTRIBUTION_MAX_ACTIVITY;
-        $this->timeType = self::DISTRIBUTION_MAX_ACTIVITY;
-        $this->seenType = self::DISTRIBUTION_MAX_ACTIVITY;
+        $this->msgType = self::DISTRIBUTION_DEFAULT;
+        $this->timeType = self::DISTRIBUTION_DEFAULT;
+        $this->seenType = self::DISTRIBUTION_DEFAULT;
 
         // $this->numUsers = 20;
         $this->numUsers = null;

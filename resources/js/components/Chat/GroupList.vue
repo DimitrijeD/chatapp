@@ -18,18 +18,6 @@
                 'font-semibold text-green-200 hover:text-green-300': numGroupsWithUnseen && !show,
         }">
             {{ dropdownText }}                 
-            <font-awesome-icon 
-                v-if="!numGroupsWithUnseen"
-                icon="envelope" 
-                size="xl" 
-                class="ml-1"
-            /> 
-            <font-awesome-icon 
-                v-else
-                icon="envelope-open" 
-                size="xl" 
-                class="ml-1"
-            /> 
         </button>
 
         <div

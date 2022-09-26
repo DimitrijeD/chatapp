@@ -202,6 +202,20 @@ const actions =
                 dispatch('whoSawWhat')
             })
         })
+
+        // Echo.join(`group.${this.group_id}`)
+        // .here((users) => {
+        //     console.log(users)
+        // })
+        // .joining((user) => {
+        //     console.log(user.name);
+        // })
+        // .leaving((user) => {
+        //     console.log(user.name);
+        // })
+        // .error((error) => {
+        //     console.error(error);
+        // });
     },
 
     // refreshGroup({ state, commit, dispatch }, data)

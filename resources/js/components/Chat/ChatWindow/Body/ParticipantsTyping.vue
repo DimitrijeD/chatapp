@@ -37,6 +37,7 @@ export default {
             usersTimeouts: {},
             config: {
                 removeTyperAfterMS: 3000,
+                showNtypers: 5, // TODO Maximum number of typers to show in chat 
             },
         }
     },

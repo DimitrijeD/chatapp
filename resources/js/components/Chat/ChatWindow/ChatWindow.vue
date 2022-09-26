@@ -44,7 +44,7 @@
             <!-- Chat Window Footer -->
             <div 
                 v-if="permissions.send_message" 
-                class="border-t-4 border-gray-200 bg-gray-100"
+                class="border-t-4 border-gray-200 bg-blue-100 mb-1"
             >
                 <message-input
                     :group_id="group.id"

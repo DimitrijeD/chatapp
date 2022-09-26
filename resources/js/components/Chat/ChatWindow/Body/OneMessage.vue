@@ -1,5 +1,5 @@
 <template>
-    <div class="my-2.5 mx-2.5"
+    <div class="my-1 ml-1 mr-1.5"
         :class="{
         'bg-blue-100 rounded-l-2xl rounded-tl-2xl a-shadow-blue': !isSelf,
         'bg-gray-200 rounded-r-2xl rounded-bl-2xl a-shadow-gray': isSelf,

@@ -15,16 +15,12 @@
                     :group_id="group.id"
                     @typing="adjustScrollIfBottom"
                 />
-                <div class="mx-2" >
-                    <div v-for="(message, messageId) in group.messages" :key="messageId" >
-                        <one-message
-                            :message="message"
-                        />
-                        <messages-seen 
-                            :ref="getMessageSeenBlockRef(messageId)"
-                            :message_id="messageId"
-                            :group_id="group.id"
-                            :message="message"
+                
+                <div> <!-- This div is required to leave flex-col-reverse class -->
+                    <div v-for="(block, index) in blocks" :key="index">
+                        <same-user-message-block 
+                            :block="block"
+                            :group="group"
                         />
                     </div>
                 </div>
@@ -34,9 +30,8 @@
 </template>
 
 <script>
-import OneMessage from './OneMessage.vue';
-import MessagesSeen from './MessagesSeen.vue';
 import ParticipantsTyping from "./ParticipantsTyping.vue";
+import SameUserMessageBlock from './SameUserMessageBlock.vue';
 import { mapGetters } from "vuex";
 import * as ns from '../../../../store/module_namespaces.js'
 
@@ -46,29 +41,23 @@ export default {
     ],
 
     components: {
-        'one-message': OneMessage,
-        'messages-seen': MessagesSeen,
         'participants-typing': ParticipantsTyping,
+        'same-user-message-block': SameUserMessageBlock,
     },
 
     data() {
         return {
             ops: {
-                vuescroll: {},
                 scrollPanel: {
                     initialScrollY: 1000000000000, // i need percent here and it doesnt work 
                     scrollingX: false,
                 },
-                rail: {},
-                bar: {
-                    keepShow: true
-                }
+                bar: { keepShow: true }
             },
 
             refsNames: {
                 scroll: 'messages-scroll',
                 block: 'msgesBlocks',
-                seen: 'msgesSeen-'
             },
 
             config:{
@@ -78,7 +67,9 @@ export default {
                 awaitsEarlyMessages: false,
                 scrollAdjustmentOffset: 200,
             },
-            gm_ns: ns.groupModule(this.group.id), // group module name space
+            gm_ns: ns.groupModule(this.group.id), 
+
+            blocks: []
         }
     },
 
@@ -101,62 +92,29 @@ export default {
     },
 
     watch: {
-        'group.messages_tracker.last_message.id': function(newVal, oldVal){
+        'group.messages_tracker.last_message.id': function (newVal, oldVal) {
             this.$nextTick(() => {
                 if(this.passedHeigthThreshold()) this.scrollDown()
             })
         },
 
-        'group.whoSawWhat': {
+        'group.messages': {
             handler: function (newVal, oldVal) {
-                this.resetSeenStates(oldVal)
-                this.injectSeenStates(newVal)
+                this.createBlocks()
             },
             deep: true,
-        }
+        },
 
     }, 
 
     methods: 
     {
-        resetSeenStates(oldUsersIds){
-            for(let msg_id in oldUsersIds){
-                this.$refs[this.getMessageSeenBlockRef(msg_id)][0].resetUserIds()
-            }
-        },
-
-        injectSeenStates(newUsersIds){
-            for(let msg_id in newUsersIds){
-                if( !this.$refs[this.getMessageSeenBlockRef(msg_id)] ){ 
-                    console.log('msg seen ref doesnt exist. Most likely message isnt fetched (its old message)')
-                    // he i can have some kind of handler for this case
-                    // each time early messages are called, this function should be run
-                    continue
-                }
-            
-                if( !Array.isArray( this.$refs[this.getMessageSeenBlockRef(msg_id)] )){ 
-                    console.log('msg seen refs are no longer arrays.. what?')
-                    continue
-                }
-
-                if( this.$refs[this.getMessageSeenBlockRef(msg_id)].length > 1 ){
-                    console.log('MessagesBlock group.whoSawWhat watcher, msg seen  refs contain more than one element, wat is going on?')
-                    continue
-                }
-
-                this.$refs[this.getMessageSeenBlockRef(msg_id)][0].setUserIds(newUsersIds[msg_id])
-            }
-        },
-
-        getMessageSeenBlockRef(msg_id){ return this.refsNames.seen + msg_id },
-
         scrollDown() { this.$refs[this.refsNames.scroll].scrollTo({  y: "100%" },  300) },
 
         scrollDownSlow() { this.$refs[this.refsNames.scroll].scrollTo({  y: "200%" },  1000) },
 
         /**
          * Called every time user scolls and on mount
-         * if user scrolled to top of chat indow AND isnt waiting for api to finish, 
          */
         handleScroll(vertical, horizontal, nativeEvent){
             // if user scrolled to top of chat indow AND isnt waiting for api to finish, 
@@ -204,7 +162,50 @@ export default {
                 })
             }
                 
-        }
+        },
+
+        createBlocks()
+        {
+            this.blocks = []
+            
+            if(this.group.messages == {}) return 
+
+            const msgIds = Object.keys( this.group.messages).map(id => {
+                return Number(id);
+            }).sort((a, b) => {
+                return a - b;
+            })
+
+            let blockCollector = this.getFreshBlockCollector()
+
+            let blockOwnerId = this.group.messages[msgIds[0]].user_id
+
+            for(let i in msgIds){
+                if(this.group.messages[msgIds[i]].user_id == blockOwnerId){
+                    blockCollector.messages.push(this.group.messages[msgIds[i]])
+                    blockCollector.blockOwnerId = this.group.messages[msgIds[i]].user_id
+                } else {
+                    this.blocks.push(blockCollector)
+                    blockCollector = this.getFreshBlockCollector()
+                    blockCollector.messages.push(this.group.messages[msgIds[i]])
+                    blockOwnerId = this.group.messages[msgIds[i]].user_id
+                    blockCollector.blockOwnerId = this.group.messages[msgIds[i]].user_id
+                }
+            }
+
+            // add last collected block if not empty
+            if(blockCollector.messages.length != 0) this.blocks.push(blockCollector)
+
+        },
+
+        getFreshBlockCollector(){
+            return {
+                messages: [],
+                blockOwnerId: null
+            }
+        },
+
+
     },
 
 }
