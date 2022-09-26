@@ -1,10 +1,11 @@
 <template>
-    <div class="flex m-2 gap-2 ">
+    <div class="flex m-2 gap-2">
         <textarea
             class="rounded-lg flex-grow p-2 resize-none text-base focus:outline-none shadow-inner"
             rows="3"
-            @keyup.enter="whenMessageSent()"
-            @keydown="userTyping"
+            @keyup.enter.exact.prevent="whenMessageSent()"
+            @keydown.enter.shift.exact.prevent="message += '\n'"
+            @keydown.exact="userTyping"
             type="text"
             v-model="message"
             placeholder="Message ..."

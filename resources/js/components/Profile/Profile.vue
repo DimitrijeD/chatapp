@@ -1,6 +1,6 @@
 <template>
     <div v-if="user">
-        <div class="bg-gray-50 shadow-xl py-3">
+        <div class="bg-gray-100 shadow-xl py-3">
             <div class="p-2 text-center text-xl text-gray-900">
                 <img class="mx-auto w-20 h-20" :src="user.image" alt="no img">
 

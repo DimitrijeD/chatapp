@@ -19,5 +19,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('group.{chatGroup}', function ($user, \App\Models\ChatGroup $chatGroup) {
-    return $chatGroup->participants->contains($user);
+    if ($chatGroup->participants->contains($user)) {
+        return ['id' => $user->id];
+    }
 });

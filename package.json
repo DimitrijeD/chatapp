@@ -11,9 +11,12 @@
     },
     "devDependencies": {
         "axios": "^0.21",
+        "browser-sync": "^2.27.10",
+        "browser-sync-webpack-plugin": "^2.3.0",
         "laravel-echo": "^1.11.3",
         "laravel-mix": "^6.0.6",
         "pusher-js": "^7.0.3",
+        "resolve-url-loader": "^5.0.0",
         "sass": "^1.55.0",
         "sass-loader": "^12.6.0",
         "vue": "^2.6.12",

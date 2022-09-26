@@ -5,7 +5,6 @@
             :class="[static.img, getImgCls]"
             alt="no img :/"
         > 
-
         <p :class="[static.userName, getUserNameCls]">
             {{ getUserNameDisplay }}
         </p>
@@ -43,7 +42,7 @@ export default {
 
             static: {
                 layout: "flex items-center cursor-pointer",
-                img: "inline-block ml-0.5 object-cover border border-gray-100 rounded-full",
+                img: "inline-block ml-0.5 object-cover border border-gray-100 rounded-full shadow-gray",
                 userName: "inline-block font-semibold",
             },
         }
@@ -52,3 +51,9 @@ export default {
 
 }
 </script>
+
+<style>
+.shadow-gray {
+    box-shadow: -3px 8px 10px -6px rgb(45 35 35 / 52%);
+}
+</style>

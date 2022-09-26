@@ -1,9 +1,9 @@
 <template>
     <div>
         <div 
-            class="flex justify-end mx-4 flex-wrap"
+            class="flex justify-start mx-4 flex-wrap"
         >
-            <div v-for="participant_id in user_ids">
+            <div v-for="participant_id in user_ids" :key="participant_id">
                 <div v-if="toShow(participant_id)">
                     <img
                         :src="getParticipantThumbnail(participant_id)"
@@ -23,13 +23,12 @@ import * as ns from '../../../../store/module_namespaces.js'
 
 export default {
     props:[
-        'group_id', 'message'
+        'group_id', 'message', "user_ids"
     ],
 
     data(){
         return{
             gm_ns: ns.groupModule(this.group_id),
-            user_ids: [],
 
             classes: {
                 self: 'shadow-small-img-self',
@@ -56,12 +55,6 @@ export default {
 
     methods: 
     {
-        setUserIds(user_ids){ this.user_ids = user_ids },
-
-        getUserIds(){ return this.user_ids },
-
-        resetUserIds(){ this.user_ids.splice(0) }, 
-
         hasAnybodySeenThis(){ return this.user_ids.length > 0 ? true : false },
 
         getParticipantThumbnail(id) { return this.$store.getters[this.gm_ns + '/getParticipantThumbnail'](id) },
