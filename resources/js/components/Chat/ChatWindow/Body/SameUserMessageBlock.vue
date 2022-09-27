@@ -27,8 +27,9 @@
                     <!-- Need delete message component here with SVG icon -->
                     <!-- <span class="float-right text-sm rounded-full border border-gray-200 cursor-pointer border hover:border-red-300">X</span> -->
 
-                    <!-- Message Content -->
-                    <p style="white-space: pre;" class="font-serif mt-0.5 msg-txt text-gray-700 font-sans tracking-wide break-words" v-html="message.text">
+                    <!-- Message Content style="white-space: pre;" -->
+                    <!-- TODO - caused issue where messages woudnt break into new line but it did include new lines and tabs... -->
+                    <p  class="font-serif mt-0.5 msg-txt text-gray-700 font-sans tracking-wide break-words" v-html="message.text">
                     </p>
                     <!-- / -->
 
