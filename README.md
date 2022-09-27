@@ -71,7 +71,7 @@ Install NPM packages:
 
 If you plan to edit frontend, run following command in separate console to compile your changes automatically:
 
-- npm run watch-poll 
+- npm run dev-poll 
 
 After setting up project on new machine, 
 
@@ -80,7 +80,7 @@ After setting up project on new machine,
 
 didn't show anything on FE even tho it did compile successfully, but
 
-- npm run watch-poll 
+- npm run dev-poll 
 
 solved this issue.
 
