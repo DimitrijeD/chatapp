@@ -58,7 +58,7 @@
 <script>
 import WindowManagement from "./Header/WindowManagement.vue"
 import ChatParticipants from "./Header/ChatParticipants.vue"
-import MessagesBlock    from "./Body/MessagesBlock"
+import MessagesBlock    from "./Body/MessagesBlock.vue"
 import Config           from "./Body/Config.vue"
 import MessageInput     from "./Footer/MessageInput.vue"
 
