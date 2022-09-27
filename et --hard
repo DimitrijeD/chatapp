@@ -1,0 +1,621 @@
+[33mcommit 6a370f07e8be7a370d1c1a23e80746d820b55861[m[33m ([m[1;36mHEAD -> [m[1;32mversion-upgrades[m[33m, [m[1;31morigin/version-upgrades[m[33m)[m
+Merge: 28b236e 4fc33ac
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Sep 27 03:27:11 2022 +0200
+
+    Merge pull request #34 from DimitrijeD/shift-71475
+    
+    Migrate from Laravel Mix to Vite
+
+[33mcommit 4fc33ac70f9c16ed74a2f38223bc21e604bf3f59[m[33m ([m[1;31morigin/shift-71475[m[33m)[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Ignore build assets
+
+[33mcommit 4c6be4a9a41921d7b0230e055feb4a5064c46bdd[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Add `.vue` extension to Vue imports
+
+[33mcommit 6fce0287d8f13fb7330043ccb61c4b06b7f1dd22[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Rename ENV variables
+
+[33mcommit 47775d0b59996f6fed999e4638d61fa0c0541917[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Use ES modules
+
+[33mcommit 6c92f426b150bd442e39ade32aae92e1fd85d342[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Remove `webpack.mix.js`
+
+[33mcommit d7055a04dc527747b1a7f589b94dfa59b6b2131d[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Configure Vite
+
+[33mcommit 7e78f18b32facbe2deb5eacfd6a3d0c2eefb0479[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Update build scripts
+
+[33mcommit 222b19ed9b273136cba8670ffb0e5027801d2a1c[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Add npm dependencies
+
+[33mcommit 32e29a029a8d9cf1e86d9ca9dd0065605fa61e3b[m
+Author: Shift <shift@laravelshift.com>
+Date:   Tue Sep 27 01:26:30 2022 +0000
+
+    Bump `laravel/framework` dependency
+
+[33mcommit 28b236e1462819bfa67bbdb32b4609784bf7976f[m
+Author: vagrant <vagrant@homestead>
+Date:   Tue Sep 27 01:24:54 2022 +0000
+
+    pre laravel shift
+
+[33mcommit c3d2004bc83d42d73e495d9897b9de4aba800209[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Merge: 1bfddfb ea272b9
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Sep 27 01:59:08 2022 +0200
+
+    Merge pull request #33 from DimitrijeD/fix/#6-messages-list-adjustments
+    
+    Fix/#6 messages list adjustments
+
+[33mcommit ea272b98112cabb62b5ae876016533466a04d7be[m[33m ([m[1;31morigin/fix/#6-messages-list-adjustments[m[33m, [m[1;32mfix/#6-messages-list-adjustments[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Mon Sep 26 23:57:51 2022 +0000
+
+    Different messages layout
+
+[33mcommit d179c2c3b74ff0694fd174dc830028a7033dc85f[m
+Author: vagrant <vagrant@homestead>
+Date:   Sun Sep 25 16:04:33 2022 +0000
+
+    unfinished branch
+
+[33mcommit 1bfddfb2d31d671fb243e47cbc0865266164f7e2[m[33m ([m[1;32mlist[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Fri Sep 23 23:20:11 2022 +0000
+
+    packages update
+
+[33mcommit 3b41ebbd863964e2272a446b947c3e740a0f8926[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Fri Sep 23 22:51:44 2022 +0200
+
+    moved procfile to root
+
+[33mcommit 8179fdd8b851451a54bf0522f84ddc01d62037be[m
+Merge: 04b4488 827e46b
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Fri Sep 23 22:47:05 2022 +0200
+
+    Merge pull request #32 from DimitrijeD/style_adjustments
+    
+    fixed some issues and prep for heroku deploy
+
+[33mcommit 827e46b66ad1d65146d63de69dcd18993481f381[m[33m ([m[1;31morigin/style_adjustments[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Fri Sep 23 22:45:31 2022 +0200
+
+    fixed some issues and prep for heroku deploy
+
+[33mcommit 04b44887305b5739cd99df4743836071ee57b255[m
+Merge: 7ec601d 89a709b
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Aug 9 19:24:20 2022 +0200
+
+    Merge pull request #31 from DimitrijeD/small_changes
+    
+    cleaned routes, some test corrections
+
+[33mcommit 89a709b248f59d766d52614b354e1117ef519c8f[m[33m ([m[1;31morigin/small_changes[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Tue Aug 9 17:22:35 2022 +0000
+
+    cleaned routes, some test corrections
+
+[33mcommit 7ec601df80133140a11837056b158155f214053b[m
+Merge: e298985 0283de0
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Jul 26 13:19:53 2022 +0200
+
+    Merge pull request #30 from DimitrijeD/feature/#67-dynamic-store-module
+    
+    Vuex store refactor
+
+[33mcommit 0283de0e74516c15bcca5ebeec3134d640daf8ab[m[33m ([m[1;31morigin/feature/#67-dynamic-store-module[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Tue Jul 26 11:18:13 2022 +0000
+
+    Vuex store refactor
+
+[33mcommit e2989856e8e8f7a82da6828798d7aa5773736e5d[m
+Merge: ee9dfb2 fdfd734
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Sun Jul 3 19:40:58 2022 +0200
+
+    Merge pull request #29 from DimitrijeD/feature/#63-reasonable-group-list-display
+    
+    Group and Message Card components
+
+[33mcommit fdfd7346b95996a353798380e69848b509a64dfe[m[33m ([m[1;31morigin/feature/#63-reasonable-group-list-display[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Sun Jul 3 17:40:13 2022 +0000
+
+    Group and Message Card components
+
+[33mcommit ee9dfb2f6bb02a7ac53aa4f441ce77bd3a67441b[m
+Merge: c3d18e9 408f6dd
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Sat Jul 2 14:13:13 2022 +0200
+
+    Merge pull request #28 from DimitrijeD/feature/#64-create-universal-toastr-alt-component
+    
+    Added colors, not completed component
+
+[33mcommit 408f6ddec2aee2c9be27542441dd39d1c826a8df[m[33m ([m[1;31morigin/feature/#64-create-universal-toastr-alt-component[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Sat Jul 2 12:11:58 2022 +0000
+
+    Added colors, not completed component
+
+[33mcommit c3d18e94b019b171243765de373c59d61c101894[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Fri Jul 1 19:55:01 2022 +0000
+
+    Group and participants store into dictionary
+
+[33mcommit e100810fefeb8190ff2736d1ff1fa9d60048eb93[m
+Merge: 42238fb 3f3b11d
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Jun 30 23:00:18 2022 +0200
+
+    Merge pull request #27 from DimitrijeD/fix/#5-groups-and-participants-into-dictionary
+    
+    Refactored group store into dict
+
+[33mcommit 3f3b11dace84f560e9707de6b413f0da926fd165[m[33m ([m[1;31morigin/fix/#5-groups-and-participants-into-dictionary[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Thu Jun 30 20:59:21 2022 +0000
+
+    Refactored group store into dict
+
+[33mcommit 42238fb15180e0774aef516d44cb9f67aa189fac[m
+Merge: 3c4b9b9 8c1eeaf
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Jun 30 16:47:47 2022 +0200
+
+    Merge pull request #26 from DimitrijeD/feature/#53-user-search-for-new-chat-group
+    
+    Implemented same search as add-users to find-users
+
+[33mcommit 8c1eeafa8e5e8402f6364126e638ac32d7ed3fc9[m[33m ([m[1;31morigin/feature/#53-user-search-for-new-chat-group[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Thu Jun 30 14:46:46 2022 +0000
+
+    Implemented same search as add-users to find-users
+
+[33mcommit 3c4b9b9b9d1bce7307516a9f8d5b1bc336329ce4[m
+Merge: d28a858 71ac091
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Wed Jun 29 22:55:47 2022 +0200
+
+    Merge pull request #25 from DimitrijeD/feature/#61-chage-group-name
+    
+    Added entire chat group name change feature
+
+[33mcommit 71ac091bb1016e18918265e1b3ddabd9d25f49df[m[33m ([m[1;31morigin/feature/#61-chage-group-name[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Wed Jun 29 20:55:07 2022 +0000
+
+    Added entire chat group name change feature
+
+[33mcommit d28a858b6a8064a407c3857aa9b67fe4a86cf771[m
+Merge: aab6771 da26d5e
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Wed Jun 29 14:21:46 2022 +0200
+
+    Merge pull request #24 from DimitrijeD/feature/#58-on-role-change-refresh-UI
+    
+    UI refreshes when role is changed
+
+[33mcommit da26d5eeb66664ccfb61abe30e2d296cec80bdc6[m[33m ([m[1;31morigin/feature/#58-on-role-change-refresh-UI[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Wed Jun 29 12:20:52 2022 +0000
+
+    UI refreshes when role is changed
+
+[33mcommit aab677194a4a4643d95462773c95b77c9c1b8778[m
+Merge: a695e0b 78de182
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Jun 28 21:59:05 2022 +0200
+
+    Merge pull request #23 from DimitrijeD/feature/#56-reactive-user-enters-removed-left-group-event
+    
+    Added user group presence chage events, fix headers display, group li…
+
+[33mcommit 78de1826360765581b65623cedad8e1e27f2acac[m[33m ([m[1;31morigin/feature/#56-reactive-user-enters-removed-left-group-event[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Tue Jun 28 19:58:10 2022 +0000
+
+    Added user group presence chage events, fix headers display, group list component background overflow
+
+[33mcommit a695e0b463fb59af3d1a41340125d60ac6468da8[m
+Merge: e329217 5245589
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Jun 28 16:07:24 2022 +0200
+
+    Merge pull request #22 from DimitrijeD/feature/#54-group-name-in-cw-header
+    
+    rule for remove users, role display,header display
+
+[33mcommit 5245589cb0be66a9445d675a139133e2b98a4a97[m[33m ([m[1;31morigin/feature/#54-group-name-in-cw-header[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Tue Jun 28 14:06:38 2022 +0000
+
+    rule for remove users, role display,header display
+
+[33mcommit e3292174c1f45a044262212ba3ee8d12b3d4b98c[m
+Merge: 7056c5b 21cefc5
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Mon Jun 27 23:04:16 2022 +0200
+
+    Merge pull request #21 from DimitrijeD/feature/#51and#47-Last-Message-Seen-fix
+    
+    fixed user seen not displaying properly
+
+[33mcommit 21cefc5d8f516eaa27a640f4b859a78e5dd1204c[m[33m ([m[1;31morigin/feature/#51and#47-Last-Message-Seen-fix[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Mon Jun 27 21:03:30 2022 +0000
+
+    fixed user seen not displaying properly
+
+[33mcommit 7056c5b05120319c5dbc7e3ce10e7976c0d89c6f[m
+Merge: fb6b0ff 6084134
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Sun Jun 26 22:12:44 2022 +0200
+
+    Merge pull request #20 from DimitrijeD/feature/#52-cache-roles-and-api-req
+    
+    Created role based chat system
+
+[33mcommit 60841348cc7951bbce909fd404bf3fb7598b5e21[m[33m ([m[1;31morigin/feature/#52-cache-roles-and-api-req[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Sun Jun 26 20:11:52 2022 +0000
+
+    Created role based chat system
+
+[33mcommit fb6b0ffbfa51ccd1a8a19ec88785f435ccfdf3b4[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Sun Jun 12 10:56:05 2022 +0000
+
+    small changes
+
+[33mcommit e43fad51c8c3dc72a1d6e078b6ad9ea5038652fc[m
+Merge: 3ab5246 6231ac5
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Fri Jun 10 19:17:52 2022 +0200
+
+    Merge pull request #19 from DimitrijeD/feature/#17-add-new-users-to-group
+    
+    after resigning
+
+[33mcommit 6231ac51c3d7a10e2997a94c23e390fc18b9ea18[m[33m ([m[1;31morigin/feature/#17-add-new-users-to-group[m[33m)[m
+Author: Dimitrije Drakulic <dimitrije.drakulic@bridgewaterlabs.com>
+Date:   Fri Jun 10 17:16:31 2022 +0000
+
+    after resigning
+
+[33mcommit 3ab5246f6e56ba2bdcef600000416cd17bc08d2a[m
+Merge: 24ffb4c 0293a31
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Mon Jun 6 18:26:09 2022 +0200
+
+    Merge pull request #18 from DimitrijeD/feature/#17-add-new-users-to-group
+    
+    Many new stuff
+
+[33mcommit 0293a3112e92fc237d6dbe56a0513b3493c98f4e[m
+Author: Dimitrije Drakulic <dimitrije.drakulic@bridgewaterlabs.com>
+Date:   Mon Jun 6 16:23:29 2022 +0000
+
+    Many new stuff
+
+[33mcommit 24ffb4c70379e0058be777f3c904324ced288da8[m
+Merge: c47ded9 30ed643
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Sun Apr 24 17:10:49 2022 +0200
+
+    Merge pull request #17 from DimitrijeD/feature/#48-get-only-missing-messages
+    
+    #48, #7, refactored cg-seeder setter, added animations in fend
+
+[33mcommit 30ed64386729d230c978414395a8dbce5fa195d5[m[33m ([m[1;31morigin/feature/#48-get-only-missing-messages[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Sun Apr 24 15:09:51 2022 +0000
+
+    #48, #7, refactored cg-seeder setter, added animations in fend
+
+[33mcommit c47ded916bf461a330f63fe61ed3df81877fc6b3[m
+Merge: f457cca 0e8cc56
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Fri Apr 22 04:28:54 2022 +0200
+
+    Merge pull request #16 from DimitrijeD/feature/#20-chat-personalization
+    
+    Lots of stuff
+
+[33mcommit 0e8cc5685f8528e6b3bd55b4a0306350faeedaa6[m[33m ([m[1;31morigin/feature/#20-chat-personalization[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Fri Apr 22 02:26:01 2022 +0000
+
+    Lots of stuff
+
+[33mcommit f457ccade84d276f12152d84c191b58aa6f41060[m
+Merge: 8c337d3 226755d
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Apr 12 10:14:58 2022 +0200
+
+    Merge pull request #15 from DimitrijeD/feature/#43-format-verification-email
+    
+    Verification email fe
+
+[33mcommit 226755df59a53f76474f97dfe915dff791222ee1[m[33m ([m[1;31morigin/feature/#43-format-verification-email[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Tue Apr 12 08:14:09 2022 +0000
+
+    Verification email fe
+
+[33mcommit 8c337d31dfff253e6dc4c3c3deda9a4fa6cea58e[m
+Merge: 18cfcd4 7f7e32c
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Mon Apr 11 17:52:06 2022 +0200
+
+    Merge pull request #14 from DimitrijeD/feature/#10-finish-remaining-tests
+    
+    Tests, email verifications, routes
+
+[33mcommit 7f7e32cd5a26c1f7807640353dac182d8d0ef419[m[33m ([m[1;31morigin/feature/#10-finish-remaining-tests[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Mon Apr 11 15:51:20 2022 +0000
+
+    Tests, email verifications, routes
+
+[33mcommit 18cfcd40a9e6d1fa71373e2b4abab82d04ce07d3[m
+Merge: 080ee4f 3eb4be5
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Fri Apr 8 16:42:30 2022 +0200
+
+    Merge pull request #13 from DimitrijeD/feature/#37-create-user-roles-in-group
+    
+    37, 26, 38 with tests
+
+[33mcommit 3eb4be5cabab7809919fab3913c254dd411a5351[m[33m ([m[1;31morigin/feature/#37-create-user-roles-in-group[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Fri Apr 8 14:41:35 2022 +0000
+
+    37, 26, 38 with tests
+
+[33mcommit 080ee4fcc77ec265183b75a869e6acf1ed3203d4[m
+Merge: 71d1c45 bfdc67f
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Apr 7 16:03:39 2022 +0200
+
+    Merge pull request #12 from DimitrijeD/feature/#36-create-chat-types
+    
+    Added chat types for model and chatting
+
+[33mcommit bfdc67f9d494d4a647023599f2f5657b54e0b7c4[m[33m ([m[1;31morigin/feature/#36-create-chat-types[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Thu Apr 7 14:02:58 2022 +0000
+
+    Added chat types for model and chatting
+
+[33mcommit 71d1c45f33e8a7b64aef24a46ddb598277e9e7b2[m
+Merge: 4a73dea 9501963
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Apr 7 12:06:36 2022 +0200
+
+    Merge pull request #11 from DimitrijeD/feature/#22-on-message-received-remove-typer
+    
+    On new message received, remove that user from typing array
+
+[33mcommit 950196377eb74c7f9503177c38510520022e6902[m[33m ([m[1;31morigin/feature/#22-on-message-received-remove-typer[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Thu Apr 7 10:05:56 2022 +0000
+
+    On new message received, remove that user from typing array
+
+[33mcommit 4a73dea6e9d6f21cffffd486c56d33067b079870[m
+Merge: ade29c3 b66140d
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Apr 7 10:47:07 2022 +0200
+
+    Merge pull request #10 from DimitrijeD/feature/#29-middlewares
+    
+    Lot of refactors; middleware
+
+[33mcommit b66140deb4dc61d49682ac97ceb419f39f34abc4[m[33m ([m[1;31morigin/feature/#29-middlewares[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Thu Apr 7 08:46:08 2022 +0000
+
+    Lot of refactors; middleware
+
+[33mcommit ade29c396d0ede8af64ee7e9927a8e9e2b4524ce[m
+Merge: 3bfb05f 52a37e6
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Mon Apr 4 15:10:59 2022 +0200
+
+    Merge pull request #9 from DimitrijeD/feature/#23-extract-requests-from-controllers
+    
+    Request and other refactors
+
+[33mcommit 52a37e68d4d1d0166550cf0a5c4406bac3a484dd[m[33m ([m[1;31morigin/feature/#23-extract-requests-from-controllers[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Mon Apr 4 13:09:56 2022 +0000
+
+    Request and other refactors
+
+[33mcommit 3bfb05f447f385e865a6f1ce17e123bb83022bd2[m
+Merge: beca65f dc1f03b
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Sun Apr 3 12:43:55 2022 +0200
+
+    Merge pull request #8 from DimitrijeD/feature/#5.3-refactor-controllers-to-use-repo-pattern
+    
+    #5.3 repo p, #21 email verification ref, #28 user registration fixes
+
+[33mcommit dc1f03b9a755e64cd89a8def3dcb30966922fc43[m[33m ([m[1;31morigin/feature/#5.3-refactor-controllers-to-use-repo-pattern[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Sun Apr 3 10:43:08 2022 +0000
+
+    #5.3 repo p, #21 email verification ref, #28 user registration fixes
+
+[33mcommit beca65fd4f79ea3dfefe58cc48eb593183f37ab7[m
+Merge: d9eb5ec 7c6a360
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Fri Apr 1 18:55:52 2022 +0200
+
+    Merge pull request #7 from DimitrijeD/feature/#5.2-create-repo-pattern
+    
+    Created repo pattern for models, firstName->first_name, login css change
+
+[33mcommit 7c6a3606a19682421eddc9bb49a40b25298def79[m[33m ([m[1;31morigin/feature/#5.2-create-repo-pattern[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Fri Apr 1 16:53:38 2022 +0000
+
+    Created repo pattern for models, firstName->first_name, login css change
+
+[33mcommit d9eb5eca944379e038f44d775e1d0af8814c4ef7[m
+Merge: 24aa120 095e1b0
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Wed Mar 30 14:15:06 2022 +0200
+
+    Merge pull request #6 from DimitrijeD/feature/#16-edit-readme
+    
+    readme with example
+
+[33mcommit 095e1b0d4005258f3ce2a4ae0995b0f15cb7baac[m[33m ([m[1;31morigin/feature/#16-edit-readme[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Wed Mar 30 12:12:34 2022 +0000
+
+    readme with example
+
+[33mcommit 24aa120a6144238d5f8fa4e4343472ef443e6645[m
+Merge: b104dd2 dad994b
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Mar 29 20:10:05 2022 +0200
+
+    Merge pull request #5 from DimitrijeD/feature/5.1-sending-message-chain-of-events-refactor
+    
+    Added Cluster seeders,
+    helpers,
+    fixed seen in chat
+    uppon submitting new message, update pivot,
+    started refactoring "get all messages when some1 submits new message" -> into get only missing messages
+
+[33mcommit dad994be52720b91565fda4e4f39b753fd41bbd3[m[33m ([m[1;31morigin/feature/5.1-sending-message-chain-of-events-refactor[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Tue Mar 29 18:03:50 2022 +0000
+
+    Added Cluster seeders, helpers, fixed seen in chat
+
+[33mcommit b104dd2c404c2f443366c0df856d0f7a89d43a78[m
+Merge: 23b222c 912810c
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Feb 15 16:25:46 2022 +0100
+
+    Merge pull request #4 from DimitrijeD/feature/4.1-switch-to-vuex
+    
+    Vuex integration
+
+[33mcommit 912810cfaee5cca66896616bcbdf42105b2271e9[m[33m ([m[1;31morigin/feature/4.1-switch-to-vuex[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Tue Feb 15 15:19:59 2022 +0000
+
+    Vuex integration
+
+[33mcommit 23b222c541744d535cf107bbfbdc087d28336c3b[m
+Author: vagrant <vagrant@homestead>
+Date:   Wed Feb 9 15:41:42 2022 +0000
+
+    Start ignoring public/js
+
+[33mcommit 8588ff108e9b5c73655f245609060a2246ec3667[m
+Merge: 449eed5 8cac30a
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Wed Feb 9 16:33:40 2022 +0100
+
+    Merge pull request #3 from DimitrijeD/feature/3-multiple-users-typing
+    
+    Multiple users can type while their names are displayed on the bottom of chat window
+
+[33mcommit 8cac30a59ee4e69975d62c922b66d818302ad2cc[m[33m ([m[1;31morigin/feature/3-multiple-users-typing[m[33m)[m
+Author: vagrant <vagrant@homestead>
+Date:   Wed Feb 9 15:32:18 2022 +0000
+
+    Multiple users can type while their names are displayed on the bottom of chat window
+
+[33mcommit 449eed5d946e78ee62b06104e336a851c3b7584e[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Mon Jan 17 10:46:37 2022 +0000
+
+    Started adding tests and attempting vuex
+
+[33mcommit 1162ddd442aab6941cc37d431b0cb56e568f1a11[m
+Merge: 015a489 d712fda
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Thu Jan 6 18:41:45 2022 +0100
+
+    Merge pull request #2 from DimitrijeD/feature/2-chat
+    
+    Feature/2 chat
+
+[33mcommit d712fdad18b2946f2129c0677431353b2d5cf55a[m[33m ([m[1;31morigin/feature/2-chat[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Thu Jan 6 18:40:31 2022 +0100
+
+    Additional stuff
+
+[33mcommit 3383bf5fd797f3851a0642e600fac975ccae5f31[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Fri Nov 26 13:39:45 2021 +0000
+
+    Chat
+
+[33mcommit 015a4898551e4f41b7d6e1017de4549cc2fbf7e1[m
+Merge: 138dc35 82df713
+Author: DimitrijeD <78658313+DimitrijeD@users.noreply.github.com>
+Date:   Tue Nov 2 12:20:11 2021 +0100
+
+    Merge pull request #1 from DimitrijeD/feature/1-registration
+    
+    Registration, image management, login, email verification
+
+[33mcommit 82df7132a395e405639325b7f128d3406d25a2d3[m[33m ([m[1;31morigin/feature/1-registration[m[33m)[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Tue Nov 2 10:25:38 2021 +0000
+
+    Registration, image management, login, email verification
+
+[33mcommit 138dc352e592def3be0c6dfdc9204b0ff364ac89[m
+Author: DimitrijeD <dimitrijedrakulic@gmail.com>
+Date:   Thu Oct 21 22:54:02 2021 +0000
+
+    Initial setup

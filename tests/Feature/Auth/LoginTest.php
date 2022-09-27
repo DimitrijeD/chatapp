@@ -58,9 +58,9 @@ class LoginTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertJson([
-                "message" => "The given data was invalid.",
+                "message" => __("The provided credentials are incorrect."),
                 "errors" => [
-                    "email" => ["The provided credentials are incorrect."]
+                    "email" => [__("The provided credentials are incorrect.")]
                 ]
             ]); 
     }
@@ -74,9 +74,9 @@ class LoginTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertJson([
-                "message" => "The given data was invalid.",
+                "message" => __("The provided credentials are incorrect."),
                 "errors" => [
-                    "email" => ["The provided credentials are incorrect."]
+                    "email" => [__("The provided credentials are incorrect.")]
                 ]
             ]); 
     }
@@ -90,9 +90,9 @@ class LoginTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertJson([
-                "message" => "The given data was invalid.",
+                "message" => __("The provided credentials are incorrect."),
                 "errors" => [
-                    "email" => ["The provided credentials are incorrect."]
+                    "email" => [__("The provided credentials are incorrect.")]
                 ]
             ]); 
     }
