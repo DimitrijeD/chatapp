@@ -1,28 +1,23 @@
-require('./bootstrap')
+import './bootstrap';
+import '../css/app.css';
 
-// import "tailwindcss/tailwind.css"
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createApp, h } from 'vue';
+import { createInertiaApp } from '@inertiajs/inertia-vue3';
+import { InertiaProgress } from '@inertiajs/progress';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
-import routes from './routes'
-import App from "./App.vue"
-import store from './store/index.js'
+const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
-Vue.use(VueRouter)
+createInertiaApp({
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+    setup({ el, app, props, plugin }) {
+        return createApp({ render: () => h(app, props) })
+            .use(plugin)
+            .use(ZiggyVue, Ziggy)
+            .mount(el);
+    },
+});
 
-import vuescroll from 'vuescroll'
-
-Vue.use(vuescroll)
-
-Vue.prototype.$vuescrollConfig = {
-  bar: {
-    background: 'rgba(96, 165, 250)' //bg-blue-400
-  }
-}
-
-const app = new Vue({
-    el: '#app',
-    router: new VueRouter(routes),
-    store: store,
-    render: h => h(App),
-})
+InertiaProgress.init({ color: '#4B5563' });

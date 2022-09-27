@@ -1,32 +1,21 @@
-const colors = require('tailwindcss/colors')
+const defaultTheme = require('tailwindcss/defaultTheme');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
-  theme: {
-    extend: {
-      colors: {
-          orange: colors.orange,
-          lime: colors.lime,
-          emerald: colors.emerald,
-          teal: colors.teal,
-          cyan: colors.cyan,
-          sky: colors.sky,
-          blueGray: colors.blueGray,
-          coolGray: colors.coolGray,
-          trueGray: colors.trueGray,
-          warmGray: colors.warmGray,
-          amber: colors.amber,
-          indigo: colors.indigo,
-          violet: colors.violet,
-          purple: colors.purple,
-          rose: colors.rose,
-          fuchsia: colors.fuchsia,
-      },
-    }
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-}
+    content: [
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
+        './resources/views/**/*.blade.php',
+        './resources/js/**/*.vue',
+    ],
+
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+            },
+        },
+    },
+
+    plugins: [require('@tailwindcss/forms')],
+};

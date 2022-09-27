@@ -189,7 +189,7 @@ class GetUsersByStrTrimByIdsTest extends TestCase
         $response = $this->post($this->getUsersEndpoint, $userInput);
 
         $response->assertJson([
-            "message" => __("The given data was invalid."),
+            "message" => __("User ID-s provided in array must be numeric, '{$notInt}' given."),
             "errors" => [ 
                 "i_have_ids" => [__("User ID-s provided in array must be numeric, '{$notInt}' given.")] 
             ]

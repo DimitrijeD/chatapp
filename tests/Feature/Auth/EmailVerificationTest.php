@@ -2,91 +2,64 @@
 
 namespace Tests\Feature\Auth;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use App\Models\User;
-use App\Models\AccountVerification;
-use Illuminate\Support\Facades\Hash;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
+use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
+    public function test_email_verification_screen_can_be_rendered()
     {
-        parent::setUp();
-
-        $this->email = 'qwe@qwe';
-        $this->password = 'qweqweqweQ1';
-
-        $this->user = User::factory()->create([
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
+        $user = User::factory()->create([
             'email_verified_at' => null,
         ]);
-        
-        $this->data = ['email' => $this->email];
 
-        $this->code = Str::random(AccountVerification::EMAIL_HASH_LENGTH);
+        $response = $this->actingAs($user)->get('/verify-email');
 
-        $this->verification = AccountVerification::factory()->create([
-            'code'    => Hash::make( $this->code ),
-            'type'    => AccountVerification::EMAIL_TYPE,
-            'user_id' => $this->user->id,
+        $response->assertStatus(200);
+    }
+
+    public function test_email_can_be_verified()
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
         ]);
 
-        // Auth::login($this->user);
-        $this->withHeaders([ 'Accept' => 'application/json', ]);
-        
-        $this->apiCreateOrUpdateEndpoint = '/api/email-verification/create-or-update';
-        $this->webAttemptEndpoint = "/api/email-verification/uid/{$this->user->id}/c/{$this->code}";
+        Event::fake();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $response = $this->actingAs($user)->get($verificationUrl);
+
+        Event::assertDispatched(Verified::class);
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $response->assertRedirect(RouteServiceProvider::HOME.'?verified=1');
     }
 
-    public function test_success()
+    public function test_email_is_not_verified_with_invalid_hash()
     {
-        $response = $this->get($this->webAttemptEndpoint, $this->data);
-
-        $response->assertOk();
-    }
-
-    public function test_already_verified()
-    {
-        $this->user->email_verified_at = now();
-        $this->user->save();
-        $this->user->fresh();
-
-        $response = $this->get($this->webAttemptEndpoint, $this->data);
-        
-        $response->assertOk();
-    }
-
-    public function test_already_verified_deletes_verification()
-    {
-        $this->user->email_verified_at = now();
-        $this->user->save();
-        $this->user->fresh();
-
-        $this->get($this->webAttemptEndpoint, $this->data);
-        
-        $this->assertDatabaseMissing('account_verifications', [
-            'type' => AccountVerification::EMAIL_TYPE,
-            'user_id' => $this->user->id,
+        $user = User::factory()->create([
+            'email_verified_at' => null,
         ]);
-    }
 
-    public function test_incorrect_code()
-    {
-        $code = $this->code . 'sasdasd';
-        $Endpoint = "/api/email-verification/uid/{$this->user->id}/c/{$code}";
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1('wrong-email')]
+        );
 
-        $response = $this->get($Endpoint, $this->data);
+        $this->actingAs($user)->get($verificationUrl);
 
-        $response->assertJson([
-            'status' => 'error',
-            'code' => 404
-        ]);
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 }
